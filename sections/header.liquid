@@ -9,6 +9,8 @@
     --header-transparent-header-text-color: {{ section.settings.transparent_header_text_color.rgb }};
     --header-separation-border-color: {% if section.settings.show_separation_border %}{{ section.settings.color_scheme.settings.text_color.rgb }} / 0.15{% else %}0 0 0 / 0{% endif %};
 
+    --header-highlight-color: {{ section.settings.highlight_menu_color.rgb }};
+
     position: relative;
     z-index: 4;
   }
@@ -29,7 +31,11 @@
           --header-grid: "logo primary-nav secondary-nav" / minmax(max-content, 1fr) auto minmax(max-content, 1fr);
 
         {%- when 'logo_center_navigation_below' -%}
-          --header-grid: ". logo secondary-nav" "primary-nav primary-nav primary-nav" / minmax(0, 1fr) auto minmax(0, 1fr);
+          {%- if section.settings.search_position == 'left' and section.settings.enable_search -%}
+            --header-grid: "search-start logo secondary-nav" "primary-nav primary-nav primary-nav" / minmax(0, 1fr) auto minmax(0, 1fr);
+          {%- else -%}
+            --header-grid: ". logo secondary-nav" "primary-nav primary-nav primary-nav" / minmax(0, 1fr) auto minmax(0, 1fr);
+          {%- endif -%}
       {%- endcase -%}
     }
   }
@@ -96,6 +102,22 @@
       <a href="{{ routes.root_url }}" class="header__logo">{{ logo_content }}</a>
     {% endif %}
 
+    {%- liquid
+      assign search_on_left = false
+      if section.settings.enable_search and section.settings.search_position == 'left' and section.settings.layout == 'logo_center_navigation_below'
+        assign search_on_left = true
+      endif
+    -%}
+
+    {%- if search_on_left -%}
+      <div class="header__search-start md-max:hidden">
+        <a href="{{ routes.search_url }}" aria-controls="header-search-{{ section.id }}">
+          <span class="sr-only">{{ 'header.general.search' | t }}</span>
+          {%- render 'icon' with 'search', class: 'header__nav-icon' -%}
+        </a>
+      </div>
+    {%- endif -%}
+
     {%- comment -%}
       --------------------------------------------------------------------------------------------------------------------
       PRIMARY NAVIGATION AREA
@@ -138,7 +160,8 @@
                 endfor
               %}
 
-              <li class="header__primary-nav-item">
+              {%- assign highlight_item = section.settings.highlight_menu_item | strip | downcase -%}
+              <li class="header__primary-nav-item {% if highlight_item != blank and highlight_item == link_title_downcase %}header__primary-nav-item--highlight{% endif %}">
                 {%- if link.levels == 0 and mega_menu_block == '' -%}
                   <a
                     href="{{ link.url }}"
@@ -245,6 +268,21 @@
           </li>
         {%- endif -%}
 
+        {%- for i in (1..3) -%}
+          {%- liquid
+            assign utility_text_key = 'utility_link_' | append: i | append: '_text'
+            assign utility_url_key = 'utility_link_' | append: i | append: '_url'
+            assign utility_text = section.settings[utility_text_key]
+            assign utility_url = section.settings[utility_url_key]
+          -%}
+
+          {%- if utility_text != blank and utility_url != blank -%}
+            <li class="header__utility-link md-max:hidden">
+              <a href="{{ utility_url }}" class="link-faded">{{ utility_text }}</a>
+            </li>
+          {%- endif -%}
+        {%- endfor -%}
+
         {%- comment -%}Offer a hook for apps to integrate into the header to add their own icon, for instance{%- endcomment -%}
         {%- for block in section.blocks -%}
           {%- if block.type == '@app' -%}
@@ -273,7 +311,7 @@
         {%- endif -%}
 
         {%- if section.settings.enable_search -%}
-          <li class="header__search-link">
+          <li class="header__search-link {% if search_on_left %}md:hidden{% endif %}">
             <a href="{{ routes.search_url }}" aria-controls="header-search-{{ section.id }}">
               <span class="sr-only">{{ 'header.general.search' | t }}</span>
 
@@ -531,6 +569,44 @@
         }
       ],
       "default": "logo_left_navigation_inline"
+    },
+    {
+      "type": "select",
+      "id": "search_position",
+      "label": "Search icon position",
+      "info": "Left only applies to the \"Logo center, navigation below\" layout on desktop.",
+      "options": [
+        { "value": "right", "label": "Right, with other icons" },
+        { "value": "left", "label": "Left of the logo" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "header",
+      "content": "Text links",
+      "info": "Small uppercase links shown next to the icons on desktop, e.g. Wholesale or Subscribe."
+    },
+    { "type": "text", "id": "utility_link_1_text", "label": "Link 1 text" },
+    { "type": "url", "id": "utility_link_1_url", "label": "Link 1 URL" },
+    { "type": "text", "id": "utility_link_2_text", "label": "Link 2 text" },
+    { "type": "url", "id": "utility_link_2_url", "label": "Link 2 URL" },
+    { "type": "text", "id": "utility_link_3_text", "label": "Link 3 text" },
+    { "type": "url", "id": "utility_link_3_url", "label": "Link 3 URL" },
+    {
+      "type": "header",
+      "content": "Highlighted menu item"
+    },
+    {
+      "type": "text",
+      "id": "highlight_menu_item",
+      "label": "Menu item title",
+      "info": "Exact title of a top-level menu item to show in the highlight color, e.g. Sale."
+    },
+    {
+      "type": "color",
+      "id": "highlight_menu_color",
+      "label": "Highlight color",
+      "default": "#916323"
     },
     {
       "type": "checkbox",

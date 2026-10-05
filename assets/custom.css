@@ -1,13 +1,16 @@
 /*
-  Store-specific overrides layered on top of theme.css .
+  Store-specific overrides layered on top of theme.css (Elliott and Me brand kit).
   Keep Prestige's theme.css untouched so theme updates stay easy to merge.
+
+  Brand kit: navigation, labels and buttons are Montserrat, uppercase, tracked 0.15–0.18em.
+  Gold Deep (#916323) for small text and accents, Ink (#231F20) for text.
 */
 
-/* Announcement bar: larger, bolder promo text */
+/* Announcement bar: Montserrat label style */
 .shopify-section--announcement-bar p {
   font-family: var(--text-font-family);
-  font-weight: 600;
-  letter-spacing: .14em;
+  font-weight: 500;
+  letter-spacing: .18em;
   text-transform: uppercase;
 }
 
@@ -16,11 +19,10 @@
   text-underline-offset: 3px;
 }
 
-/* Text logo (used until a logo image is uploaded) */
+/* Text logo is only a fallback: the brand kit asks for the SVG lockup, never the name retyped in a font */
 .header__logo-text {
-  font-size: 1.5rem;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  font-size: 1.75rem;
+  color: #b47b2b;
 }
 
 @media screen and (min-width: 1000px) {
@@ -32,9 +34,54 @@
 /* Primary navigation: uppercase, widely tracked */
 .header__primary-nav-item > a,
 .header__primary-nav-item > details > summary {
+  font-family: var(--text-font-family);
   font-size: .9375rem;
-  letter-spacing: .16em;
+  font-weight: 500;
+  letter-spacing: .18em;
   text-transform: uppercase;
+}
+
+.header__primary-nav-item--highlight > a,
+.header__primary-nav-item--highlight > details > summary {
+  color: rgb(var(--header-highlight-color));
+}
+
+@media screen and (min-width: 1000px) {
+  .header__primary-nav {
+    padding-block-start: 1rem;
+  }
+}
+
+@media screen and (min-width: 1150px) {
+  .header__primary-nav {
+    column-gap: 2rem;
+  }
+}
+
+/* Search icon moved to the left of the logo (desktop) */
+.header__search-start {
+  grid-area: search-start;
+  justify-self: start;
+  align-self: center;
+}
+
+/* Small uppercase text links beside the header icons */
+.header__utility-link a {
+  font-family: var(--text-font-family);
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+@media screen and (min-width: 1000px) {
+  .header__secondary-nav {
+    column-gap: 1.75rem;
+  }
+
+  .header__utility-link + .header__utility-link {
+    margin-inline-start: .25rem;
+  }
 }
 
 /* Hero: inset from the page edges instead of edge-to-edge */

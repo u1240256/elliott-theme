@@ -68,7 +68,16 @@
         "show_country_name": false,
         "show_country_flag": true,
         "show_locale_selector": false,
-        "transparent_header_text_color": "#ffffff"
+        "transparent_header_text_color": "#ffffff",
+        "search_position": "left",
+        "utility_link_1_text": "Wholesale",
+        "utility_link_1_url": "shopify://pages/contact",
+        "utility_link_2_text": "Subscribe",
+        "utility_link_2_url": "#newsletter",
+        "utility_link_3_text": "",
+        "utility_link_3_url": "",
+        "highlight_menu_item": "Sale",
+        "highlight_menu_color": "#916323"
       }
     }
   },
