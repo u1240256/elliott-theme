@@ -61,6 +61,17 @@
         --header-logo-width: {{ section.settings.logo_max_width }}px;
       }
     }
+  {%- else -%}
+    {%- comment -%}Brand SVG fallback: wordmark on phones, horizontal lockup on desktop (brand kit logo rules){%- endcomment -%}
+    #shopify-section-{{ section.id }} {
+      --header-logo-width: 150px;
+    }
+
+    @media screen and (min-width: 700px) {
+      #shopify-section-{{ section.id }} {
+        --header-logo-width: 240px;
+      }
+    }
   {%- endif -%}
 </style>
 
@@ -90,7 +101,10 @@
           {{- section.settings.transparent_logo | image_url: width: section.settings.transparent_logo.width | image_tag: sizes: sizes, widths: widths, class: 'header__logo-image header__logo-image--transparent' -}}
         {%- endif -%}
       {%- else -%}
-        <span class="header__logo-text h5">{{ shop.name }}</span>
+        <picture>
+          <source media="(max-width: 699px)" srcset="{{ 'em-logo-wordmark.svg' | asset_url }}" width="200" height="29">
+          <img src="{{ 'em-logo-horizontal.svg' | asset_url }}" alt="{{ shop.name | escape }}" width="289" height="67" class="header__logo-image">
+        </picture>
       {%- endif -%}
     {%- endcapture -%}
 

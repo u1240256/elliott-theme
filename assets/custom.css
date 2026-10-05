@@ -19,18 +19,6 @@
   text-underline-offset: 3px;
 }
 
-/* Text logo is only a fallback: the brand kit asks for the SVG lockup, never the name retyped in a font */
-.header__logo-text {
-  font-size: 1.75rem;
-  color: #b47b2b;
-}
-
-@media screen and (min-width: 1000px) {
-  .header__logo-text {
-    font-size: 2.25rem;
-  }
-}
-
 /* Primary navigation: uppercase, widely tracked */
 .header__primary-nav-item > a,
 .header__primary-nav-item > details > summary {
