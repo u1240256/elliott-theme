@@ -1,0 +1,85 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "type": "header",
+  "name": "Header group",
+  "sections": {
+    "announcement_bar_nADt8t": {
+      "type": "announcement-bar",
+      "blocks": {
+        "message_Xehx8E": {
+          "type": "message",
+          "settings": {
+            "text": "Every child has an “and Me.”"
+          }
+        }
+      },
+      "block_order": [
+        "message_Xehx8E"
+      ],
+      "name": "t:sections.announcement_bar.name",
+      "settings": {
+        "color_scheme": "scheme-light-header",
+        "enable_sticky": false,
+        "autoplay": false,
+        "cycle_speed": 5,
+        "desktop_font_size": 10,
+        "mobile_font_size": 10
+      }
+    },
+    "countdown-timer": {
+      "type": "countdown-condensed",
+      "settings": {
+        "color_scheme": "schema-3",
+        "content": "super Sale Up to 40% off",
+        "link_text": "shop now",
+        "link_url": "shopify://collections/all",
+        "expiration_date": "2025-11-25",
+        "expiration_behavior": "leave",
+        "desktop_justification": "space-between"
+      }
+    },
+    "header": {
+      "type": "header",
+      "settings": {
+        "color_scheme": "scheme-light-header",
+        "enable_sticky": true,
+        "hide_on_scroll": false,
+        "show_separation_border": true,
+        "reduce_padding": true,
+        "logo": "{{shop.brand.logo}}",
+        "logo_max_width": 100,
+        "logo_mobile_max_width": 70,
+        "menu": "main-menu",
+        "sidebar_menu": "",
+        "customer_account_menu": "customer-account-main-menu",
+        "menu_open_trigger": "hover",
+        "menu_text_font": "body",
+        "enable_search": true,
+        "sidebar_color_scheme": "scheme-light-header",
+        "sidebar_text_font": "body",
+        "sidebar_show_dividers": false,
+        "sidebar_open_second_level_menus": false,
+        "layout": "logo_center_navigation_below",
+        "show_icons": true,
+        "show_country_selector": true,
+        "show_country_name": false,
+        "show_country_flag": true,
+        "show_locale_selector": false,
+        "transparent_header_text_color": "#ffffff"
+      }
+    }
+  },
+  "order": [
+    "announcement_bar_nADt8t",
+    "countdown-timer",
+    "header"
+  ]
+}
