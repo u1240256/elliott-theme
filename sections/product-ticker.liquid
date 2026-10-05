@@ -1,0 +1,183 @@
+{%- comment -%}
+  Scrolling strip of products from a collection: thumbnail, title and a short status line.
+  Per-product overrides (optional product metafields):
+  - custom.ticker_label (single line text), e.g. "Hot right now". Falls back to the section's default label.
+  - custom.units_sold (integer). Only shown when set, so no number is ever invented.
+{%- endcomment -%}
+{%- assign products = section.settings.collection.products -%}
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+<div class="product-ticker color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+  {%- if section.settings.title != blank -%}
+    <p class="product-ticker__title">
+      <span aria-hidden="true">{{ section.settings.icon }}</span>
+      {{ section.settings.title }}
+      <span aria-hidden="true">{{ section.settings.icon }}</span>
+    </p>
+  {%- endif -%}
+
+  <marquee-text speed="{{ section.settings.scrolling_speed }}" direction="left" pause-on-hover class="scrolling-content">
+    <div class="scrolling-content__item">
+      {%- if section.settings.collection != blank -%}
+        {%- for product in products limit: section.settings.products_count -%}
+          {%- assign ticker_label = product.metafields.custom.ticker_label.value | default: section.settings.default_label -%}
+          {%- assign units_sold = product.metafields.custom.units_sold.value -%}
+
+          <a href="{{ product.url }}" class="product-ticker__item">
+            {%- if product.featured_media -%}
+              {{- product.featured_media | image_url: width: 100 | image_tag: width: 50, height: 50, sizes: '50px', widths: '50,100', class: 'product-ticker__image', loading: 'lazy' -}}
+            {%- endif -%}
+
+            <span class="product-ticker__info">
+              <span class="product-ticker__name">{{ product.title }}</span>
+              <span class="product-ticker__status">
+                <span aria-hidden="true">{{ section.settings.icon }}</span>
+                {{ ticker_label }}
+                {%- if units_sold != blank and units_sold > 0 %} {{ units_sold }} sold{% endif -%}
+              </span>
+            </span>
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..6) -%}
+          <span class="product-ticker__item">
+            {{- 'product-1' | placeholder_svg_tag: 'product-ticker__image' -}}
+            <span class="product-ticker__info">
+              <span class="product-ticker__name">Product title</span>
+              <span class="product-ticker__status"><span aria-hidden="true">{{ section.settings.icon }}</span> {{ section.settings.default_label }}</span>
+            </span>
+          </span>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </marquee-text>
+</div>
+
+{% stylesheet %}
+  .product-ticker {
+    --scrolling-content-content-gap: 0px;
+    padding-block: .875rem;
+    border-block: 1px solid rgb(var(--text-color) / .08);
+  }
+
+  .product-ticker__title {
+    margin-block-end: .75rem;
+    font-size: .6875rem;
+    font-weight: 600;
+    letter-spacing: .2em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .product-ticker__item {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+    padding-inline: 1.5rem;
+    border-inline-end: 1px solid rgb(var(--text-color) / .1);
+  }
+
+  .product-ticker__image {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .product-ticker__info {
+    display: grid;
+    gap: .125rem;
+    white-space: nowrap;
+  }
+
+  .product-ticker__name {
+    max-width: 13rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: .8125rem;
+  }
+
+  .product-ticker__status {
+    font-size: .6875rem;
+    opacity: .75;
+  }
+
+  @media screen and (min-width: 700px) {
+    .product-ticker__item {
+      padding-inline: 1.75rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Product ticker",
+  "class": "shopify-section--product-ticker",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Selling fast"
+    },
+    {
+      "type": "text",
+      "id": "icon",
+      "label": "Icon (emoji)",
+      "default": "🔥"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_count",
+      "label": "Products to show",
+      "min": 3,
+      "max": 20,
+      "step": 1,
+      "default": 10
+    },
+    {
+      "type": "text",
+      "id": "default_label",
+      "label": "Default status label",
+      "info": "Override per product with the metafield custom.ticker_label. Add custom.units_sold (integer) to show a real sold count.",
+      "default": "Selling fast"
+    },
+    {
+      "type": "range",
+      "id": "scrolling_speed",
+      "min": 0.1,
+      "max": 1,
+      "step": 0.1,
+      "label": "t:sections.scrolling_content.scrolling_speed",
+      "default": 0.2
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product ticker"
+    }
+  ]
+}
+{% endschema %}

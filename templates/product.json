@@ -12,45 +12,78 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "vendor": {
-          "type": "vendor",
-          "settings": {}
-        },
         "title": {
           "type": "title",
-          "settings": {}
+          "settings": {
+            "heading_tag": "h1"
+          }
+        },
+        "rating": {
+          "type": "rating",
+          "settings": {
+            "show_empty": false,
+            "rating_mode": "rating"
+          }
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "hide_sold_out_variants": false,
+            "selector_style": "block",
+            "swatch_selector_style": "block_swatch",
+            "variant_image_options": "",
+            "variant_image_show_underline": false,
+            "size_chart_page": ""
+          }
+        },
+        "inventory": {
+          "type": "inventory",
+          "settings": {
+            "show_in_stock_quantity": false,
+            "low_inventory_threshold": 5,
+            "show_progress_bar": false,
+            "progress_bar_max_value": 50
+          }
+        },
+        "gift_note": {
+          "type": "feature_with_icon",
+          "settings": {
+            "text": "Make it a gift at checkout!",
+            "link": "",
+            "icon": "picto-gift",
+            "icon_width": 18,
+            "background": "#ffffff",
+            "text_color": "#231f20",
+            "border_color": ""
+          }
         },
         "price": {
           "type": "price",
-          "settings": {}
+          "settings": {
+            "show_taxes_notice": false
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_payment_button": false,
+            "show_gift_card_recipient": true,
+            "atc_button_background": "",
+            "atc_button_text_color": "",
+            "payment_button_background": "",
+            "payment_button_text_color": ""
+          }
         },
         "payment_terms": {
           "type": "payment_terms",
           "settings": {}
         },
-        "separator": {
-          "type": "separator",
-          "settings": {}
-        },
         "description": {
           "type": "description",
-          "settings": {}
-        },
-        "variant_picker": {
-          "type": "variant_picker",
-          "settings": {}
-        },
-        "quantity_selector": {
-          "type": "quantity_selector",
-          "settings": {}
-        },
-        "buy_buttons": {
-          "type": "buy_buttons",
-          "settings": {}
-        },
-        "pickup_availability": {
-          "type": "pickup_availability",
-          "settings": {}
+          "settings": {
+            "collapse_content": true,
+            "show_below_gallery": false
+          }
         },
         "complementary_products": {
           "type": "complementary_products",
@@ -58,22 +91,43 @@
         }
       },
       "block_order": [
-        "vendor",
         "title",
-        "price",
-        "payment_terms",
-        "separator",
-        "description",
+        "rating",
         "variant_picker",
-        "quantity_selector",
+        "inventory",
+        "gift_note",
+        "price",
         "buy_buttons",
+        "payment_terms",
+        "description",
         "complementary_products"
       ],
-      "settings": {}
+      "settings": {
+        "color_scheme": "scheme-1",
+        "container_size": "lg",
+        "product_info_size": 45,
+        "show_sticky_add_to_cart": true,
+        "center_basic_info": false,
+        "desktop_media_layout": "carousel_thumbnails_left",
+        "desktop_media_grid_gap": 20,
+        "mobile_controls": "dots",
+        "enable_image_zoom": true,
+        "max_image_zoom_level": 3
+      }
     },
     "related-products": {
       "type": "related-products",
-      "settings": {}
+      "settings": {
+        "color_scheme": "scheme-1",
+        "separate_section_with_border": false,
+        "recommendations_count": 8,
+        "stack_products": false,
+        "products_per_row_mobile": "2",
+        "products_per_row_desktop": 4,
+        "subheading": "Complete the look with these adorable pairings!",
+        "title": "Wait… you may also like",
+        "heading_style": "h3"
+      }
     }
   },
   "order": [

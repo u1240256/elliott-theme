@@ -22,13 +22,19 @@
       <div class="section-stack">
         {%- liquid
           assign hide_section_header = false
+          assign show_link_in_header = false
 
-          if section.blocks.size <= 1 and section.settings.hide_collection_title and section.settings.subheading == blank
+          if section.blocks.size == 1 and section.settings.link_position == 'header'
+            assign show_link_in_header = true
+          endif
+
+          if section.blocks.size <= 1 and section.settings.hide_collection_title and section.settings.subheading == blank and show_link_in_header == false
             assign hide_section_header = true
           endif
         -%}
 
         {%- unless hide_section_header -%}
+          {%- if show_link_in_header == false or section.settings.subheading != blank -%}
           <div class="v-stack justify-self-{{ section.settings.header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} gap-4 text-center sm:gap-5">
             {%- if section.settings.subheading != blank -%}
               <p class="h6 text-center">{{- section.settings.subheading -}}</p>
@@ -42,12 +48,30 @@
                   </button>
                 {%- endfor -%}
               </carousel-navigation>
-            {%- elsif section.settings.hide_collection_title != true -%}
+            {%- elsif section.settings.hide_collection_title != true and show_link_in_header == false -%}
               <h2 class="{{ section.settings.heading_style }}">
                 {{ section.blocks.first.settings.title | default: section.blocks.first.settings.collection.title | default: 'Collection' }}
               </h2>
             {%- endif -%}
           </div>
+          {%- endif -%}
+
+          {%- if show_link_in_header -%}
+            {%- assign header_block = section.blocks.first -%}
+            <div class="featured-collections-inline-header">
+              {%- if section.settings.hide_collection_title != true -%}
+                <h2 class="{{ section.settings.heading_style }}">
+                  {{ header_block.settings.title | default: header_block.settings.collection.title | default: 'Collection' }}
+                </h2>
+              {%- endif -%}
+
+              {%- if header_block.settings.link_text != blank -%}
+                <a href="{{ header_block.settings.link_url | default: header_block.settings.collection.url | default: '#' }}" class="featured-collections-inline-header__link">
+                  {{- header_block.settings.link_text -}}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
         {%- endunless -%}
 
         <featured-collections-carousel id="{{ wrapper_carousel_id }}" class="featured-collections-carousel">
@@ -102,7 +126,7 @@
                 </product-list>
               {%- endif -%}
 
-              {%- if block.settings.link_text != blank -%}
+              {%- if block.settings.link_text != blank and show_link_in_header == false -%}
                 {%- assign button_link = block.settings.link_url | default: block.settings.collection.url | default: '#' -%}
 
                 <div class="justify-self-center">
@@ -116,6 +140,28 @@
     </div>
   </div>
 {%- endif -%}
+
+{% stylesheet %}
+  .featured-collections-inline-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .featured-collections-inline-header__link {
+    flex-shrink: 0;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .featured-collections-inline-header__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+{% endstylesheet %}
 
 {% schema %}
 {
@@ -209,6 +255,23 @@
     {
       "type": "header",
       "content": "t:global.section.header_category"
+    },
+    {
+      "type": "select",
+      "id": "link_position",
+      "label": "Link position",
+      "info": "Header places the heading on the left and the link on the right. Only applies with a single collection.",
+      "options": [
+        {
+          "value": "below",
+          "label": "Button below products"
+        },
+        {
+          "value": "header",
+          "label": "Link in header"
+        }
+      ],
+      "default": "below"
     },
     {
       "type": "text_alignment",

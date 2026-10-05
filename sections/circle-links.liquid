@@ -1,0 +1,197 @@
+{%- comment -%}
+  Row of circular images with an uppercase label underneath.
+{%- endcomment -%}
+{%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
+
+<div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} section-spacing {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+  <div class="container container--lg">
+    {%- if section.settings.title != blank -%}
+      <h2 class="circle-links__title {{ section.settings.heading_style }} text-center">{{ section.settings.title }}</h2>
+    {%- endif -%}
+
+    <ul class="circle-links" role="list" style="--circle-links-size: {{ section.settings.circle_size }}px; --circle-links-mobile-size: {{ section.settings.circle_size | times: 0.65 | round }}px">
+      {%- for block in section.blocks -%}
+        {%- assign item_link = block.settings.link | default: block.settings.collection.url -%}
+        {%- assign item_label = block.settings.label | default: block.settings.collection.title -%}
+        {%- assign item_image = block.settings.image | default: block.settings.collection.featured_image -%}
+
+        <li class="circle-links__item" {{ block.shopify_attributes }}>
+          <a href="{{ item_link | default: '#' }}" class="circle-links__link group">
+            <span class="circle-links__media">
+              {%- if item_image != blank -%}
+                {{- item_image | image_url: width: 400 | image_tag: sizes: '(max-width: 699px) 100px, 160px', widths: '100,200,300,400', class: 'zoom-image group-hover:zoom', loading: 'lazy' -}}
+              {%- else -%}
+                {{- 'image' | placeholder_svg_tag: 'placeholder' -}}
+              {%- endif -%}
+            </span>
+
+            {%- if item_label != blank -%}
+              <span class="circle-links__label">{{ item_label }}</span>
+            {%- endif -%}
+          </a>
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+
+{% stylesheet %}
+  .circle-links__title {
+    margin-block-end: 1.5rem;
+  }
+
+  .circle-links {
+    display: grid;
+    grid: auto / auto-flow var(--circle-links-mobile-size);
+    gap: 1.25rem;
+    justify-content: safe center;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-block-end: .25rem;
+  }
+
+  .circle-links__item {
+    scroll-snap-align: start;
+  }
+
+  .circle-links__link {
+    display: grid;
+    gap: .875rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .circle-links__media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgb(var(--text-color) / .05);
+  }
+
+  .circle-links__media img,
+  .circle-links__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .circle-links__label {
+    font-size: .6875rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  @media screen and (min-width: 700px) {
+    .circle-links {
+      grid-auto-columns: var(--circle-links-size);
+      gap: 2.75rem;
+    }
+
+    .circle-links__label {
+      font-size: .8125rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Circle links",
+  "class": "shopify-section--circle-links",
+  "tag": "section",
+  "max_blocks": 16,
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:global.colors.scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": false
+    },
+    {
+      "type": "inline_richtext",
+      "id": "title",
+      "label": "Heading",
+      "default": "Shop our newest prints"
+    },
+    {
+      "type": "select",
+      "id": "heading_style",
+      "label": "t:global.text.heading_style",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "range",
+      "id": "circle_size",
+      "label": "Circle size (desktop)",
+      "min": 80,
+      "max": 220,
+      "step": 10,
+      "unit": "px",
+      "default": 130
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Circle",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection",
+          "info": "Used as the default image, label and link"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Square image, e.g. a print swatch"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Circle links",
+      "blocks": [
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
