@@ -1,0 +1,164 @@
+{%- comment -%}
+  Cream story band: brand-kit tagline artwork, eyebrow, story copy and a link, framed like the hang tag.
+{%- endcomment -%}
+<div class="brand-story section-spacing">
+  <div class="container">
+    <div class="brand-story__card">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="brand-story__eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.show_tagline -%}
+        <h2 class="brand-story__tagline">
+          <img src="{{ 'em-tagline.svg' | asset_url }}" alt="Designed with love for your little one" width="238" height="78" loading="lazy">
+        </h2>
+      {%- elsif section.settings.heading != blank -%}
+        <h2 class="brand-story__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.content != blank -%}
+        <div class="brand-story__content">{{ section.settings.content }}</div>
+      {%- endif -%}
+
+      {%- if section.settings.link_text != blank and section.settings.link_url != blank -%}
+        <a href="{{ section.settings.link_url }}" class="brand-story__link">{{ section.settings.link_text }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .brand-story {
+    background: #f7f0e8;
+  }
+
+  .brand-story__card {
+    display: grid;
+    justify-items: center;
+    gap: 1.5rem;
+    max-width: 46rem;
+    margin-inline: auto;
+    padding: 3rem 1.5rem;
+    text-align: center;
+    background: #ffffff;
+    border: 1.5px solid #b47b2b;
+    border-radius: 16px;
+  }
+
+  .brand-story__eyebrow {
+    font-family: var(--text-font-family);
+    font-size: .75rem;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #916323;
+  }
+
+  .brand-story__tagline img {
+    display: block;
+    width: min(100%, 22rem);
+    height: auto;
+  }
+
+  .brand-story__heading {
+    font-family: var(--heading-font-family);
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: #231f20;
+  }
+
+  .brand-story__content {
+    max-width: 34em;
+    font-family: var(--heading-font-family);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: #231f20;
+  }
+
+  .brand-story__content p + p {
+    margin-block-start: 1rem;
+  }
+
+  .brand-story__link {
+    font-family: var(--text-font-family);
+    font-size: .875rem;
+    font-weight: 500;
+    color: #916323;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media screen and (min-width: 700px) {
+    .brand-story__card {
+      padding: 4rem 4.5rem;
+      gap: 2rem;
+    }
+
+    .brand-story__tagline img {
+      width: 26rem;
+    }
+
+    .brand-story__heading {
+      font-size: 2.75rem;
+    }
+
+    .brand-story__content {
+      font-size: 1.25rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Brand story",
+  "class": "shopify-section--brand-story",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Made for everyday life"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tagline",
+      "label": "Show \"Designed with Love\" tagline artwork",
+      "default": true
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Used when the tagline artwork is hidden",
+      "default": "Every child has an “and Me.”"
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Text",
+      "default": "<p>The morning cuddles. The little adventures. The sleepy nights. You focus on the moments. We’ll focus on the little things.</p>"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link text",
+      "default": "Read our story"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand story"
+    }
+  ]
+}
+{% endschema %}

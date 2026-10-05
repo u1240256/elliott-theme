@@ -79,3 +79,45 @@
     padding-block-start: 1.5rem;
   }
 }
+
+/* Product "Fabric & care" accordion: brand-kit care icons */
+.care-icons {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+}
+
+.prose .care-icons {
+  padding-inline-start: 0;
+}
+
+.care-icons__item {
+  display: grid;
+  justify-items: center;
+  gap: .5rem;
+  margin: 0;
+  text-align: center;
+}
+
+.care-icons__item::marker {
+  content: none;
+}
+
+.prose .care-icons__item img {
+  width: 2.75rem;
+  height: auto;
+  margin: 0;
+}
+
+.care-icons__item span {
+  font-family: var(--text-font-family);
+  font-size: .6875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: #231f20;
+}

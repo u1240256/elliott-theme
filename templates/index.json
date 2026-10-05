@@ -369,6 +369,17 @@
         "overlay_color": "#000000",
         "overlay_opacity": 30
       }
+    },
+    "brand-story": {
+      "type": "brand-story",
+      "settings": {
+        "eyebrow": "Made for everyday life",
+        "show_tagline": true,
+        "heading": "Every child has an “and Me.”",
+        "content": "<p>The morning cuddles. The little adventures. The sleepy nights. You focus on the moments. We’ll focus on the little things.</p>",
+        "link_text": "Read our story",
+        "link_url": ""
+      }
     }
   },
   "order": [
@@ -380,6 +391,7 @@
     "first-photo-outfits",
     "new-trending",
     "perfect-sleeper",
+    "brand-story",
     "newsletter"
   ]
 }

@@ -11,73 +11,14 @@
   "type": "footer",
   "name": "Footer group",
   "sections": {
-    "text-with-icons": {
-      "type": "text-with-icons",
-      "blocks": {
-        "icon-1": {
-          "type": "item",
-          "settings": {
-            "icon": "picto-award-gift",
-            "icon_width": 24,
-            "mobile_icon_width": 24,
-            "title": "Free delivery worldwide",
-            "content": "<p>Short content about your store</p>"
-          }
-        },
-        "icon-2": {
-          "type": "item",
-          "settings": {
-            "icon": "picto-award-gift",
-            "icon_width": 24,
-            "mobile_icon_width": 24,
-            "title": "Satisfied or refunded",
-            "content": "<p>Short content about your store</p>"
-          }
-        },
-        "icon-3": {
-          "type": "item",
-          "settings": {
-            "icon": "picto-award-gift",
-            "icon_width": 24,
-            "mobile_icon_width": 24,
-            "title": "Top-notch support",
-            "content": "<p>Short content about your store</p>"
-          }
-        },
-        "icon-4": {
-          "type": "item",
-          "settings": {
-            "icon": "picto-award-gift",
-            "icon_width": 24,
-            "mobile_icon_width": 24,
-            "title": "Secure payments",
-            "content": "<p>Short content about your store</p>"
-          }
-        }
-      },
-      "block_order": [
-        "icon-1",
-        "icon-2",
-        "icon-3",
-        "icon-4"
-      ],
-      "settings": {
-        "color_scheme": "",
-        "separate_section_with_border": true,
-        "stack_on_mobile": false,
-        "icon_color": "",
-        "text_color": "",
-        "text_alignment": "center"
-      }
-    },
     "footer": {
       "type": "footer",
       "blocks": {
         "newsletter": {
           "type": "newsletter",
           "settings": {
-            "title": "Newsletter",
-            "content": "<p>Sign up to our newsletter to receive exclusive offers.</p>",
+            "title": "Join the family",
+            "content": "<p>New colors, restocks and little moments worth sharing, straight to your inbox.</p>",
             "button_background": "",
             "button_text_color": ""
           }
@@ -93,8 +34,8 @@
         "text": {
           "type": "text",
           "settings": {
-            "title": "About",
-            "content": "<p>Use this text area to tell your customers about your brand and vision. You can change it in the theme editor.</p>",
+            "title": "Elliott and Me",
+            "content": "<p>Every child has an “and Me.” Soft, gentle pieces for the morning cuddles, the little adventures and the sleepy nights.</p>",
             "enable_follow_on_shop": true
           }
         }
@@ -115,10 +56,56 @@
         "show_country_flag": true,
         "show_locale_selector": true
       }
+    },
+    "brand-benefits": {
+      "type": "brand-benefits",
+      "blocks": {
+        "b1": {
+          "type": "item",
+          "settings": {
+            "icon": "benefit-naturally-soft",
+            "title": "Naturally soft",
+            "text": ""
+          }
+        },
+        "b2": {
+          "type": "item",
+          "settings": {
+            "icon": "benefit-buttery-soft",
+            "title": "Buttery soft & breathable",
+            "text": ""
+          }
+        },
+        "b3": {
+          "type": "item",
+          "settings": {
+            "icon": "benefit-gentle-on-skin",
+            "title": "Gentle on sensitive skin",
+            "text": ""
+          }
+        },
+        "b4": {
+          "type": "item",
+          "settings": {
+            "icon": "benefit-every-day",
+            "title": "Made for every day",
+            "text": ""
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4"
+      ],
+      "settings": {
+        "separate_section_with_border": true
+      }
     }
   },
   "order": [
-    "text-with-icons",
+    "brand-benefits",
     "footer"
   ]
 }

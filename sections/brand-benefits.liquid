@@ -1,0 +1,144 @@
+{%- comment -%}
+  Row of brand-kit benefit icons (line icons, Ink stroke) with live Montserrat labels underneath.
+{%- endcomment -%}
+<div class="brand-benefits {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
+  <div class="container">
+    <ul class="brand-benefits__list" role="list">
+      {%- for block in section.blocks -%}
+        {%- assign icon_file = block.settings.icon | append: '.svg' -%}
+
+        <li class="brand-benefits__item" {{ block.shopify_attributes }}>
+          <img src="{{ icon_file | asset_url }}" alt="" width="48" height="44" loading="lazy" class="brand-benefits__icon">
+
+          {%- if block.settings.title != blank -%}
+            <p class="brand-benefits__title">{{ block.settings.title }}</p>
+          {%- endif -%}
+
+          {%- if block.settings.text != blank -%}
+            <p class="brand-benefits__text">{{ block.settings.text }}</p>
+          {%- endif -%}
+        </li>
+      {%- endfor -%}
+    </ul>
+  </div>
+</div>
+
+{% stylesheet %}
+  .brand-benefits {
+    padding-block: 2.5rem;
+    background: #ffffff;
+  }
+
+  .brand-benefits__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .brand-benefits__item {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: .75rem;
+    text-align: center;
+  }
+
+  .brand-benefits__icon {
+    width: 2.5rem;
+    height: auto;
+  }
+
+  .brand-benefits__title {
+    font-family: var(--text-font-family);
+    font-size: .75rem;
+    font-weight: 500;
+    line-height: 1.6;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #231f20;
+    max-width: 16em;
+  }
+
+  .brand-benefits__text {
+    font-size: .875rem;
+    color: rgb(35 31 32 / .75);
+    max-width: 24em;
+  }
+
+  @media screen and (min-width: 700px) {
+    .brand-benefits {
+      padding-block: 3.5rem;
+    }
+
+    .brand-benefits__list {
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      grid-auto-flow: column;
+    }
+
+    .brand-benefits__icon {
+      width: 3rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Brand benefits",
+  "class": "shopify-section--brand-benefits",
+  "tag": "section",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "separate_section_with_border",
+      "label": "t:global.section.separate_section_with_border",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "benefit-naturally-soft", "label": "Leaf (naturally soft)" },
+            { "value": "benefit-buttery-soft", "label": "Cloud (buttery soft)" },
+            { "value": "benefit-gentle-on-skin", "label": "Heart (gentle on skin)" },
+            { "value": "benefit-every-day", "label": "Rainbow (made for every day)" }
+          ],
+          "default": "benefit-naturally-soft"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Label",
+          "default": "Naturally soft"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand benefits",
+      "blocks": [
+        { "type": "item", "settings": { "icon": "benefit-naturally-soft", "title": "Naturally soft" } },
+        { "type": "item", "settings": { "icon": "benefit-buttery-soft", "title": "Buttery soft & breathable" } },
+        { "type": "item", "settings": { "icon": "benefit-gentle-on-skin", "title": "Gentle on sensitive skin" } },
+        { "type": "item", "settings": { "icon": "benefit-every-day", "title": "Made for every day" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

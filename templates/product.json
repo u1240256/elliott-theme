@@ -88,6 +88,15 @@
         "complementary_products": {
           "type": "complementary_products",
           "settings": {}
+        },
+        "fabric_care": {
+          "type": "accordion",
+          "settings": {
+            "show_below_gallery": false,
+            "icon": "none",
+            "title": "Fabric & care",
+            "liquid": "<p>Ultra-soft, breathable fabric that’s gentle on delicate skin. Machine wash cold, tumble dry low.</p>{% render 'care-icons' %}"
+          }
         }
       },
       "block_order": [
@@ -100,6 +109,7 @@
         "buy_buttons",
         "payment_terms",
         "description",
+        "fabric_care",
         "complementary_products"
       ],
       "settings": {
