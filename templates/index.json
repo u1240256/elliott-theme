@@ -22,7 +22,7 @@
             "desktop_text_position": "sm:place-self-center sm:text-center",
             "content_max_width": 620,
             "button_1_text": "Shop best sellers",
-            "button_1_link": "shopify://collections/all",
+            "button_1_link": "shopify://collections/best-sellers",
             "button_1_style": "solid",
             "button_1_background": "#916323",
             "button_1_text_color": "#ffffff",
@@ -75,29 +75,25 @@
         "card-1": {
           "type": "card",
           "settings": {
-            "label": "Family matching",
-            "link": "shopify://collections/all"
+            "collection": "baby"
           }
         },
         "card-2": {
           "type": "card",
           "settings": {
-            "label": "The colorable collection",
-            "link": "shopify://collections/all"
+            "collection": "kids"
           }
         },
         "card-3": {
           "type": "card",
           "settings": {
-            "label": "Mommy & me lounge sets",
-            "link": "shopify://collections/all"
+            "collection": "accessories"
           }
         },
         "card-4": {
           "type": "card",
           "settings": {
-            "label": "Gifts from grandparents",
-            "link": "shopify://collections/all"
+            "collection": "swaddles"
           }
         },
         "tab-2": {
@@ -109,29 +105,25 @@
         "card-5": {
           "type": "card",
           "settings": {
-            "label": "New prints",
-            "link": "shopify://collections/all"
+            "collection": "zipper-footies"
           }
         },
         "card-6": {
           "type": "card",
           "settings": {
-            "label": "Baby essentials",
-            "link": "shopify://collections/all"
+            "collection": "rompers"
           }
         },
         "card-7": {
           "type": "card",
           "settings": {
-            "label": "Toddler sleepwear",
-            "link": "shopify://collections/all"
+            "collection": "twirl-dresses"
           }
         },
         "card-8": {
           "type": "card",
           "settings": {
-            "label": "Gift sets",
-            "link": "shopify://collections/all"
+            "collection": "top-bottoms"
           }
         }
       },
@@ -161,49 +153,61 @@
         "circle-1": {
           "type": "item",
           "settings": {
-            "label": "Print one"
+            "collection": "baby-bear-black"
           }
         },
         "circle-2": {
           "type": "item",
           "settings": {
-            "label": "Print two"
+            "collection": "cozy-charcoal"
           }
         },
         "circle-3": {
           "type": "item",
           "settings": {
-            "label": "Print three"
+            "collection": "snuggle-white"
           }
         },
         "circle-4": {
           "type": "item",
           "settings": {
-            "label": "Print four"
+            "collection": "pine-green"
           }
         },
         "circle-5": {
           "type": "item",
           "settings": {
-            "label": "Print five"
+            "collection": "sweet-pea-blush"
           }
         },
         "circle-6": {
           "type": "item",
           "settings": {
-            "label": "Print six"
+            "collection": "ladybug-red"
           }
         },
         "circle-7": {
           "type": "item",
           "settings": {
-            "label": "Print seven"
+            "collection": "teddy-bear-brown"
           }
         },
         "circle-8": {
           "type": "item",
           "settings": {
-            "label": "Print eight"
+            "collection": "little-sailor-navy"
+          }
+        },
+        "circle-9": {
+          "type": "item",
+          "settings": {
+            "collection": "baby-sunshine-yellow"
+          }
+        },
+        "circle-10": {
+          "type": "item",
+          "settings": {
+            "collection": "baby-rose"
           }
         }
       },
@@ -215,12 +219,14 @@
         "circle-5",
         "circle-6",
         "circle-7",
-        "circle-8"
+        "circle-8",
+        "circle-9",
+        "circle-10"
       ],
       "settings": {
         "color_scheme": "scheme-1",
         "separate_section_with_border": false,
-        "title": "Shop Our Newest Prints",
+        "title": "Shop by Color",
         "heading_style": "h2",
         "circle_size": 130
       }
@@ -232,7 +238,7 @@
         "separate_section_with_border": false,
         "title": "Selling fast",
         "icon": "🔥",
-        "collection": "",
+        "collection": "best-sellers",
         "products_count": 10,
         "default_label": "Selling fast",
         "scrolling_speed": 0.2
@@ -245,16 +251,16 @@
           "type": "look",
           "settings": {
             "hot_spots_background": "#ffffff",
-            "product_1": "",
+            "product_1": "snuggle-white-solid-jersey-headbands",
             "product_1_horizontal_position": 62,
             "product_1_vertical_position": 14,
-            "product_2": "",
+            "product_2": "teddy-bear-brown-solid-jersey-knotted-hat",
             "product_2_horizontal_position": 27,
             "product_2_vertical_position": 34,
-            "product_3": "",
+            "product_3": "snuggle-white-solid-jersey-knotted-gown",
             "product_3_horizontal_position": 61,
             "product_3_vertical_position": 50,
-            "product_4": "",
+            "product_4": "snuggle-white-solid-jersey-swaddles",
             "product_4_horizontal_position": 35,
             "product_4_vertical_position": 70
           }
@@ -279,7 +285,7 @@
         "collection-1": {
           "type": "collection",
           "settings": {
-            "collection": "",
+            "collection": "new-arrivals",
             "products_count": 10,
             "title": "New & Trending",
             "link_url": "",
@@ -312,7 +318,7 @@
         "collection-1": {
           "type": "collection",
           "settings": {
-            "collection": "",
+            "collection": "zipper-footies",
             "products_count": 8,
             "title": "The Perfect Sleeper",
             "link_url": "",

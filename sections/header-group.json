@@ -17,7 +17,7 @@
         "message_Xehx8E": {
           "type": "message",
           "settings": {
-            "text": "Buy one, get one 50% off PJs! <a href=\"/collections/all\">Shop now</a>"
+            "text": "Soft. Safe. Made for Little Ones. <a href=\"/collections/best-sellers\">Shop best sellers</a>"
           }
         },
         "message_brand": {
@@ -76,7 +76,7 @@
         "utility_link_2_url": "#newsletter",
         "utility_link_3_text": "",
         "utility_link_3_url": "",
-        "highlight_menu_item": "Sale",
+        "highlight_menu_item": "New Arrivals",
         "highlight_menu_color": "#916323"
       }
     }
