@@ -45,7 +45,7 @@
       "settings": {
         "allow_transparent_header": false,
         "show_next_section_button": false,
-        "media_size": "fill",
+        "media_size": "lg",
         "show_initial_transition": true,
         "autoplay": true,
         "autoplay_pause_on_video": true,

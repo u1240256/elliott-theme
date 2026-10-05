@@ -25,7 +25,7 @@
     "error_color": "#cb2b2b",
     "heading_font": "cormorant_n4",
     "heading_text_transform": "normal",
-    "heading_letter_spacing": 18,
+    "heading_letter_spacing": 2,
     "text_font": "montserrat_n4",
     "text_font_size_desktop": 14,
     "button_letter_spacing": 18,
@@ -84,6 +84,17 @@
           "primary_button_text_color": "#1c1c1c",
           "circle_button_background": "#ffffff",
           "circle_button_icon": "#1c1c1c"
+        }
+      },
+      "scheme-announcement": {
+        "settings": {
+          "background": "#F7F0E8",
+          "background_gradient": "",
+          "text_color": "#916323",
+          "primary_button_background": "#916323",
+          "primary_button_text_color": "#FFFFFF",
+          "circle_button_background": "#FFFFFF",
+          "circle_button_icon": "#231F20"
         }
       },
       "scheme-light-header": {

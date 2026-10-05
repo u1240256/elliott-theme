@@ -17,33 +17,28 @@
         "message_Xehx8E": {
           "type": "message",
           "settings": {
+            "text": "Buy one, get one 50% off PJs! <a href=\"/collections/all\">Shop now</a>"
+          }
+        },
+        "message_brand": {
+          "type": "message",
+          "settings": {
             "text": "Every child has an “and Me.”"
           }
         }
       },
       "block_order": [
-        "message_Xehx8E"
+        "message_Xehx8E",
+        "message_brand"
       ],
       "name": "t:sections.announcement_bar.name",
       "settings": {
-        "color_scheme": "scheme-light-header",
+        "color_scheme": "scheme-announcement",
         "enable_sticky": false,
-        "autoplay": false,
-        "cycle_speed": 5,
-        "desktop_font_size": 10,
-        "mobile_font_size": 10
-      }
-    },
-    "countdown-timer": {
-      "type": "countdown-condensed",
-      "settings": {
-        "color_scheme": "schema-3",
-        "content": "super Sale Up to 40% off",
-        "link_text": "shop now",
-        "link_url": "shopify://collections/all",
-        "expiration_date": "2025-11-25",
-        "expiration_behavior": "leave",
-        "desktop_justification": "space-between"
+        "autoplay": true,
+        "cycle_speed": 6,
+        "desktop_font_size": 13,
+        "mobile_font_size": 11
       }
     },
     "header": {
@@ -52,8 +47,8 @@
         "color_scheme": "scheme-light-header",
         "enable_sticky": true,
         "hide_on_scroll": false,
-        "show_separation_border": true,
-        "reduce_padding": true,
+        "show_separation_border": false,
+        "reduce_padding": false,
         "logo": "{{shop.brand.logo}}",
         "logo_max_width": 100,
         "logo_mobile_max_width": 70,
@@ -79,7 +74,6 @@
   },
   "order": [
     "announcement_bar_nADt8t",
-    "countdown-timer",
     "header"
   ]
 }
