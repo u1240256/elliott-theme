@@ -85,17 +85,25 @@
             "show_below_gallery": false
           }
         },
-        "complementary_products": {
-          "type": "complementary_products",
-          "settings": {}
-        },
         "fabric_care": {
           "type": "accordion",
           "settings": {
             "show_below_gallery": false,
             "icon": "none",
             "title": "Fabric & care",
-            "liquid": "<p>Ultra-soft, breathable fabric that’s gentle on delicate skin. Machine wash cold, tumble dry low.</p>{% render 'care-icons' %}"
+            "content": "<p>Share some content to your customers about your products.</p>",
+            "liquid": "<p>Ultra-soft, breathable fabric that’s gentle on delicate skin. Machine wash cold, tumble dry low.</p>{% render 'care-icons' %}",
+            "page": ""
+          }
+        },
+        "complementary_products": {
+          "type": "complementary_products",
+          "settings": {
+            "title": "Pairs well with",
+            "products_count": 2,
+            "show_below_gallery": true,
+            "stack_products": false,
+            "show_quick_buy": true
           }
         }
       },
@@ -114,6 +122,8 @@
       ],
       "settings": {
         "color_scheme": "scheme-1",
+        "allow_transparent_header": false,
+        "transparent_header_use_primary_colors": false,
         "container_size": "lg",
         "product_info_size": 45,
         "show_sticky_add_to_cart": true,
@@ -121,6 +131,8 @@
         "desktop_media_layout": "carousel_thumbnails_left",
         "desktop_media_grid_gap": 20,
         "mobile_controls": "dots",
+        "enable_media_autoplay": false,
+        "enable_video_looping": true,
         "enable_image_zoom": true,
         "max_image_zoom_level": 3
       }
@@ -130,18 +142,46 @@
       "settings": {
         "color_scheme": "scheme-1",
         "separate_section_with_border": false,
-        "recommendations_count": 8,
+        "hide_product_information": false,
         "stack_products": false,
+        "recommendations_count": 8,
         "products_per_row_mobile": "2",
         "products_per_row_desktop": 4,
+        "horizontal_spacing_factor": 1,
+        "vertical_spacing_factor": 1,
         "subheading": "Complete the look with these adorable pairings!",
         "title": "Wait… you may also like",
-        "heading_style": "h3"
+        "heading_style": "h3",
+        "content": ""
+      }
+    },
+    "17912634512c3d01b1": {
+      "type": "apps",
+      "blocks": {
+        "judge_me_reviews_review_widget_j9QwyD": {
+          "type": "shopify://apps/judge-me-reviews/blocks/review_widget/61ccd3b1-a9f2-4160-9fe9-4fec8413e5d8",
+          "settings": {
+            "review_data": "sample_data",
+            "max_width": 1200,
+            "show_shop_reviews": false,
+            "empty_state": "empty_widget"
+          }
+        }
+      },
+      "block_order": [
+        "judge_me_reviews_review_widget_j9QwyD"
+      ],
+      "settings": {
+        "color_scheme": "",
+        "separate_section_with_border": true,
+        "remove_vertical_spacing": false,
+        "remove_horizontal_spacing": false
       }
     }
   },
   "order": [
     "main",
-    "related-products"
+    "related-products",
+    "17912634512c3d01b1"
   ]
 }
