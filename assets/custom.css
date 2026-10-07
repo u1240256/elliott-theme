@@ -99,46 +99,72 @@
   text-transform: uppercase;
 }
 
-/* Homepage: a solid brand row with a separate navigation strip over the hero. */
+/* Site header: a solid brand row and a separate navigation strip on every page. */
 @media screen and (min-width: 1000px) {
-  body:has(main > .shopify-section--hero-gallery) .shopify-section--header {
+  .shopify-section--header {
     position: relative !important;
     top: auto !important;
   }
 
-  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header {
+  .shopify-section--header .header {
     grid-template: ". logo ." / minmax(0, 1fr) auto minmax(0, 1fr) !important;
     --header-logo-width: 190px !important;
     --header-padding-block: .85rem !important;
-    margin-block-end: 0;
+    margin-block-end: 3.25rem;
     background: #ffffff;
   }
 
-  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__utility-link {
+  .shopify-section--header .header__utility-link {
     display: none;
   }
 
-  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav {
+  .shopify-section--header .header__primary-nav {
     position: absolute;
     z-index: 2;
     inset-block-start: 100%;
     inset-inline: 0;
     justify-content: center;
     padding: 1rem var(--container-gutter);
-    color: #ffffff;
-    background: rgb(35 31 32 / .64);
+    color: #231f20;
+    background: #ffffff;
     transition: background .2s ease, color .2s ease;
   }
 
-  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__secondary-nav {
+  .shopify-section--header .header__secondary-nav {
     position: absolute;
     z-index: 3;
     inset-block-start: 100%;
     inset-inline-end: var(--container-gutter);
     align-self: auto;
     padding-block: 1rem;
-    color: #ffffff;
+    color: #231f20;
     transition: color .2s ease;
+  }
+
+  .shopify-section--header .header.is-solid .header__primary-nav {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+  }
+
+  .shopify-section--header .header.is-solid .header__secondary-nav {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-end: var(--container-gutter);
+  }
+
+  /* The home hero alone uses a translucent navigation strip before scrolling. */
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header {
+    margin-block-end: 0;
+  }
+
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav {
+    color: #ffffff;
+    background: rgb(35 31 32 / .64);
+  }
+
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__secondary-nav {
+    color: #ffffff;
   }
 
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav:hover,
@@ -150,18 +176,6 @@
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav:hover + .header__secondary-nav,
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__secondary-nav {
     color: #231f20;
-  }
-
-  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__primary-nav {
-    position: fixed;
-    inset-block-start: 0;
-    inset-inline: 0;
-  }
-
-  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__secondary-nav {
-    position: fixed;
-    inset-block-start: 0;
-    inset-inline-end: var(--container-gutter);
   }
 }
 
