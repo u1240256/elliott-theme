@@ -238,3 +238,27 @@
 .color-siblings .color-swatch.is-selected {
   border-color: #b47b2b;
 }
+
+/* Product gallery: stock photo padding + desktop crossfade (proof of concept on knotted gowns) */
+product-gallery[data-crossfade] .product-gallery__image-list {
+  position: relative;
+}
+
+.product-gallery__media--stock > img,
+.product-gallery__thumbnail--stock > img {
+  aspect-ratio: var(--stock-aspect-ratio, 1);
+  object-fit: cover;
+  height: auto;
+}
+
+.product-gallery__crossfade {
+  position: absolute;
+  z-index: 1;
+  object-fit: cover;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.product-gallery__crossfade.is-fading {
+  opacity: 0;
+}

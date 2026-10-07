@@ -84,12 +84,24 @@
       endif
     endfor
   endif
+
+  # Proof of concept: pad knotted gowns with stock photos until real product photography is uploaded.
+  # Remove this (and the gallery_stock_images loops below) once the products have their own images.
+  assign gallery_stock_images = '' | split: ','
+  if product.handle contains 'knotted-gown'
+    assign gallery_stock_images = 'stock-look,stock-card-swaddles,stock-card-baby' | split: ','
+  endif
+  assign gallery_media_count = product.media.size | plus: gallery_stock_images.size
 %}
 
 <product-gallery
   class="product-gallery"
   form="{{ product_form_id }}"
   filtered-indexes="{{ filtered_indexes | json }}"
+  {% if gallery_stock_images.size > 0 %}
+    data-crossfade
+    style="--stock-aspect-ratio: {{ product.featured_media.aspect_ratio | default: 1 }}"
+  {% endif %}
   {% if enable_media_autoplay %}
     autoplay-media
   {% endif %}
@@ -162,7 +174,7 @@
               data-media-type="{{ media.media_type }}"
               data-media-id="{{ media.id }}"
               role="group"
-              aria-label="{{ 'general.accessibility.item_nth_of_count' | t: index: media.position, count: product.media.size }}"
+              aria-label="{{ 'general.accessibility.item_nth_of_count' | t: index: media.position, count: gallery_media_count }}"
               {% if filtered_indexes contains media.position %}
                 hidden
               {% endif %}
@@ -188,6 +200,20 @@
                 group: 'product',
                 product: product
               -%}
+            </div>
+          {%- endfor -%}
+
+          {%- for stock_name in gallery_stock_images -%}
+            {%- assign stock_position = product.media.size | plus: forloop.index -%}
+
+            <div
+              class="product-gallery__media product-gallery__media--stock snap-center"
+              data-media-type="image"
+              data-media-id="{{ stock_name }}"
+              role="group"
+              aria-label="{{ 'general.accessibility.item_nth_of_count' | t: index: stock_position, count: gallery_media_count }}"
+            >
+              {%- render 'stock-image', name: stock_name, alt: product.title -%}
             </div>
           {%- endfor -%}
         {%- else -%}
@@ -251,7 +277,7 @@
     ----------------------------------------------------------------------------------------------------------------------
   {%- endcomment -%}
 
-  {%- if product.media.size > 1 or product == blank -%}
+  {%- if gallery_media_count > 1 or product == blank -%}
     {%- liquid
       assign show_thumbnails_mobile = false
       assign show_thumbnails_desktop = false
@@ -295,6 +321,22 @@
                 {% endunless %}
               </button>
             {%- endfor -%}
+
+            {%- for stock_name in gallery_stock_images -%}
+              {%- assign stock_position = product.media.size | plus: forloop.index -%}
+
+              <button
+                type="button"
+                class="product-gallery__thumbnail product-gallery__thumbnail--stock"
+                data-media-type="image"
+                data-media-position="{{ stock_position }}"
+                data-media-id="{{ stock_name }}"
+                aria-current="false"
+                aria-label="{{ 'general.accessibility.go_to_item' | t: index: stock_position | escape }}"
+              >
+                {%- render 'stock-image', name: stock_name, class: 'object-cover' -%}
+              </button>
+            {%- endfor -%}
           {%- else -%}
             {%- for i in (1..3) -%}
               {%- capture placeholder_name -%}product-{% cycle '1', '2', '3', '4', '5' %}{%- endcapture -%}
@@ -331,6 +373,14 @@
               <span class="sr-only">{{ 'general.accessibility.go_to_item' | t: index: media.position }}</span>
             </button>
           {%- endfor -%}
+
+          {%- for stock_name in gallery_stock_images -%}
+            {%- assign stock_position = product.media.size | plus: forloop.index -%}
+
+            <button type="button" class="tap-area" aria-current="false">
+              <span class="sr-only">{{ 'general.accessibility.go_to_item' | t: index: stock_position }}</span>
+            </button>
+          {%- endfor -%}
         {%- else -%}
           {%- for i in (1..3) -%}
             <button type="button" class="tap-area" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
@@ -342,3 +392,66 @@
     {%- endif -%}
   {%- endif -%}
 </product-gallery>
+
+{%- if gallery_stock_images.size > 0 -%}
+  <script>
+    {%- comment -%}
+      On desktop, crossfade between images when a thumbnail is clicked instead of sliding the carousel. The click is
+      intercepted before the theme's own thumbnail handler, the carousel jumps instantly, and a snapshot of the previous
+      image fades out on top of it.
+    {%- endcomment -%}
+    if (!window.productGalleryCrossfade) {
+      window.productGalleryCrossfade = true;
+
+      document.addEventListener('click', async (event) => {
+        const thumbnail = event.target.closest('.product-gallery__thumbnail');
+        const gallery = thumbnail?.closest('product-gallery[data-crossfade]');
+
+        if (!gallery || !window.matchMedia('(min-width: 1000px) and (prefers-reduced-motion: no-preference)').matches) {
+          return;
+        }
+
+        const navigation = thumbnail.closest('product-gallery-navigation');
+        const carousel = gallery.carousel;
+        const index = navigation.items.indexOf(thumbnail);
+        const fromImage = carousel.selectedCell?.querySelector(':scope > img');
+        const toImage = carousel.cells[index]?.querySelector(':scope > img');
+
+        if (index < 0 || !fromImage || !toImage || carousel.cells[index] === carousel.selectedCell) {
+          return;
+        }
+
+        event.stopPropagation();
+
+        const container = gallery.querySelector('.product-gallery__image-list');
+        const containerRect = container.getBoundingClientRect();
+        const fromRect = fromImage.getBoundingClientRect();
+
+        container.querySelectorAll('.product-gallery__crossfade').forEach((overlay) => overlay.remove());
+
+        const overlay = new Image();
+        overlay.src = fromImage.currentSrc || fromImage.src;
+        overlay.alt = '';
+        overlay.className = 'product-gallery__crossfade';
+        Object.assign(overlay.style, {
+          top: `${fromRect.top - containerRect.top}px`,
+          left: `${fromRect.left - containerRect.left}px`,
+          width: `${fromRect.width}px`,
+          height: `${fromRect.height}px`
+        });
+        container.append(overlay);
+
+        toImage.loading = 'eager';
+        carousel.select(index, { instant: true });
+        navigation.onNavigationChange(index);
+
+        await Promise.race([toImage.decode().catch(() => {}), new Promise((resolve) => setTimeout(resolve, 600))]);
+
+        requestAnimationFrame(() => {
+          overlay.classList.add('is-fading');
+          overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
+        });
+      }, { capture: true });
+    }
+  </script>
+{%- endif -%}
