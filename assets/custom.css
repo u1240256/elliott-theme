@@ -101,8 +101,13 @@
 
 /* Homepage: a solid brand row with a separate navigation strip over the hero. */
 @media screen and (min-width: 1000px) {
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header {
+    position: relative !important;
+    top: auto !important;
+  }
+
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header {
-    grid-template: "search-start logo secondary-nav" / minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    grid-template: ". logo ." / minmax(0, 1fr) auto minmax(0, 1fr) !important;
     --header-logo-width: 190px !important;
     --header-padding-block: .85rem !important;
     margin-block-end: 0;
@@ -125,10 +130,38 @@
     transition: background .2s ease, color .2s ease;
   }
 
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__secondary-nav {
+    position: absolute;
+    z-index: 3;
+    inset-block-start: 100%;
+    inset-inline-end: var(--container-gutter);
+    align-self: auto;
+    padding-block: 1rem;
+    color: #ffffff;
+    transition: color .2s ease;
+  }
+
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav:hover,
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__primary-nav {
     color: #231f20;
     background: #ffffff;
+  }
+
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav:hover + .header__secondary-nav,
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__secondary-nav {
+    color: #231f20;
+  }
+
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__primary-nav {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+  }
+
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__secondary-nav {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-end: var(--container-gutter);
   }
 }
 

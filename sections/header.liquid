@@ -116,12 +116,7 @@
       <a href="{{ routes.root_url }}" class="header__logo">{{ logo_content }}</a>
     {% endif %}
 
-    {%- liquid
-      assign search_on_left = false
-      if section.settings.enable_search and section.settings.search_position == 'left' and section.settings.layout == 'logo_center_navigation_below'
-        assign search_on_left = true
-      endif
-    -%}
+    {%- assign search_on_left = false -%}
 
     {%- if search_on_left -%}
       <div class="header__search-start md-max:hidden">
