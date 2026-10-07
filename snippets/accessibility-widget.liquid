@@ -157,32 +157,61 @@
     font-family: inherit;
   }
 
-  .a11y__launcher {
+  .a11y {
     --a11y-launcher-size: 56px;
     --a11y-launcher-gap: 20px;
     --a11y-launcher-top: calc(var(--announcement-bar-height, 0px) + var(--header-height, 80px) + 16px);
+    --a11y-dock-bottom: var(--a11y-launcher-gap);
+    --a11y-stack-gap: 12px;
+  }
+
+  .a11y__launcher,
+  .a11y__to-top {
     position: fixed;
     right: var(--a11y-launcher-gap);
-    top: var(--a11y-launcher-top);
-    z-index: 2147483001;
     width: var(--a11y-launcher-size);
     height: var(--a11y-launcher-size);
     border-radius: 50%;
     border: 2px solid #fff;
-    background: var(--a11y-gold);
-    color: #fff;
     display: grid;
     place-items: center;
     box-shadow: 0 4px 14px rgb(0 0 0 / 0.25);
     cursor: pointer;
+  }
+
+  .a11y__launcher {
+    top: var(--a11y-launcher-top);
+    z-index: 2147483001;
+    background: var(--a11y-gold);
+    color: #fff;
     transition: transform 0.5s cubic-bezier(.4, 0, .2, 1), scale 0.15s ease;
   }
 
+  /* Docked: bottom corner, leaving room for the back-to-top button underneath */
   .a11y__launcher.is-docked {
-    transform: translateY(calc(100dvh - var(--a11y-launcher-top) - var(--a11y-launcher-size) - var(--a11y-launcher-gap)));
+    transform: translateY(calc(100dvh - var(--a11y-launcher-top) - var(--a11y-dock-bottom) - 2 * var(--a11y-launcher-size) - var(--a11y-stack-gap)));
   }
 
-  .a11y__launcher:hover { scale: 1.06; }
+  .a11y__to-top {
+    bottom: var(--a11y-dock-bottom);
+    z-index: 2147483001;
+    background: var(--a11y-ink);
+    color: #fff;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s, scale 0.15s ease;
+  }
+
+  .a11y__to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s, scale 0.15s ease;
+  }
+
+  .a11y__launcher:hover,
+  .a11y__to-top:hover { scale: 1.06; }
 
   .a11y__launcher:focus-visible,
   .a11y button:focus-visible {
@@ -190,16 +219,26 @@
     outline-offset: 3px;
   }
 
+  .a11y__to-top:focus-visible { outline-color: var(--a11y-gold); }
+
   .a11y__launcher svg { width: 30px; height: 30px; }
 
+  .a11y__to-top svg { width: 22px; height: 22px; }
+
+  /* Visitor moved the widget to the left */
+  html.a11y-side-left .a11y__launcher,
+  html.a11y-side-left .a11y__to-top {
+    right: auto;
+    left: var(--a11y-launcher-gap);
+  }
+
   @media screen and (max-width: 999px) {
-    .a11y__launcher { --a11y-launcher-size: 48px; --a11y-launcher-gap: 16px; }
+    .a11y { --a11y-launcher-size: 48px; --a11y-launcher-gap: 16px; --a11y-stack-gap: 10px; }
     .a11y__launcher svg { width: 26px; height: 26px; }
+    .a11y__to-top svg { width: 20px; height: 20px; }
 
     /* Clear the sticky add-to-cart bar on product pages */
-    body:has(product-sticky-bar) .a11y__launcher.is-docked {
-      transform: translateY(calc(100dvh - var(--a11y-launcher-top) - var(--a11y-launcher-size) - 88px));
-    }
+    body:has(product-sticky-bar) .a11y { --a11y-dock-bottom: 88px; }
   }
 
   .a11y__panel {
@@ -223,6 +262,15 @@
     visibility: visible;
     transition: transform 0.3s ease;
   }
+
+  html.a11y-side-left .a11y__panel {
+    right: auto;
+    left: 0;
+    box-shadow: 8px 0 30px rgb(0 0 0 / 0.18);
+    transform: translateX(-100%);
+  }
+
+  html.a11y-side-left .a11y__panel.is-open { transform: none; }
 
   .a11y__header {
     display: flex;
@@ -357,6 +405,52 @@
     font-weight: 700;
   }
 
+  .a11y__move { margin-top: 20px; }
+
+  .a11y__move-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 4px;
+    border: 0;
+    background: none;
+    color: var(--a11y-ink);
+    font-size: 16px;
+    font-weight: 700;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .a11y__move-toggle svg { width: 28px; height: 28px; color: var(--a11y-gold); flex: none; }
+
+  .a11y__move-toggle .a11y__caret { width: 12px; height: 12px; color: var(--a11y-ink); transition: transform 0.2s ease; }
+
+  .a11y__move-toggle[aria-expanded="true"] .a11y__caret { transform: rotate(180deg); }
+
+  .a11y__move-options {
+    margin: 8px 0 0;
+    padding: 4px 16px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--a11y-tile);
+  }
+
+  .a11y__move-options[hidden] { display: none; }
+
+  .a11y__move-options label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    font-size: 15px;
+    cursor: pointer;
+  }
+
+  .a11y__move-options label + label { border-top: 1px solid var(--a11y-line); }
+
+  .a11y__move-options input { width: 20px; height: 20px; margin: 0; accent-color: var(--a11y-gold); cursor: pointer; }
+
   .a11y__footer { padding: 14px 20px 20px; border-top: 1px solid var(--a11y-line); }
 
   .a11y__reset {
@@ -376,10 +470,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .a11y__panel, .a11y__panel.is-open, .a11y__launcher { transition: none; }
+    .a11y__panel, .a11y__panel.is-open, .a11y__launcher, .a11y__to-top, .a11y__to-top.is-visible { transition: none; }
   }
 
-  html.a11y-stop-motion .a11y__launcher { transition: none; }
+  html.a11y-stop-motion :is(.a11y__launcher, .a11y__to-top, .a11y__to-top.is-visible) { transition: none; }
 </style>
 
 {%- capture icon_attrs -%}xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"{%- endcapture -%}
@@ -408,6 +502,11 @@
       <circle cx="12" cy="4.2" r="2.2"/>
       <path d="M4.2 7.6a1 1 0 0 1 1.2-.8c2.2.5 4.4.8 6.6.8s4.4-.3 6.6-.8a1 1 0 1 1 .4 2c-1.6.3-3.2.6-4.9.7v3.6l2 7.6a1.1 1.1 0 0 1-2.1.6L12 15.2l-2 5.9a1.1 1.1 0 0 1-2.1-.6l2-7.6V9.5c-1.7-.1-3.3-.4-4.9-.7a1 1 0 0 1-.8-1.2z"/>
     </svg>
+  </button>
+
+  <button type="button" class="a11y__to-top" data-a11y-to-top tabindex="-1" aria-hidden="true">
+    <span class="sr-only">Back to top</span>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
   </button>
 
   <div class="a11y__panel" id="a11y-panel" role="dialog" aria-modal="false" aria-labelledby="a11y-title">
@@ -551,6 +650,20 @@
           </div>
         </div>
       </div>
+
+      <div class="a11y__move">
+        <button type="button" class="a11y__move-toggle" aria-expanded="false" aria-controls="a11y-move-options">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 1a11 11 0 1 0 0 22 11 11 0 0 0 0-22zm5.9 12.3-1.5.9.1 1.1-1.4 1.4-1.1-.1-.9 1.5h-2l-.9-1.5-1.1.1-1.4-1.4.1-1.1-1.5-.9v-2l1.5-.9-.1-1.1 1.4-1.4 1.1.1.9-1.5h2l.9 1.5 1.1-.1 1.4 1.4-.1 1.1 1.5.9zM12 9.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z"/></svg>
+          Move Accessibility Widget
+          <svg class="a11y__caret" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true" focusable="false"><path d="M1 3.5h10L6 9z"/></svg>
+        </button>
+
+        <fieldset class="a11y__move-options" id="a11y-move-options" hidden>
+          <legend class="sr-only">Widget position</legend>
+          <label>Left <input type="radio" name="a11y-side" value="left"></label>
+          <label>Right <input type="radio" name="a11y-side" value="right" checked></label>
+        </fieldset>
+      </div>
     </div>
 
     <div class="a11y__footer">
@@ -568,6 +681,10 @@
     const panel = widget.querySelector('.a11y__panel');
     const filterLayer = widget.querySelector('#a11y-filter');
     const options = Array.from(widget.querySelectorAll('[data-a11y-key]'));
+    const toTop = widget.querySelector('[data-a11y-to-top]');
+    const moveToggle = widget.querySelector('.a11y__move-toggle');
+    const moveOptions = widget.querySelector('#a11y-move-options');
+    const sideInputs = Array.from(moveOptions.querySelectorAll('input'));
     const guideLine = widget.querySelector('#a11y-guide-line');
     const guideMask = widget.querySelector('#a11y-guide-mask');
     const tip = widget.querySelector('#a11y-tip');
@@ -614,6 +731,7 @@
       if (colorFilter === 'grayscale') filters.push('grayscale(1)');
       filterLayer.style.backdropFilter = filterLayer.style.webkitBackdropFilter = filters.join(' ');
       filterLayer.hidden = filters.length === 0;
+      sideInputs.forEach((input) => (input.checked = input.value === (settings.side || 'right')));
       guideLine.hidden = !settings['reading-line'];
       guideMask.hidden = !settings['reading-mask'];
       if (!settings.tooltips) tip.hidden = true;
@@ -661,8 +779,24 @@
       });
     });
 
+    /* ---------- Move widget left / right (kept when settings are reset) ---------- */
+    moveToggle.addEventListener('click', () => {
+      const expanded = moveToggle.getAttribute('aria-expanded') === 'true';
+      moveToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+      moveOptions.hidden = expanded;
+    });
+
+    sideInputs.forEach((input) => {
+      input.addEventListener('change', () => {
+        if (input.value === 'left') settings.side = 'left';
+        else delete settings.side;
+        save();
+        apply();
+      });
+    });
+
     widget.querySelector('[data-a11y-reset]').addEventListener('click', () => {
-      settings = {};
+      settings = settings.side ? { side: settings.side } : {};
       save();
       apply();
       stopReading();
@@ -788,7 +922,22 @@
     });
 
     /* ---------- Launcher starts under the header, then docks to the bottom corner once the page scrolls ---------- */
-    const dock = () => launcher.classList.toggle('is-docked', window.scrollY > 80);
+    const dock = () => {
+      const scrolled = window.scrollY > 80;
+      launcher.classList.toggle('is-docked', scrolled);
+      toTop.classList.toggle('is-visible', scrolled);
+      // Only reachable by keyboard / screen readers while it is shown
+      toTop.tabIndex = scrolled ? 0 : -1;
+      toTop.toggleAttribute('aria-hidden', !scrolled);
+    };
+
+    toTop.addEventListener('click', () => {
+      const instant = root.classList.contains('a11y-stop-motion') || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: instant ? 'auto' : 'smooth' });
+      // Send keyboard focus back to the top too (the theme's skip link is the first stop)
+      const first = document.querySelector('.skip-to-content') || document.querySelector('a[href], button');
+      first?.focus({ preventScroll: true });
+    });
     window.addEventListener('scroll', dock, { passive: true });
     dock();
 
