@@ -1,6 +1,8 @@
 {%- comment -%}
-  Accessibility options: a floating button in the bottom-left corner that opens a panel of display adjustments
-  (text size, spacing, fonts, cursor, link highlighting, images, motion, color filters).
+  Accessibility options: a floating button that sits under the header at the top of the page and glides down to
+  the bottom-right corner once the visitor scrolls. It opens a panel of display adjustments (text size and spacing,
+  fonts, cursor, tooltips, images, motion), reading aids (reading line, reading mask, read aloud, page structure,
+  link highlighting) and color filters.
 
   Each visitor's choices are kept in localStorage and applied as classes on <html>. The matching early-apply script
   lives in layout/theme.liquid <head> so pages load with the visitor's settings already in place (no flash).
@@ -33,6 +35,10 @@
   html.a11y-line-1 body *:not(.a11y, .a11y *) { line-height: 1.8 !important; }
   html.a11y-line-2 body *:not(.a11y, .a11y *) { line-height: 2.1 !important; }
   html.a11y-line-3 body *:not(.a11y, .a11y *) { line-height: 2.4 !important; }
+
+  html.a11y-spacing-1 body *:not(.a11y, .a11y *) { letter-spacing: .05em !important; word-spacing: .1em !important; }
+  html.a11y-spacing-2 body *:not(.a11y, .a11y *) { letter-spacing: .1em !important; word-spacing: .2em !important; }
+  html.a11y-spacing-3 body *:not(.a11y, .a11y *) { letter-spacing: .15em !important; word-spacing: .3em !important; }
 
   html.a11y-font-readable body *:not(.a11y, .a11y *) { font-family: 'A11y Readable', Arial, sans-serif !important; }
   html.a11y-font-dyslexic body *:not(.a11y, .a11y *) { font-family: 'A11y Dyslexic', 'Comic Sans MS', sans-serif !important; }
@@ -69,6 +75,53 @@
     scroll-behavior: auto !important;
   }
 
+  /* Reading aids follow the pointer; they never block clicks */
+  .a11y-guide-line,
+  .a11y-guide-mask {
+    position: fixed;
+    inset-inline: 0;
+    z-index: 2147482999;
+    pointer-events: none;
+  }
+
+  .a11y-guide-line {
+    top: 0;
+    height: 4px;
+    background: #916323;
+    box-shadow: 0 0 0 1px #fff;
+    transform: translateY(var(--a11y-pointer-y, 50vh));
+  }
+
+  .a11y-guide-mask {
+    inset-block: 0;
+    background:
+      linear-gradient(rgb(0 0 0 / .6), rgb(0 0 0 / .6)) top / 100% max(0px, calc(var(--a11y-pointer-y, 50vh) - 60px)) no-repeat,
+      linear-gradient(rgb(0 0 0 / .6), rgb(0 0 0 / .6)) bottom / 100% max(0px, calc(100% - var(--a11y-pointer-y, 50vh) - 60px)) no-repeat;
+  }
+
+  .a11y-guide-line[hidden],
+  .a11y-guide-mask[hidden] { display: none; }
+
+  .a11y-tip {
+    position: fixed;
+    z-index: 2147483003;
+    max-width: 280px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #231F20;
+    color: #fff;
+    font: 600 14px/1.35 Arial, Helvetica, sans-serif;
+    pointer-events: none;
+  }
+
+  .a11y-tip[hidden] { display: none; }
+
+  .a11y-reading-target {
+    outline: 3px solid #916323 !important;
+    outline-offset: 4px;
+    background-color: #fff6d6 !important;
+  }
+
   /* Color filters sit on a click-through layer above the page, so fixed/sticky page elements keep working */
   .a11y-filter {
     position: fixed;
@@ -100,12 +153,15 @@
   }
 
   .a11y__launcher {
+    --a11y-launcher-size: 56px;
+    --a11y-launcher-gap: 20px;
+    --a11y-launcher-top: calc(var(--announcement-bar-height, 0px) + var(--header-height, 80px) + 16px);
     position: fixed;
-    left: 20px;
-    bottom: 20px;
+    right: var(--a11y-launcher-gap);
+    top: var(--a11y-launcher-top);
     z-index: 2147483001;
-    width: 56px;
-    height: 56px;
+    width: var(--a11y-launcher-size);
+    height: var(--a11y-launcher-size);
     border-radius: 50%;
     border: 2px solid #fff;
     background: var(--a11y-gold);
@@ -114,10 +170,14 @@
     place-items: center;
     box-shadow: 0 4px 14px rgb(0 0 0 / 0.25);
     cursor: pointer;
-    transition: transform 0.15s ease;
+    transition: transform 0.5s cubic-bezier(.4, 0, .2, 1), scale 0.15s ease;
   }
 
-  .a11y__launcher:hover { transform: scale(1.06); }
+  .a11y__launcher.is-docked {
+    transform: translateY(calc(100dvh - var(--a11y-launcher-top) - var(--a11y-launcher-size) - var(--a11y-launcher-gap)));
+  }
+
+  .a11y__launcher:hover { scale: 1.06; }
 
   .a11y__launcher:focus-visible,
   .a11y button:focus-visible {
@@ -128,11 +188,13 @@
   .a11y__launcher svg { width: 30px; height: 30px; }
 
   @media screen and (max-width: 999px) {
-    .a11y__launcher { left: 16px; bottom: 16px; width: 48px; height: 48px; }
+    .a11y__launcher { --a11y-launcher-size: 48px; --a11y-launcher-gap: 16px; }
     .a11y__launcher svg { width: 26px; height: 26px; }
 
     /* Clear the sticky add-to-cart bar on product pages */
-    body:has(product-sticky-bar) .a11y__launcher { bottom: 88px; }
+    body:has(product-sticky-bar) .a11y__launcher.is-docked {
+      transform: translateY(calc(100dvh - var(--a11y-launcher-top) - var(--a11y-launcher-size) - 88px));
+    }
   }
 
   .a11y__panel {
@@ -217,6 +279,43 @@
 
   .a11y__steps span.is-on { background: var(--a11y-gold); }
 
+  .a11y__structure {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--a11y-tile);
+  }
+
+  .a11y__structure[hidden] { display: none; }
+
+  .a11y__structure-title { margin: 0 0 8px; font-size: 15px; font-weight: 700; }
+
+  .a11y__structure ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+
+  .a11y__structure button {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    border: 0;
+    border-radius: 6px;
+    background: none;
+    color: var(--a11y-ink);
+    font-size: 14px;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .a11y__structure button:hover { background: #f6ecdc; }
+
+  .a11y__structure-level {
+    display: inline-block;
+    min-width: 26px;
+    margin-inline-end: 6px;
+    color: var(--a11y-gold);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
   .a11y__footer { padding: 14px 20px 20px; border-top: 1px solid var(--a11y-line); }
 
   .a11y__reset {
@@ -238,12 +337,17 @@
   @media (prefers-reduced-motion: reduce) {
     .a11y__panel, .a11y__panel.is-open, .a11y__launcher { transition: none; }
   }
+
+  html.a11y-stop-motion .a11y__launcher { transition: none; }
 </style>
 
 {%- capture icon_attrs -%}xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"{%- endcapture -%}
 
 <div class="a11y" id="a11y-widget">
   <div class="a11y-filter" id="a11y-filter" hidden></div>
+  <div class="a11y-guide-line" id="a11y-guide-line" hidden></div>
+  <div class="a11y-guide-mask" id="a11y-guide-mask" hidden></div>
+  <div class="a11y-tip" id="a11y-tip" aria-hidden="true" hidden></div>
 
   <button type="button" class="a11y__launcher" aria-controls="a11y-panel" aria-expanded="false">
     <span class="sr-only">Accessibility options</span>
@@ -277,6 +381,12 @@
           <span class="a11y__steps" aria-hidden="true"><span></span><span></span><span></span></span>
         </button>
 
+        <button type="button" class="a11y__option" data-a11y-key="spacing" data-a11y-levels="3" aria-pressed="false">
+          <svg {{ icon_attrs }}><path d="M3 12h18M6 9l-3 3 3 3M18 9l3 3-3 3"/></svg>
+          Text Spacing
+          <span class="a11y__steps" aria-hidden="true"><span></span><span></span><span></span></span>
+        </button>
+
         <button type="button" class="a11y__option" data-a11y-key="font-readable" data-a11y-group="font" aria-pressed="false">
           <svg {{ icon_attrs }}><path d="M3 19L8 5l5 14M4.8 14h6.4M15 13.5a3 3 0 1 1 6 0V19M21 16.3c-2.7-.7-6-.4-6 1.4 0 1.9 4 1.6 6-.4"/></svg>
           Readable Font
@@ -287,14 +397,14 @@
           Dyslexia Friendly
         </button>
 
-        <button type="button" class="a11y__option" data-a11y-key="links" aria-pressed="false">
-          <svg {{ icon_attrs }}><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
-          Highlight Links
-        </button>
-
         <button type="button" class="a11y__option" data-a11y-key="cursor" aria-pressed="false">
           <svg {{ icon_attrs }}><path d="M5 3l14 9-6 1.5L16.5 21l-2.7 1.2-3.4-7.5L5 19z"/></svg>
           Bigger Cursor
+        </button>
+
+        <button type="button" class="a11y__option" data-a11y-key="tooltips" aria-pressed="false">
+          <svg {{ icon_attrs }}><path d="M4 4h16v12H10l-4 4v-4H4z"/><path d="M12 8v.01M12 11v3"/></svg>
+          Tooltips
         </button>
 
         <button type="button" class="a11y__option" data-a11y-key="hide-images" aria-pressed="false">
@@ -306,6 +416,39 @@
           <svg {{ icon_attrs }}><circle cx="12" cy="12" r="9"/><path d="M10 9v6M14 9v6"/></svg>
           Stop Animations
         </button>
+      </div>
+
+      <h3 class="a11y__group-title">Navigation</h3>
+      <div class="a11y__grid">
+        <button type="button" class="a11y__option" data-a11y-key="reading-line" aria-pressed="false">
+          <svg {{ icon_attrs }}><rect x="3" y="10" width="18" height="4" rx="2"/></svg>
+          Reading Line
+        </button>
+
+        <button type="button" class="a11y__option" data-a11y-key="reading-mask" aria-pressed="false">
+          <svg {{ icon_attrs }}><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 15h18" /><path d="M3 4h18v5H3zM3 15h18v5H3z" fill="currentColor" stroke="none"/></svg>
+          Reading Mask
+        </button>
+
+        <button type="button" class="a11y__option" data-a11y-key="links" aria-pressed="false">
+          <svg {{ icon_attrs }}><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>
+          Highlight Links
+        </button>
+
+        <button type="button" class="a11y__option" data-a11y-action="read" aria-pressed="false" hidden>
+          <svg {{ icon_attrs }}><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>
+          Read Page
+        </button>
+
+        <button type="button" class="a11y__option" data-a11y-action="structure" aria-pressed="false" aria-controls="a11y-structure">
+          <svg {{ icon_attrs }}><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></svg>
+          Page Structure
+        </button>
+      </div>
+
+      <div class="a11y__structure" id="a11y-structure" hidden>
+        <h4 class="a11y__structure-title">Headings on this page</h4>
+        <ul></ul>
       </div>
 
       <h3 class="a11y__group-title">Colors</h3>
@@ -349,6 +492,12 @@
     const panel = widget.querySelector('.a11y__panel');
     const filterLayer = widget.querySelector('#a11y-filter');
     const options = Array.from(widget.querySelectorAll('[data-a11y-key]'));
+    const guideLine = widget.querySelector('#a11y-guide-line');
+    const guideMask = widget.querySelector('#a11y-guide-mask');
+    const tip = widget.querySelector('#a11y-tip');
+    const readButton = widget.querySelector('[data-a11y-action="read"]');
+    const structureButton = widget.querySelector('[data-a11y-action="structure"]');
+    const structure = widget.querySelector('#a11y-structure');
 
     let settings = {};
     try {
@@ -377,6 +526,9 @@
       if (settings.grayscale) filters.push('grayscale(1)');
       filterLayer.style.backdropFilter = filterLayer.style.webkitBackdropFilter = filters.join(' ');
       filterLayer.hidden = filters.length === 0;
+      guideLine.hidden = !settings['reading-line'];
+      guideMask.hidden = !settings['reading-mask'];
+      if (!settings.tooltips) tip.hidden = true;
 
       options.forEach((option) => {
         const value = settings[option.dataset.a11yKey] || 0;
@@ -415,7 +567,132 @@
       settings = {};
       save();
       apply();
+      stopReading();
+      structure.hidden = true;
+      structureButton.setAttribute('aria-pressed', 'false');
     });
+
+    /* ---------- Reading line / mask follow the pointer ---------- */
+    let pointerFrame;
+    document.addEventListener('pointermove', (event) => {
+      if (!settings['reading-line'] && !settings['reading-mask']) return;
+      cancelAnimationFrame(pointerFrame);
+      pointerFrame = requestAnimationFrame(() => root.style.setProperty('--a11y-pointer-y', `${event.clientY}px`));
+    }, { passive: true });
+
+    /* ---------- Tooltips: show an element's accessible label on hover or focus ---------- */
+    const showTip = (event) => {
+      if (!settings.tooltips) return;
+      const target = event.target.closest?.('[aria-label], img[alt], [title]');
+      const text = target && !widget.contains(target) && (target.getAttribute('aria-label') || target.getAttribute('alt') || target.getAttribute('title') || '').trim();
+      if (!text) return;
+
+      const rect = target.getBoundingClientRect();
+      tip.textContent = text;
+      tip.hidden = false;
+      const top = rect.bottom + 8 + tip.offsetHeight > window.innerHeight ? rect.top - tip.offsetHeight - 8 : rect.bottom + 8;
+      tip.style.top = `${Math.max(8, top)}px`;
+      tip.style.left = `${Math.min(Math.max(8, rect.left), window.innerWidth - tip.offsetWidth - 8)}px`;
+    };
+    const hideTip = () => (tip.hidden = true);
+    document.addEventListener('mouseover', showTip);
+    document.addEventListener('focusin', showTip);
+    document.addEventListener('mouseout', hideTip);
+    document.addEventListener('focusout', hideTip);
+    window.addEventListener('scroll', hideTip, { passive: true });
+
+    /* ---------- Read page aloud, block by block, highlighting what is being read ---------- */
+    let reading = false;
+    let readingTarget;
+
+    const isReadable = (element) =>
+      element.offsetParent !== null && !element.closest('[aria-hidden="true"], [inert], .a11y') && element.innerText.trim() !== '';
+
+    const readingBlocks = () => {
+      const blocks = Array.from(document.querySelectorAll('main :is(h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, td, dt, dd)')).filter(isReadable);
+      // Skip blocks nested inside another block (e.g. a paragraph inside a list item) so nothing is read twice
+      return blocks.filter((block) => !blocks.some((other) => other !== block && other.contains(block)));
+    };
+
+    const markReading = (element) => {
+      readingTarget?.classList.remove('a11y-reading-target');
+      readingTarget = element;
+      element?.classList.add('a11y-reading-target');
+      element?.scrollIntoView({ block: 'center', behavior: root.classList.contains('a11y-stop-motion') ? 'auto' : 'smooth' });
+    };
+
+    function stopReading() {
+      reading = false;
+      window.speechSynthesis?.cancel();
+      markReading(null);
+      readButton.setAttribute('aria-pressed', 'false');
+    }
+
+    const speak = (queue, index) => {
+      if (!reading || index >= queue.length) return stopReading();
+      const { text, element } = queue[index];
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = root.lang || 'en';
+      utterance.onend = () => speak(queue, index + 1);
+      utterance.onerror = () => speak(queue, index + 1);
+      if (element) markReading(element);
+      window.speechSynthesis.speak(utterance);
+    };
+
+    if ('speechSynthesis' in window) {
+      readButton.hidden = false;
+      readButton.addEventListener('click', () => {
+        if (reading) return stopReading();
+        const selection = window.getSelection()?.toString().trim();
+        const queue = selection ? [{ text: selection }] : readingBlocks().map((element) => ({ text: element.innerText.trim(), element }));
+        if (queue.length === 0) return;
+        reading = true;
+        readButton.setAttribute('aria-pressed', 'true');
+        window.speechSynthesis.cancel();
+        speak(queue, 0);
+      });
+      window.addEventListener('pagehide', () => window.speechSynthesis.cancel());
+    }
+
+    /* ---------- Page structure: list the headings and jump to one ---------- */
+    structureButton.addEventListener('click', () => {
+      const showing = structure.hidden;
+      structure.hidden = !showing;
+      structureButton.setAttribute('aria-pressed', showing ? 'true' : 'false');
+      if (!showing) return;
+
+      const list = structure.querySelector('ul');
+      list.replaceChildren();
+      const headings = Array.from(document.querySelectorAll('h1, h2, h3, h4')).filter(isReadable);
+
+      if (headings.length === 0) {
+        list.innerHTML = '<li>No headings found on this page.</li>';
+        return;
+      }
+
+      headings.forEach((heading) => {
+        const level = Number(heading.tagName[1]);
+        const item = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.style.paddingInlineStart = `${8 + (level - 1) * 14}px`;
+        button.innerHTML = `<span class="a11y__structure-level">H${level}</span>`;
+        button.append(heading.innerText.trim());
+        button.addEventListener('click', () => {
+          close();
+          if (!heading.hasAttribute('tabindex')) heading.setAttribute('tabindex', '-1');
+          heading.scrollIntoView({ block: 'center' });
+          heading.focus({ preventScroll: true });
+        });
+        item.append(button);
+        list.append(item);
+      });
+    });
+
+    /* ---------- Launcher starts under the header, then docks to the bottom corner once the page scrolls ---------- */
+    const dock = () => launcher.classList.toggle('is-docked', window.scrollY > 80);
+    window.addEventListener('scroll', dock, { passive: true });
+    dock();
 
     const open = () => {
       panel.classList.add('is-open');
