@@ -102,9 +102,15 @@
 /* Homepage: a solid brand row with a separate navigation strip over the hero. */
 @media screen and (min-width: 1000px) {
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header {
-    --header-grid: "search-start logo secondary-nav" / minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template: "search-start logo secondary-nav" / minmax(0, 1fr) auto minmax(0, 1fr) !important;
+    --header-logo-width: 190px !important;
+    --header-padding-block: .85rem !important;
     margin-block-end: 0;
     background: #ffffff;
+  }
+
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__utility-link {
+    display: none;
   }
 
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav {
