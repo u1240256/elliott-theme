@@ -49,8 +49,7 @@
                     {%- capture sizes -%}(max-width: 999px) 100vw, min(60vw, 550px){%- endcapture -%}
                     {{- block.settings.image | image_url: width: block.settings.image.width | image_tag: loading: look_image_loading_strategy, widths: '400,500,600,700,800,1000,1200,1400,1600,1800', sizes: sizes, class: 'image-cover' -}}
                   {%- else -%}
-                    {%- capture placeholder -%}{% cycle 'collection-1', 'collection-2', 'collection-3', 'collection-4' %}{%- endcapture -%}
-                    {{- placeholder | placeholder_svg_tag: 'placeholder--invert' | replace: '<svg', '<svg preserveAspectRatio="xMinYMin slice"' -}}
+                    {%- render 'stock-image', name: 'stock-look', class: 'image-cover', alt: section.settings.title -%}
                   {%- endif -%}
 
                   <carousel-navigation aria-controls="shop-the-look-item-carousel-{{ block.id }}-{% if device == 'mobile' %}md{% else %}md-max{% endif %}" class="shop-the-look__hot-spot-list">

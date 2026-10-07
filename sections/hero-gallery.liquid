@@ -1,0 +1,534 @@
+{%- comment -%}
+  Hero gallery: one large rounded slide centred with its neighbours peeking in at the edges,
+  arrow and dot navigation, swipe on touch, optional autoplay. Loops in both directions.
+  Slides without an image fall back to the temporary stock photos (see snippets/stock-image).
+{%- endcomment -%}
+<div class="hero-gallery">
+  <hero-gallery class="hero-gallery__root{% if section.blocks.size <= 1 %} hero-gallery__root--single{% endif %}" {% if section.settings.autoplay %}data-autoplay="{{ section.settings.speed | times: 1000 }}"{% endif %} aria-roledescription="carousel" aria-label="{{ section.settings.accessibility_label | escape }}">
+    <div class="hero-gallery__viewport">
+      <div class="hero-gallery__track">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            if forloop.first
+              assign loading = 'eager'
+            else
+              assign loading = 'lazy'
+            endif
+            assign stock_index = forloop.index0 | modulo: 3 | plus: 1
+            assign stock_name = 'stock-slide-' | append: stock_index
+          -%}
+          <div class="hero-gallery__slide{% if block.settings.link != blank %} hero-gallery__slide--linked{% endif %}" role="group" aria-roledescription="slide" aria-label="{{ forloop.index }} / {{ forloop.length }}" {{ block.shopify_attributes }}>
+            <div class="hero-gallery__media">
+              {%- if block.settings.image != blank -%}
+                <picture>
+                  {%- if block.settings.mobile_image != blank -%}
+                    <source media="(max-width: 699px)" srcset="{{ block.settings.mobile_image | image_url: width: 800 }} 800w, {{ block.settings.mobile_image | image_url: width: 1200 }} 1200w">
+                  {%- endif -%}
+                  {{- block.settings.image | image_url: width: 3000 | image_tag: loading: loading, sizes: '(max-width: 699px) 92vw, 94vw', widths: '800,1200,1600,2000,2400,3000', alt: block.settings.heading -}}
+                </picture>
+              {%- else -%}
+                {%- render 'stock-image', name: stock_name, loading: loading, alt: block.settings.heading -%}
+              {%- endif -%}
+            </div>
+
+            <div class="hero-gallery__content hero-gallery__content--{{ block.settings.text_position }}">
+              <div class="hero-gallery__text">
+                {%- if block.settings.eyebrow != blank -%}
+                  <p class="hero-gallery__eyebrow">{{ block.settings.eyebrow }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.heading != blank -%}
+                  {%- if forloop.first -%}
+                    <h1 class="hero-gallery__heading">{{ block.settings.heading }}</h1>
+                  {%- else -%}
+                    <h2 class="hero-gallery__heading">{{ block.settings.heading }}</h2>
+                  {%- endif -%}
+                {%- endif -%}
+
+                {%- if block.settings.text != blank -%}
+                  <p class="hero-gallery__subtext">{{ block.settings.text }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.link != blank -%}
+                  <a href="{{ block.settings.link }}" class="hero-gallery__button">{{ block.settings.button_label | default: 'Shop now' }}</a>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- if section.blocks.size > 1 -%}
+      <button type="button" class="hero-gallery__arrow hero-gallery__arrow--prev" data-hero-prev aria-label="Previous slide">
+        <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <button type="button" class="hero-gallery__arrow hero-gallery__arrow--next" data-hero-next aria-label="Next slide">
+        <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5l7 7-7 7"/></svg>
+      </button>
+
+      <div class="hero-gallery__dots">
+        {%- for block in section.blocks -%}
+          <button type="button" class="hero-gallery__dot" data-hero-dot="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}"{% if forloop.first %} aria-current="true"{% endif %}></button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </hero-gallery>
+</div>
+
+{% stylesheet %}
+  .hero-gallery {
+    --hero-peek: 1rem;
+    --hero-gap: .5rem;
+    padding-block: 1rem 0;
+  }
+
+  .hero-gallery__root {
+    position: relative;
+    display: block;
+  }
+
+  .hero-gallery__viewport {
+    overflow: hidden;
+    touch-action: pan-y;
+  }
+
+  .hero-gallery__track {
+    display: flex;
+    gap: var(--hero-gap);
+    transform: translateX(calc(var(--hero-peek) + var(--hero-gap)));
+  }
+
+  .hero-gallery__track.is-animating {
+    transition: transform .6s cubic-bezier(.25, .8, .25, 1);
+  }
+
+  .hero-gallery__slide {
+    position: relative;
+    flex: 0 0 calc(100% - 2 * (var(--hero-peek) + var(--hero-gap)));
+    aspect-ratio: 4 / 5;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #f7f0e8;
+  }
+
+  .hero-gallery__root--single .hero-gallery__track {
+    transform: translateX(var(--hero-peek));
+  }
+
+  .hero-gallery__root--single .hero-gallery__slide {
+    flex-basis: calc(100% - 2 * var(--hero-peek));
+  }
+
+  .hero-gallery__media,
+  .hero-gallery__media picture {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-gallery__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-gallery__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 1.5rem;
+    text-align: center;
+    background: linear-gradient(to top, rgb(247 240 232 / .95) 0%, rgb(247 240 232 / .8) 32%, rgb(247 240 232 / 0) 62%);
+  }
+
+  .hero-gallery__text {
+    display: grid;
+    justify-items: center;
+    gap: .75rem;
+    max-width: 32rem;
+  }
+
+  .hero-gallery__eyebrow {
+    font-family: var(--text-font-family);
+    font-size: .75rem;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #916323;
+  }
+
+  .hero-gallery__heading {
+    font-family: var(--heading-font-family);
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -.01em;
+    color: #231f20;
+  }
+
+  .hero-gallery__subtext {
+    font-family: var(--text-font-family);
+    font-size: .9375rem;
+    line-height: 1.5;
+    color: #231f20;
+  }
+
+  .hero-gallery__button {
+    display: inline-block;
+    margin-block-start: .5rem;
+    padding: 1rem 2rem;
+    font-family: var(--text-font-family);
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: #916323;
+    border-radius: 8px;
+    transition: background .2s ease;
+  }
+
+  .hero-gallery__button:hover {
+    background: #7a531d;
+  }
+
+  .hero-gallery__slide--linked .hero-gallery__button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-gallery__button:focus-visible {
+    outline: 2px solid #231f20;
+    outline-offset: 3px;
+  }
+
+  .hero-gallery__arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: #231f20;
+    background: #ffffff;
+    border: 1px solid #b47b2b;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: background .2s ease, color .2s ease;
+  }
+
+  .hero-gallery__arrow:hover {
+    color: #ffffff;
+    background: #916323;
+    border-color: #916323;
+  }
+
+  .hero-gallery__arrow--prev {
+    left: calc(var(--hero-peek) + var(--hero-gap) / 2);
+  }
+
+  .hero-gallery__arrow--next {
+    left: calc(100% - var(--hero-peek) - var(--hero-gap) / 2);
+  }
+
+  .hero-gallery__dots {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+    padding-block: 1rem 0;
+  }
+
+  .hero-gallery__dot {
+    width: .5rem;
+    height: .5rem;
+    padding: 0;
+    background: #e6d8c4;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: width .3s ease, background .3s ease;
+  }
+
+  .hero-gallery__dot[aria-current="true"] {
+    width: 1.5rem;
+    background: #b47b2b;
+  }
+
+  @media screen and (min-width: 700px) {
+    .hero-gallery {
+      --hero-peek: 2.5rem;
+      --hero-gap: 1rem;
+      padding-block-start: 1.5rem;
+    }
+
+    .hero-gallery__slide {
+      aspect-ratio: 16 / 7;
+    }
+
+    .hero-gallery__content {
+      align-items: center;
+      padding: 3rem 4.5rem;
+    }
+
+    .hero-gallery__content--left {
+      justify-content: flex-start;
+      text-align: left;
+      background: linear-gradient(to right, rgb(247 240 232 / .94) 0%, rgb(247 240 232 / .75) 34%, rgb(247 240 232 / 0) 60%);
+    }
+
+    .hero-gallery__content--left .hero-gallery__text {
+      justify-items: start;
+    }
+
+    .hero-gallery__content--right {
+      justify-content: flex-end;
+      text-align: right;
+      background: linear-gradient(to left, rgb(247 240 232 / .94) 0%, rgb(247 240 232 / .75) 34%, rgb(247 240 232 / 0) 60%);
+    }
+
+    .hero-gallery__content--right .hero-gallery__text {
+      justify-items: end;
+    }
+
+    .hero-gallery__content--center {
+      background: radial-gradient(ellipse at center, rgb(247 240 232 / .9) 0%, rgb(247 240 232 / .6) 40%, rgb(247 240 232 / 0) 70%);
+    }
+
+    .hero-gallery__heading {
+      font-size: clamp(2.5rem, 4.4vw, 4.25rem);
+    }
+
+    .hero-gallery__subtext {
+      font-size: 1.0625rem;
+    }
+
+    .hero-gallery__arrow {
+      width: 3rem;
+      height: 3rem;
+    }
+  }
+
+  @media screen and (min-width: 1400px) {
+    .hero-gallery {
+      --hero-peek: 4rem;
+    }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  if (!customElements.get('hero-gallery')) {
+    class HeroGallery extends HTMLElement {
+      connectedCallback() {
+        this.track = this.querySelector('.hero-gallery__track');
+        this.slides = Array.from(this.track.children);
+        this.dots = Array.from(this.querySelectorAll('[data-hero-dot]'));
+        if (this.slides.length < 2) return;
+
+        // Clone the last and first slides onto the ends so the loop runs without a jump.
+        const head = this.slides[this.slides.length - 1].cloneNode(true);
+        const tail = this.slides[0].cloneNode(true);
+        [head, tail].forEach((clone) => {
+          clone.setAttribute('aria-hidden', 'true');
+          clone.inert = true;
+          clone.removeAttribute('data-shopify-editor-block');
+          clone.querySelectorAll('img').forEach((img) => img.setAttribute('loading', 'lazy'));
+        });
+        this.track.prepend(head);
+        this.track.append(tail);
+        this.position = 1;
+
+        this.querySelector('[data-hero-prev]').addEventListener('click', () => this.go(this.position - 1));
+        this.querySelector('[data-hero-next]').addEventListener('click', () => this.go(this.position + 1));
+        this.dots.forEach((dot) => dot.addEventListener('click', () => this.go(Number(dot.dataset.heroDot) + 1)));
+        this.track.addEventListener('pointerdown', (event) => {
+          this.startX = event.clientX;
+          this.swiped = false;
+        });
+        this.track.addEventListener('pointerup', (event) => {
+          const delta = event.clientX - (this.startX ?? event.clientX);
+          this.startX = null;
+          if (Math.abs(delta) < 40) return;
+          this.swiped = true;
+          this.go(this.position + (delta < 0 ? 1 : -1));
+        });
+        // A swipe that ends on a slide link should not also follow the link.
+        this.track.addEventListener('click', (event) => {
+          if (this.swiped) event.preventDefault();
+          this.swiped = false;
+        }, true);
+        this.track.addEventListener('dragstart', (event) => event.preventDefault());
+
+        this.resizeObserver = new ResizeObserver(() => this.place(false));
+        this.resizeObserver.observe(this);
+        this.place(false);
+
+        const speed = Number(this.dataset.autoplay);
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (speed && !reduceMotion && !window.Shopify?.designMode) {
+          this.speed = speed;
+          ['mouseenter', 'focusin'].forEach((type) => this.addEventListener(type, () => this.stop()));
+          ['mouseleave', 'focusout'].forEach((type) => this.addEventListener(type, () => this.start()));
+          this.start();
+        }
+
+        this.addEventListener('shopify:block:select', (event) => {
+          const index = this.slides.indexOf(event.target);
+          if (index > -1) this.go(index + 1);
+        });
+      }
+
+      disconnectedCallback() {
+        this.stop();
+        this.resizeObserver?.disconnect();
+      }
+
+      start() {
+        if (!this.speed) return;
+        this.stop();
+        this.timer = setInterval(() => this.go(this.position + 1), this.speed);
+      }
+
+      stop() {
+        clearInterval(this.timer);
+      }
+
+      go(position) {
+        if (this.busy) return;
+        this.busy = true;
+        this.position = position;
+        this.place(true);
+        // Matches the .6s track transition; a timer rather than transitionend, which also bubbles up from slide content.
+        setTimeout(() => this.settle(), 620);
+      }
+
+      place(animate) {
+        const slide = this.track.children[this.position];
+        const offset = (this.offsetWidth - slide.offsetWidth) / 2 - slide.offsetLeft;
+        this.track.classList.toggle('is-animating', animate);
+        this.track.style.transform = `translateX(${offset}px)`;
+
+        const active = (this.position - 1 + this.slides.length) % this.slides.length;
+        this.dots.forEach((dot, index) => dot.setAttribute('aria-current', index === active ? 'true' : 'false'));
+      }
+
+      settle() {
+        this.busy = false;
+        if (this.position === 0) this.position = this.slides.length;
+        else if (this.position === this.slides.length + 1) this.position = 1;
+        else return;
+        this.place(false);
+      }
+    }
+
+    customElements.define('hero-gallery', HeroGallery);
+  }
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Hero gallery",
+  "class": "shopify-section--hero-gallery",
+  "tag": "section",
+  "max_blocks": 8,
+  "disabled_on": {
+    "groups": ["header", "footer", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-rotate slides",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Change slides every",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "sec",
+      "default": 6
+    },
+    {
+      "type": "text",
+      "id": "accessibility_label",
+      "label": "Accessibility label",
+      "default": "Featured collections"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Wide image, at least 2400 x 1050px"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobile image",
+          "info": "Portrait image, 1200 x 1500px"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Slide heading"
+        },
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "text_position",
+          "label": "Desktop text position",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero gallery",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}

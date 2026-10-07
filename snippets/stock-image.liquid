@@ -1,0 +1,33 @@
+{%- comment -%}
+  Temporary CC0 stock photo shown where a section's image picker is still empty.
+  Choosing an image in the theme editor replaces it. Remove this snippet and the
+  stock-*.jpg assets once real photography is in place.
+
+  @param name {String} - Asset name without extension, e.g. 'stock-slide-1'
+  @param class {String} - [Optional] Classes for the img tag
+  @param loading {String} - [Optional] 'lazy' (default) or 'eager'
+  @param alt {String} - [Optional] Alt text
+{%- endcomment -%}
+{%- liquid
+  case name
+    when 'stock-slide-1', 'stock-slide-2'
+      assign width = 2400
+      assign height = 1600
+    when 'stock-slide-3'
+      assign width = 2400
+      assign height = 1590
+    when 'stock-card-baby'
+      assign width = 960
+      assign height = 1440
+    when 'stock-card-kids'
+      assign width = 960
+      assign height = 1445
+    when 'stock-card-swaddles', 'stock-card-top-bottoms', 'stock-card-twirl-dresses'
+      assign width = 1024
+      assign height = 683
+    else
+      assign width = 960
+      assign height = 640
+  endcase
+-%}
+<img src="{{ name | append: '.jpg' | asset_url }}" alt="{{ alt | escape }}" width="{{ width }}" height="{{ height }}" loading="{{ loading | default: 'lazy' }}"{% if class != blank %} class="{{ class }}"{% endif %}>

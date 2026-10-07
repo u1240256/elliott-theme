@@ -68,11 +68,15 @@
             {%- assign card_link = block.settings.link | default: block.settings.collection.url -%}
             {%- assign card_label = block.settings.label | default: block.settings.collection.title -%}
             {%- assign card_image = block.settings.image | default: block.settings.collection.featured_image -%}
+            {%- assign stock_handles = 'baby,kids,accessories,swaddles,zipper-footies,rompers,twirl-dresses,top-bottoms' | split: ',' -%}
 
             <a href="{{ card_link | default: '#' }}" class="tabbed-cards__card group" {{ block.shopify_attributes }}>
               <div class="tabbed-cards__media">
                 {%- if card_image != blank -%}
                   {{- card_image | image_url: width: 900 | image_tag: sizes: '(max-width: 699px) 70vw, 25vw', widths: '300,400,500,600,700,800,900', class: 'zoom-image group-hover:zoom', loading: 'lazy' -}}
+                {%- elsif stock_handles contains block.settings.collection.handle -%}
+                  {%- assign stock_name = 'stock-card-' | append: block.settings.collection.handle -%}
+                  {%- render 'stock-image', name: stock_name, class: 'zoom-image group-hover:zoom', alt: card_label -%}
                 {%- else -%}
                   {{- 'collection-1' | placeholder_svg_tag: 'placeholder' -}}
                 {%- endif -%}

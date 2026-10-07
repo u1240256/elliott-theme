@@ -1,32 +1,46 @@
 {%- comment -%}
-  Full-width clickable promotional image (e.g. "Buy one, get one 50% off"). Supports a separate mobile image.
+  Full-width clickable promotion. Shows the uploaded banner image (with an optional mobile image),
+  or, with no image, a cream text band: emblem, eyebrow, headline with a gold highlight, and a button.
 {%- endcomment -%}
-{%- if section.settings.image != blank -%}
-  <div class="promo-banner {% unless section.settings.remove_vertical_spacing %}section-spacing{% endunless %}">
-    <div class="{% if section.settings.full_width %}promo-banner__inner--full{% else %}container container--lg{% endif %}">
-      {%- if section.settings.link != blank -%}
-        <a href="{{ section.settings.link }}" class="promo-banner__link" aria-label="{{ section.settings.accessibility_label | default: section.settings.image.alt | escape }}">
-      {%- endif -%}
+{%- capture label -%}{{ section.settings.accessibility_label | default: section.settings.image.alt | default: section.settings.heading }}{%- endcapture -%}
+<div class="promo-banner {% unless section.settings.remove_vertical_spacing %}section-spacing{% endunless %}">
+  <div class="{% if section.settings.full_width %}promo-banner__inner--full{% else %}container container--lg{% endif %}">
+    {%- if section.settings.link != blank -%}
+      <a href="{{ section.settings.link }}" class="promo-banner__link" aria-label="{{ label | strip | escape }}">
+    {%- endif -%}
 
-      {%- if section.settings.mobile_image != blank -%}
-        {{- section.settings.mobile_image | image_url: width: 1200 | image_tag: sizes: '100vw', widths: '400,600,800,1000,1200', class: 'promo-banner__image sm:hidden', loading: 'lazy' -}}
-        {{- section.settings.image | image_url: width: 3000 | image_tag: sizes: '100vw', widths: '800,1000,1200,1400,1600,1800,2000,2400,3000', class: 'promo-banner__image hidden sm:block', loading: 'lazy' -}}
-      {%- else -%}
-        {{- section.settings.image | image_url: width: 3000 | image_tag: sizes: '100vw', widths: '400,600,800,1000,1200,1400,1600,1800,2000,2400,3000', class: 'promo-banner__image', loading: 'lazy' -}}
-      {%- endif -%}
+    {%- if section.settings.image == blank -%}
+      <div class="promo-banner__band">
+        <img class="promo-banner__emblem" src="{{ 'em-emblem.svg' | asset_url }}" alt="" width="69" height="60" loading="lazy">
 
-      {%- if section.settings.link != blank -%}
-        </a>
-      {%- endif -%}
-    </div>
+        <div class="promo-banner__copy">
+          {%- if section.settings.eyebrow != blank -%}
+            <p class="promo-banner__eyebrow">{{ section.settings.eyebrow }}</p>
+          {%- endif -%}
+          <p class="promo-banner__heading">
+            {%- if section.settings.highlight != blank -%}<em class="promo-banner__highlight">{{ section.settings.highlight }}</em> {% endif -%}
+            {{- section.settings.heading -}}
+          </p>
+        </div>
+
+        {%- if section.settings.button_label != blank -%}
+          <span class="promo-banner__button">{{ section.settings.button_label }}</span>
+        {%- endif -%}
+
+        <img class="promo-banner__emblem promo-banner__emblem--end" src="{{ 'em-emblem.svg' | asset_url }}" alt="" width="69" height="60" loading="lazy">
+      </div>
+    {%- elsif section.settings.mobile_image != blank -%}
+      {{- section.settings.mobile_image | image_url: width: 1200 | image_tag: sizes: '100vw', widths: '400,600,800,1000,1200', class: 'promo-banner__image sm:hidden', loading: 'lazy' -}}
+      {{- section.settings.image | image_url: width: 3000 | image_tag: sizes: '100vw', widths: '800,1000,1200,1400,1600,1800,2000,2400,3000', class: 'promo-banner__image hidden sm:block', loading: 'lazy' -}}
+    {%- else -%}
+      {{- section.settings.image | image_url: width: 3000 | image_tag: sizes: '100vw', widths: '400,600,800,1000,1200,1400,1600,1800,2000,2400,3000', class: 'promo-banner__image', loading: 'lazy' -}}
+    {%- endif -%}
+
+    {%- if section.settings.link != blank -%}
+      </a>
+    {%- endif -%}
   </div>
-{%- elsif request.design_mode -%}
-  <div class="promo-banner section-spacing">
-    <div class="container container--lg">
-      {{- 'hero-apparel-1' | placeholder_svg_tag: 'promo-banner__placeholder' -}}
-    </div>
-  </div>
-{%- endif -%}
+</div>
 
 {% stylesheet %}
   .promo-banner__image {
@@ -39,10 +53,87 @@
     display: block;
   }
 
-  .promo-banner__placeholder {
-    width: 100%;
-    height: 160px;
-    background: rgb(var(--text-color) / .05);
+  .promo-banner__band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: .75rem 1.5rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    background: #f7f0e8;
+    border-block: 1.5px solid #b47b2b;
+  }
+
+  .promo-banner__emblem {
+    display: none;
+    width: 3.5rem;
+    height: auto;
+  }
+
+  .promo-banner__emblem--end {
+    transform: scaleX(-1);
+  }
+
+  .promo-banner__copy {
+    display: grid;
+    gap: .25rem;
+  }
+
+  .promo-banner__eyebrow {
+    font-family: var(--text-font-family);
+    font-size: .75rem;
+    font-weight: 500;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #916323;
+  }
+
+  .promo-banner__heading {
+    font-family: var(--heading-font-family);
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -.01em;
+    color: #231f20;
+  }
+
+  .promo-banner__highlight {
+    color: #b47b2b;
+  }
+
+  .promo-banner__button {
+    display: inline-block;
+    padding: .875rem 1.75rem;
+    font-family: var(--text-font-family);
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: #ffffff;
+    background: #916323;
+    border-radius: 8px;
+    transition: background .2s ease;
+  }
+
+  .promo-banner__link:hover .promo-banner__button {
+    background: #7a531d;
+  }
+
+  @media screen and (min-width: 700px) {
+    .promo-banner__band {
+      flex-wrap: nowrap;
+      gap: 2.5rem;
+      padding: 1.75rem 2rem;
+    }
+
+    .promo-banner__emblem {
+      display: block;
+    }
+
+    .promo-banner__heading {
+      font-size: clamp(2rem, 3.4vw, 3rem);
+    }
   }
 {% endstylesheet %}
 
@@ -56,13 +147,38 @@
       "type": "image_picker",
       "id": "image",
       "label": "Image",
-      "info": "Wide banner, e.g. 3000 x 260px"
+      "info": "Wide banner, e.g. 3000 x 260px. Leave empty to show the text banner below."
     },
     {
       "type": "image_picker",
       "id": "mobile_image",
       "label": "Mobile image",
       "info": "Optional. Shown on screens below 700px."
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "A little welcome gift"
+    },
+    {
+      "type": "text",
+      "id": "highlight",
+      "label": "Highlighted words",
+      "info": "Shown in gold before the heading",
+      "default": "Free shipping"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "on orders over $50"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop now"
     },
     {
       "type": "url",
