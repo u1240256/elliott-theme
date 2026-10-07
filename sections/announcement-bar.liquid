@@ -33,39 +33,17 @@
   </style>
 
   <height-observer variable="announcement-bar">
-    <div class="announcement-bar color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
-      {%- assign carousel_id = 'carousel-' | append: section.id -%}
-
-      {%- if section.blocks.size > 1 -%}
-        <carousel-prev-button aria-controls="{{ carousel_id }}" class="contents">
-          <button type="button" class="tap-area">
-            <span class="sr-only">{{ 'general.accessibility.previous' | t }}</span>
-            {%- render 'icon' with 'arrow-left', width: 12, direction_aware: true -%}
-          </button>
-        </carousel-prev-button>
-      {%- endif -%}
-
-      <announcement-bar-carousel
-        allow-swipe
-        {% if section.settings.autoplay %}
-          autoplay="{{ section.settings.cycle_speed }}"
-        {% endif %}
-        id="{{ carousel_id }}"
-        class="announcement-bar__carousel"
-      >
+    <div class="announcement-bar announcement-bar--marquee color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
+      <marquee-text speed="{{ section.settings.scroll_speed }}" direction="left" pause-on-hover class="announcement-bar__ticker">
+        <div class="announcement-bar__ticker-items">
         {%- for block in section.blocks -%}
-          <p class="prose heading {% if forloop.first %}is-selected{% endif %}" {{ block.shopify_attributes }}>{{- block.settings.text -}}</p>
+          <div class="announcement-bar__message" {{ block.shopify_attributes }}>
+            {%- render 'icon' with 'picto-plane', width: 15, stroke_width: 1.25 -%}
+            <span>{{- block.settings.text -}}</span>
+          </div>
         {%- endfor -%}
-      </announcement-bar-carousel>
-
-      {%- if section.blocks.size > 1 -%}
-        <carousel-next-button aria-controls="{{ carousel_id }}" class="contents">
-          <button type="button" class="tap-area">
-            <span class="sr-only">{{ 'general.accessibility.next' | t }}</span>
-            {%- render 'icon' with 'arrow-right', width: 12, direction_aware: true -%}
-          </button>
-        </carousel-next-button>
-      {%- endif -%}
+        </div>
+      </marquee-text>
     </div>
   </height-observer>
 
@@ -111,21 +89,13 @@
       "label": "t:sections.announcement_bar.enable_sticky_bar"
     },
     {
-      "type": "checkbox",
-      "id": "autoplay",
-      "label": "t:sections.announcement_bar.auto_rotate_between_messages",
-      "default": true
-    },
-    {
       "type": "range",
-      "id": "cycle_speed",
-      "min": 2,
-      "max": 20,
-      "step": 1,
-      "unit": "sec",
-      "label": "t:sections.announcement_bar.cycle_speed",
-      "default": 5,
-      "visible_if": "{{ section.settings.autoplay }}"
+      "id": "scroll_speed",
+      "min": 0.1,
+      "max": 1,
+      "step": 0.1,
+      "label": "Ticker speed",
+      "default": 0.3
     },
     {
       "type": "range",

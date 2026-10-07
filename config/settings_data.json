@@ -97,9 +97,9 @@
       },
       "scheme-announcement": {
         "settings": {
-          "background": "#f7f0e8",
+          "background": "#916323",
           "background_gradient": "",
-          "text_color": "#916323",
+          "text_color": "#ffffff",
           "primary_button_background": "#916323",
           "primary_button_text_color": "#ffffff",
           "circle_button_background": "#ffffff",

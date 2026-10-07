@@ -6,17 +6,54 @@
   Gold Deep (#916323) for small text and accents, Ink (#231F20) for text.
 */
 
-/* Announcement bar: Montserrat label style */
-.shopify-section--announcement-bar p {
+/* Announcement ticker: Gold Deep and white are an accessible brand-kit pairing. */
+.shopify-section--announcement-bar .announcement-bar--marquee {
+  display: block;
+  padding: 0;
+}
+
+.announcement-bar__ticker {
+  display: block;
+  overflow: hidden;
+  padding-block: .85rem;
+  white-space: nowrap;
+}
+
+.announcement-bar__ticker::part(scroller) {
+  display: inline-flex;
+  min-width: max-content;
+}
+
+.announcement-bar__ticker-items {
+  display: inline-flex;
+  align-items: center;
+}
+
+.announcement-bar__message {
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  margin-inline: 2.5rem;
   font-family: var(--text-font-family);
+  font-size: var(--announcement-bar-font-size);
   font-weight: 500;
   letter-spacing: .18em;
   text-transform: uppercase;
 }
 
-.shopify-section--announcement-bar a {
+.announcement-bar__message .icon {
+  flex: none;
+}
+
+.shopify-section--announcement-bar .announcement-bar__message a {
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .announcement-bar__ticker::part(scroller) {
+    transform: none !important;
+  }
 }
 
 /* Primary navigation: uppercase, widely tracked */

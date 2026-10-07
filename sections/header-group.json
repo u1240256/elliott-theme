@@ -17,13 +17,13 @@
         "message_Xehx8E": {
           "type": "message",
           "settings": {
-            "text": "Soft. Safe. Made for Little Ones. <a href=\"/collections/best-sellers\">Shop best sellers</a>"
+            "text": "Free US shipping on orders $50+"
           }
         },
         "message_brand": {
           "type": "message",
           "settings": {
-            "text": "Every child has an “and Me.”"
+            "text": "Buy 1, get 20% off your second item. Select items"
           }
         }
       },
@@ -35,8 +35,7 @@
       "settings": {
         "color_scheme": "scheme-announcement",
         "enable_sticky": false,
-        "autoplay": true,
-        "cycle_speed": 6,
+        "scroll_speed": 0.3,
         "desktop_font_size": 13,
         "mobile_font_size": 11
       }
