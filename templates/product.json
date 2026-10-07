@@ -105,11 +105,18 @@
             "stack_products": false,
             "show_quick_buy": true
           }
+        },
+        "color_siblings": {
+          "type": "color_siblings",
+          "settings": {
+            "option_name": "Color"
+          }
         }
       },
       "block_order": [
         "title",
         "rating",
+        "color_siblings",
         "variant_picker",
         "inventory",
         "gift_note",

@@ -121,3 +121,24 @@
   text-transform: uppercase;
   color: #231f20;
 }
+
+/* Product page: colour swatches linking to the same garment in other colours */
+.color-siblings .color-swatch {
+  --swatch-size: 2.5rem;
+  --swatch-offset: 3px;
+  border-radius: 999px;
+  background-clip: content-box;
+}
+
+.color-siblings .color-swatch::after {
+  content: '';
+  position: absolute;
+  inset: var(--swatch-offset);
+  border: 1px solid rgb(35 31 32 / .14);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.color-siblings .color-swatch.is-selected {
+  border-color: #b47b2b;
+}

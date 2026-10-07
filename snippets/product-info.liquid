@@ -219,6 +219,58 @@
                   size_chart_page: block.settings.size_chart_page -%}
             {%- endif -%}
 
+          {%- when 'color_siblings' -%}
+            {%- comment -%}
+              Each colorway is its own product, handled "<color>-<fabric>-<type>". Swap the color prefix to find the
+              same garment and fabric in every other color, and link to each one that exists as a swatch.
+              Swatch colors come from the "Color swatch configuration" theme setting.
+            {%- endcomment -%}
+            {%- liquid
+              assign color_slugs = 'baby-bear-black,cozy-charcoal,snuggle-white,pine-green,sweet-pea-blush,ladybug-red,teddy-bear-brown,little-sailor-navy,baby-sunshine-yellow,baby-rose' | split: ','
+              assign color_names = 'Baby Bear Black,Cozy Charcoal,Snuggle White,Pine Green,Sweet Pea Blush,Ladybug Red,Teddy Bear Brown,Little Sailor Navy,Baby Sunshine Yellow,Baby Rose' | split: ','
+              assign family_suffix = ''
+              assign current_color = ''
+
+              for slug in color_slugs
+                assign prefix = slug | append: '-'
+                assign handle_start = product.handle | slice: 0, prefix.size
+                if handle_start == prefix
+                  assign family_suffix = product.handle | remove_first: prefix
+                  assign current_color = color_names[forloop.index0]
+                  break
+                endif
+              endfor
+            -%}
+
+            {%- if family_suffix != blank -%}
+              <div class="variant-picker color-siblings v-stack gap-4" {{ block.shopify_attributes }}>
+                <div class="variant-picker__option v-stack gap-2">
+                  <div class="h-stack gap-1">
+                    <p class="text-subdued">{{ block.settings.option_name | default: 'Color' | escape }}:</p>
+                    <span>{{ current_color }}</span>
+                  </div>
+
+                  <div class="variant-picker__option-values h-stack gap-2.5 wrap">
+                    {%- for slug in color_slugs -%}
+                      {%- assign sibling_handle = slug | append: '-' | append: family_suffix -%}
+                      {%- assign sibling = all_products[sibling_handle] -%}
+
+                      {%- if sibling.id != blank -%}
+                        {%- liquid
+                          if sibling.id == product.id
+                            assign selected = true
+                          else
+                            assign selected = false
+                          endif
+                        -%}
+                        {%- render 'option-value', type: 'swatch', url: sibling.url, label: color_names[forloop.index0], selected: selected, show_tooltip: true, id_prefix: 'color-sibling' -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
+
           {%- when 'product_variations' -%}
             {%- liquid
               assign contains_product = false

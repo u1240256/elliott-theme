@@ -117,7 +117,8 @@
           "circle_button_icon": "#231f20"
         }
       }
-    }
+    },
+    "color_swatch_config": "Baby Bear Black:#2b2829\nCozy Charcoal:#5b5856\nSnuggle White:#fbf8f3\nPine Green:#43604b\nSweet Pea Blush:#efcfc6\nLadybug Red:#b23b33\nTeddy Bear Brown:#8b6142\nLittle Sailor Navy:#263552\nBaby Sunshine Yellow:#f3db8f\nBaby Rose:#dba3a9"
   },
   "installed_preset_name": "Prestige",
   "presets": {
