@@ -99,26 +99,31 @@
   text-transform: uppercase;
 }
 
-/* Homepage: keep the centered brand row solid; only the navigation overlays the hero. */
-:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) {
-  isolation: isolate;
-}
+/* Homepage: a solid brand row with a separate navigation strip over the hero. */
+@media screen and (min-width: 1000px) {
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header {
+    --header-grid: "search-start logo secondary-nav" / minmax(0, 1fr) auto minmax(0, 1fr);
+    margin-block-end: 0;
+    background: #ffffff;
+  }
 
-:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open]))::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: 0 0 auto;
-  height: calc(var(--header-logo-width) * .35 + var(--header-padding-block) * 2);
-  background: #ffffff;
-}
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav {
+    position: absolute;
+    z-index: 2;
+    inset-block-start: 100%;
+    inset-inline: 0;
+    justify-content: center;
+    padding: 1rem var(--container-gutter);
+    color: #ffffff;
+    background: rgb(35 31 32 / .64);
+    transition: background .2s ease, color .2s ease;
+  }
 
-:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) .header__logo-image {
-  filter: none;
-}
-
-:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) :is(.header__logo, .header__search-start, .header__secondary-nav) {
-  color: #231f20;
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header__primary-nav:hover,
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid .header__primary-nav {
+    color: #231f20;
+    background: #ffffff;
+  }
 }
 
 @media screen and (min-width: 1000px) {
