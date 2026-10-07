@@ -239,11 +239,7 @@
   border-color: #b47b2b;
 }
 
-/* Product gallery: stock photo padding + desktop crossfade (proof of concept on knotted gowns) */
-product-gallery[data-crossfade] .product-gallery__image-list {
-  position: relative;
-}
-
+/* Product gallery: stock photo padding (proof of concept on knotted gowns) */
 .product-gallery__media--stock > img,
 .product-gallery__thumbnail--stock > img {
   aspect-ratio: var(--stock-aspect-ratio, 1);
@@ -251,14 +247,7 @@ product-gallery[data-crossfade] .product-gallery__image-list {
   height: auto;
 }
 
-.product-gallery__crossfade {
-  position: absolute;
-  z-index: 1;
-  object-fit: cover;
-  pointer-events: none;
-  transition: opacity 0.5s ease;
-}
-
-.product-gallery__crossfade.is-fading {
-  opacity: 0;
+/* Keeps snapping off while the thumbnail slide animation runs (the theme resets inline snap styles on every scroll) */
+.product-gallery__carousel.is-sliding {
+  scroll-snap-type: none !important;
 }

@@ -99,7 +99,7 @@
   form="{{ product_form_id }}"
   filtered-indexes="{{ filtered_indexes | json }}"
   {% if gallery_stock_images.size > 0 %}
-    data-crossfade
+    data-slide-transition
     style="--stock-aspect-ratio: {{ product.featured_media.aspect_ratio | default: 1 }}"
   {% endif %}
   {% if enable_media_autoplay %}
@@ -396,16 +396,19 @@
 {%- if gallery_stock_images.size > 0 -%}
   <script>
     {%- comment -%}
-      On desktop, crossfade between images when a thumbnail is clicked instead of sliding the carousel. The click is
-      intercepted before the theme's own thumbnail handler, the carousel jumps instantly, and a snapshot of the previous
-      image fades out on top of it.
+      On desktop, clicking a thumbnail glides the image strip sideways with a fast-start, soft-landing ease (like
+      flipping to the next page) instead of the browser's default smooth scroll. Snapping is paused while the strip
+      moves, then the carousel is re-synced on the target slide so the theme's own state stays correct.
     {%- endcomment -%}
-    if (!window.productGalleryCrossfade) {
-      window.productGalleryCrossfade = true;
+    if (!window.productGallerySlide) {
+      window.productGallerySlide = true;
 
-      document.addEventListener('click', async (event) => {
+      const duration = 750;
+      const easeOutExpo = (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+
+      document.addEventListener('click', (event) => {
         const thumbnail = event.target.closest('.product-gallery__thumbnail');
-        const gallery = thumbnail?.closest('product-gallery[data-crossfade]');
+        const gallery = thumbnail?.closest('product-gallery[data-slide-transition]');
 
         if (!gallery || !window.matchMedia('(min-width: 1000px) and (prefers-reduced-motion: no-preference)').matches) {
           return;
@@ -414,43 +417,40 @@
         const navigation = thumbnail.closest('product-gallery-navigation');
         const carousel = gallery.carousel;
         const index = navigation.items.indexOf(thumbnail);
-        const fromImage = carousel.selectedCell?.querySelector(':scope > img');
-        const toImage = carousel.cells[index]?.querySelector(':scope > img');
+        const cell = carousel.cells[index];
 
-        if (index < 0 || !fromImage || !toImage || carousel.cells[index] === carousel.selectedCell) {
+        if (index < 0 || !cell || !carousel.isScrollable) {
           return;
         }
 
         event.stopPropagation();
-
-        const container = gallery.querySelector('.product-gallery__image-list');
-        const containerRect = container.getBoundingClientRect();
-        const fromRect = fromImage.getBoundingClientRect();
-
-        container.querySelectorAll('.product-gallery__crossfade').forEach((overlay) => overlay.remove());
-
-        const overlay = new Image();
-        overlay.src = fromImage.currentSrc || fromImage.src;
-        overlay.alt = '';
-        overlay.className = 'product-gallery__crossfade';
-        Object.assign(overlay.style, {
-          top: `${fromRect.top - containerRect.top}px`,
-          left: `${fromRect.left - containerRect.left}px`,
-          width: `${fromRect.width}px`,
-          height: `${fromRect.height}px`
-        });
-        container.append(overlay);
-
-        toImage.loading = 'eager';
-        carousel.select(index, { instant: true });
         navigation.onNavigationChange(index);
+        cell.querySelectorAll('img[loading="lazy"]').forEach((image) => (image.loading = 'eager'));
 
-        await Promise.race([toImage.decode().catch(() => {}), new Promise((resolve) => setTimeout(resolve, 600))]);
+        const from = carousel.scrollLeft;
+        const to = cell.offsetLeft + cell.offsetWidth / 2 - carousel.clientWidth / 2;
+        const animation = (carousel.slideAnimation = {});
+        const start = performance.now();
 
-        requestAnimationFrame(() => {
-          overlay.classList.add('is-fading');
-          overlay.addEventListener('transitionend', () => overlay.remove(), { once: true });
-        });
+        carousel.classList.add('is-sliding');
+
+        const step = (now) => {
+          if (carousel.slideAnimation !== animation) {
+            return;
+          }
+
+          const progress = Math.min((now - start) / duration, 1);
+          carousel.scrollLeft = from + (to - from) * easeOutExpo(progress);
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          } else {
+            carousel.classList.remove('is-sliding');
+            carousel.select(index, { instant: true });
+          }
+        };
+
+        requestAnimationFrame(step);
       }, { capture: true });
     }
   </script>
