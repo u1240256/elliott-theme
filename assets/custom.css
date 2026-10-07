@@ -135,6 +135,11 @@
     filter: brightness(0) invert(1);
   }
 
+  body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header:not(:hover, .is-solid) .header__primary-nav-item > :is(a, details > summary) {
+    color: #ffffff;
+    text-transform: uppercase;
+  }
+
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header:hover,
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header.is-solid {
     color: #231f20;
