@@ -75,6 +75,11 @@
     scroll-behavior: auto !important;
   }
 
+  /* Colorblind filters (daltonization, Machado 2009 matrices) recolor the page itself so they work in every browser */
+  html.a11y-cf-protan { filter: url(#a11y-cf-protan); }
+  html.a11y-cf-deutan { filter: url(#a11y-cf-deutan); }
+  html.a11y-cf-tritan { filter: url(#a11y-cf-tritan); }
+
   /* Reading aids follow the pointer; they never block clicks */
   .a11y-guide-line,
   .a11y-guide-mask {
@@ -279,6 +284,42 @@
 
   .a11y__steps span.is-on { background: var(--a11y-gold); }
 
+  .a11y__filters {
+    grid-column: span 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    min-height: 112px;
+    padding: 12px;
+    border-radius: 10px;
+    background: var(--a11y-tile);
+  }
+
+  .a11y__filters-title { margin: 0; font-size: 14px; font-weight: 700; text-align: center; }
+
+  .a11y__pills { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+
+  .a11y__pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--a11y-ink);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .a11y__pill:hover { border-color: var(--a11y-line); }
+
+  .a11y__pill[aria-pressed="true"] { border-color: var(--a11y-gold); background: #f6ecdc; }
+
+  .a11y__pill-swatch { flex: none; width: 16px; height: 16px; border-radius: 50%; }
+
   .a11y__structure {
     margin-top: 14px;
     padding: 14px 16px;
@@ -348,6 +389,18 @@
   <div class="a11y-guide-line" id="a11y-guide-line" hidden></div>
   <div class="a11y-guide-mask" id="a11y-guide-mask" hidden></div>
   <div class="a11y-tip" id="a11y-tip" aria-hidden="true" hidden></div>
+
+  <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+    <filter id="a11y-cf-protan" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0.4789 0.4769 0.0442 0 0  0.5973 -0.6887 1.0914 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="a11y-cf-deutan" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0.1628 0.7250 0.1122 0 0  0.4547 -0.6454 1.1907 0 0  0 0 0 1 0"/>
+    </filter>
+    <filter id="a11y-cf-tritan" color-interpolation-filters="linearRGB">
+      <feColorMatrix type="matrix" values="0.7412 -0.4072 0.6660 0 0  0.0751 0.5852 0.3397 0 0  0 0 1 0 0  0 0 0 1 0"/>
+    </filter>
+  </svg>
 
   <button type="button" class="a11y__launcher" aria-controls="a11y-panel" aria-expanded="false">
     <span class="sr-only">Accessibility options</span>
@@ -470,10 +523,33 @@
           <span class="a11y__steps" aria-hidden="true"><span></span><span></span></span>
         </button>
 
-        <button type="button" class="a11y__option" data-a11y-key="grayscale" aria-pressed="false">
-          <svg {{ icon_attrs }}><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>
-          Grayscale
+        <button type="button" class="a11y__option" data-a11y-key="saturation" data-a11y-levels="2" aria-pressed="false">
+          <svg {{ icon_attrs }}><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/><path d="M15 14a3 3 0 0 1-3 3"/></svg>
+          Saturation
+          <span class="a11y__steps" aria-hidden="true"><span></span><span></span></span>
         </button>
+
+        <div class="a11y__filters" role="group" aria-labelledby="a11y-filters-title">
+          <p class="a11y__filters-title" id="a11y-filters-title">Color Filters</p>
+          <div class="a11y__pills">
+            <button type="button" class="a11y__pill" data-a11y-filter="grayscale" aria-pressed="false">
+              <span class="a11y__pill-swatch" style="background: #9a9a9e" aria-hidden="true"></span>
+              Grayscale
+            </button>
+            <button type="button" class="a11y__pill" data-a11y-filter="protan" aria-pressed="false">
+              <span class="a11y__pill-swatch" style="background: linear-gradient(90deg, #e53935 50%, #76ff4d 50%)" aria-hidden="true"></span>
+              Red/Green
+            </button>
+            <button type="button" class="a11y__pill" data-a11y-filter="tritan" aria-pressed="false">
+              <span class="a11y__pill-swatch" style="background: linear-gradient(90deg, #1515ff 50%, #ffff4d 50%)" aria-hidden="true"></span>
+              Blue/Yellow
+            </button>
+            <button type="button" class="a11y__pill" data-a11y-filter="deutan" aria-pressed="false">
+              <span class="a11y__pill-swatch" style="background: linear-gradient(90deg, #76ff4d 50%, #e53935 50%)" aria-hidden="true"></span>
+              Green/Red
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -504,6 +580,13 @@
       settings = JSON.parse(localStorage.getItem(storageKey)) || {};
     } catch (error) {}
 
+    // Grayscale used to be its own toggle; it now lives under Color Filters
+    if (settings.grayscale) settings['color-filter'] = 'grayscale';
+    delete settings.grayscale;
+
+    const filterKeys = ['invert', 'contrast', 'brightness', 'saturation', 'color-filter'];
+    const pills = Array.from(widget.querySelectorAll('[data-a11y-filter]'));
+
     const save = () => {
       try {
         localStorage.setItem(storageKey, JSON.stringify(settings));
@@ -514,16 +597,21 @@
       root.className = root.className.replace(/\ba11y-[\w-]+/g, '').trim();
 
       Object.entries(settings).forEach(([key, value]) => {
-        if (value && !['invert', 'contrast', 'brightness', 'grayscale'].includes(key)) {
+        if (value && !filterKeys.includes(key)) {
           root.classList.add(value === true ? `a11y-${key}` : `a11y-${key}-${value}`);
         }
       });
+
+      const colorFilter = settings['color-filter'];
+      if (colorFilter && colorFilter !== 'grayscale') root.classList.add(`a11y-cf-${colorFilter}`);
+      pills.forEach((pill) => pill.setAttribute('aria-pressed', pill.dataset.a11yFilter === colorFilter ? 'true' : 'false'));
 
       const filters = [];
       if (settings.invert) filters.push('invert(1) hue-rotate(180deg)');
       if (settings.contrast) filters.push(`contrast(${settings.contrast === 1 ? 1.3 : 1.7})`);
       if (settings.brightness) filters.push(`brightness(${settings.brightness === 1 ? 1.25 : 0.8})`);
-      if (settings.grayscale) filters.push('grayscale(1)');
+      if (settings.saturation) filters.push(`saturate(${settings.saturation === 1 ? 0.5 : 2})`);
+      if (colorFilter === 'grayscale') filters.push('grayscale(1)');
       filterLayer.style.backdropFilter = filterLayer.style.webkitBackdropFilter = filters.join(' ');
       filterLayer.hidden = filters.length === 0;
       guideLine.hidden = !settings['reading-line'];
@@ -558,6 +646,16 @@
         }
 
         Object.keys(settings).forEach((name) => !settings[name] && delete settings[name]);
+        save();
+        apply();
+      });
+    });
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const value = pill.dataset.a11yFilter;
+        if (settings['color-filter'] === value) delete settings['color-filter'];
+        else settings['color-filter'] = value;
         save();
         apply();
       });
