@@ -35,7 +35,7 @@
       "settings": {
         "color_scheme": "scheme-announcement",
         "enable_sticky": false,
-        "scroll_speed": 0.08,
+        "scroll_speed": 0.04,
         "desktop_font_size": 13,
         "mobile_font_size": 11
       }

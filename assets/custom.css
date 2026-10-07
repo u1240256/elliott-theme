@@ -71,6 +71,12 @@
   color: rgb(var(--header-highlight-color));
 }
 
+/* Keep menu labels uppercase in both transparent and solid header states. */
+.shopify-section--header .header__primary-nav,
+.shopify-section--header .header__primary-nav :is(a, summary, [data-title]) {
+  text-transform: uppercase !important;
+}
+
 @media screen and (min-width: 1000px) {
   .header__primary-nav {
     padding-block-start: 1rem;
@@ -127,7 +133,7 @@
   body:has(main > .shopify-section--hero-gallery) .shopify-section--header .header {
     margin-block-end: calc(-1 * var(--header-height, 0px));
     color: #ffffff;
-    background: rgb(35 31 32 / .64);
+    background: rgb(65 63 64 / .56);
     transition: background .2s ease, color .2s ease;
   }
 
