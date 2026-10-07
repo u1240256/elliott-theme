@@ -99,9 +99,26 @@
   text-transform: uppercase;
 }
 
-/* Keep the centered brand mark legible while the home hero sits behind the header. */
+/* Homepage: keep the centered brand row solid; only the navigation overlays the hero. */
+:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) {
+  isolation: isolate;
+}
+
+:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open]))::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: calc(var(--header-logo-width) * .35 + var(--header-padding-block) * 2);
+  background: #ffffff;
+}
+
 :has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) .header__logo-image {
-  filter: brightness(0) invert(1);
+  filter: none;
+}
+
+:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) :is(.header__logo, .header__search-start, .header__secondary-nav) {
+  color: #231f20;
 }
 
 @media screen and (min-width: 1000px) {
