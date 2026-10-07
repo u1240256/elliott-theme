@@ -5,6 +5,11 @@
   - custom.units_sold (integer). Only shown when set, so no number is ever invented.
 {%- endcomment -%}
 {%- assign products = section.settings.collection.products -%}
+
+{%- comment -%}"Mix it up": see snippets/varied-products.{%- endcomment -%}
+{%- if section.settings.vary_products -%}
+  {%- capture picked -%}{%- render 'varied-products', products: products, count: section.settings.products_count -%}{%- endcapture -%}
+{%- endif -%}
 {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
 
 <div class="product-ticker color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
@@ -19,7 +24,18 @@
   <marquee-text speed="{{ section.settings.scrolling_speed }}" direction="left" pause-on-hover class="scrolling-content">
     <div class="scrolling-content__item">
       {%- if section.settings.collection != blank -%}
-        {%- for product in products limit: section.settings.products_count -%}
+        {%- liquid
+          if section.settings.vary_products
+            assign loop_limit = 50
+          else
+            assign loop_limit = section.settings.products_count
+          endif
+        -%}
+        {%- for product in products limit: loop_limit -%}
+          {%- if section.settings.vary_products -%}
+            {%- assign picked_key = ',' | append: product.handle | append: ',' -%}
+            {%- unless picked contains picked_key -%}{%- continue -%}{%- endunless -%}
+          {%- endif -%}
           {%- assign ticker_label = product.metafields.custom.ticker_label.value | default: section.settings.default_label -%}
           {%- assign units_sold = product.metafields.custom.units_sold.value -%}
 
@@ -156,6 +172,13 @@
       "max": 20,
       "step": 1,
       "default": 10
+    },
+    {
+      "type": "checkbox",
+      "id": "vary_products",
+      "label": "Mix it up",
+      "info": "Prefer one product per product type and per color",
+      "default": true
     },
     {
       "type": "text",

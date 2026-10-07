@@ -18,10 +18,11 @@
         <li class="circle-links__item" {{ block.shopify_attributes }}>
           <a href="{{ item_link | default: '#' }}" class="circle-links__link group">
             <span class="circle-links__media">
-              {%- if item_image != blank -%}
-                {{- item_image | image_url: width: 400 | image_tag: sizes: '(max-width: 699px) 100px, 160px', widths: '100,200,300,400', class: 'zoom-image group-hover:zoom', loading: 'lazy' -}}
-              {%- elsif block.settings.swatch_color != blank -%}
+              {%- comment -%}An uploaded image wins, then the swatch color, then the collection's own image.{%- endcomment -%}
+              {%- if block.settings.image == blank and block.settings.swatch_color != blank -%}
                 <span class="circle-links__swatch" style="background: {{ block.settings.swatch_color }}"></span>
+              {%- elsif item_image != blank -%}
+                {{- item_image | image_url: width: 400 | image_tag: sizes: '(max-width: 699px) 100px, 160px', widths: '100,200,300,400', class: 'zoom-image group-hover:zoom', loading: 'lazy' -}}
               {%- else -%}
                 {{- 'image' | placeholder_svg_tag: 'placeholder' -}}
               {%- endif -%}

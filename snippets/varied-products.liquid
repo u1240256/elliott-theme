@@ -1,0 +1,69 @@
+{%- comment -%}
+  Picks a varied set of products from a list so a row doesn't repeat the same garment (and photo) over and over.
+  First pass: one product per product type and per color (the first part of a "Color – Fabric – Type" title).
+  Second pass: fill the remaining slots with one product per type, any color.
+  Third pass: if the list has too few types, top up with any remaining products in list order.
+  Outputs the picked handles as ",handle-a,handle-b,", so callers capture it and test `picked contains ',handle,'`.
+
+  @param products {Array} - Products to choose from (the first 50 are considered)
+  @param count {Number} - How many products to pick
+
+  @example
+  {%- capture picked -%}{%- render 'varied-products', products: collection.products, count: 8 -%}{%- endcapture -%}
+{%- endcomment -%}
+{%- liquid
+  assign picked = ','
+  assign picked_count = 0
+  assign seen_types = '|'
+  assign seen_colors = '|'
+
+  for product in products limit: 50
+    if picked_count >= count
+      break
+    endif
+
+    assign color = product.title | split: ' – ' | first
+    assign type_key = '|' | append: product.type | append: '|'
+    assign color_key = '|' | append: color | append: '|'
+
+    if seen_types contains type_key or seen_colors contains color_key
+      continue
+    endif
+
+    assign seen_types = seen_types | append: product.type | append: '|'
+    assign seen_colors = seen_colors | append: color | append: '|'
+    assign picked = picked | append: product.handle | append: ','
+    assign picked_count = picked_count | plus: 1
+  endfor
+
+  for product in products limit: 50
+    if picked_count >= count
+      break
+    endif
+
+    assign type_key = '|' | append: product.type | append: '|'
+    assign handle_key = ',' | append: product.handle | append: ','
+
+    if seen_types contains type_key or picked contains handle_key
+      continue
+    endif
+
+    assign seen_types = seen_types | append: product.type | append: '|'
+    assign picked = picked | append: product.handle | append: ','
+    assign picked_count = picked_count | plus: 1
+  endfor
+
+  for product in products limit: 50
+    if picked_count >= count
+      break
+    endif
+
+    assign handle_key = ',' | append: product.handle | append: ','
+    unless picked contains handle_key
+      assign picked = picked | append: product.handle | append: ','
+      assign picked_count = picked_count | plus: 1
+    endunless
+  endfor
+
+  echo picked
+-%}

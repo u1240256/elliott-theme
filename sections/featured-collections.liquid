@@ -84,8 +84,24 @@
                   {%- assign should_reveal = true -%}
                 {%- endif -%}
 
-                {%- for product in block.settings.collection.products limit: block.settings.products_count -%}
-                  {%- render 'product-card', product: product, reveal: should_reveal, position: forloop.index, hide_product_information: section.settings.hide_product_information, block: block -%}
+                {%- liquid
+                  assign loop_limit = block.settings.products_count
+                  if block.settings.vary_products
+                    assign loop_limit = 50
+                    capture picked
+                      render 'varied-products', products: block.settings.collection.products, count: block.settings.products_count
+                    endcapture
+                  endif
+                  assign card_position = 0
+                -%}
+
+                {%- for product in block.settings.collection.products limit: loop_limit -%}
+                  {%- if block.settings.vary_products -%}
+                    {%- assign picked_key = ',' | append: product.handle | append: ',' -%}
+                    {%- unless picked contains picked_key -%}{%- continue -%}{%- endunless -%}
+                  {%- endif -%}
+                  {%- assign card_position = card_position | plus: 1 -%}
+                  {%- render 'product-card', product: product, reveal: should_reveal, position: card_position, hide_product_information: section.settings.hide_product_information, block: block -%}
                 {%- else -%}
                   {%- for i in (1..block.settings.products_count) -%}
                     {%- render 'product-card-placeholder', reveal: should_reveal, loop_index: forloop.index0, hide_product_information: section.settings.hide_product_information -%}
@@ -342,6 +358,13 @@
           "max": 50,
           "label": "t:global.product_list.products_to_show",
           "default": 8
+        },
+        {
+          "type": "checkbox",
+          "id": "vary_products",
+          "label": "Mix it up",
+          "info": "Prefer one product per product type and per color",
+          "default": false
         },
         {
           "type": "inline_richtext",

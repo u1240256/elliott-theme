@@ -198,7 +198,8 @@
                         {%- render 'mega-menu', link: link, block: mega_menu_block -%}
                       {%- else -%}
                         <ul class="header__dropdown-menu {% if link.levels <= 1 %}header__dropdown-menu--restrictable{% endif %} unstyled-list" role="list">
-                          {%- for sub_link in link.links -%}
+                          {%- assign sorted_sub_links = link.links | sort_natural: 'title' -%}
+                          {%- for sub_link in sorted_sub_links -%}
                             <li>
                               {%- if sub_link.levels == 0 -%}
                                 <a href="{{ sub_link.url }}" class="link-faded-reverse" {% if sub_link.current %}aria-current="page"{% endif %}>{{ sub_link.title }}</a>
@@ -213,7 +214,8 @@
                                     </summary>
 
                                     <ul class="header__dropdown-menu unstyled-list" role="list">
-                                      {%- for sub_sub_link in sub_link.links -%}
+                                      {%- assign sorted_sub_sub_links = sub_link.links | sort_natural: 'title' -%}
+                                      {%- for sub_sub_link in sorted_sub_sub_links -%}
                                         <li>
                                           <a href="{{ sub_sub_link.url }}" class="link-faded-reverse" {% if sub_sub_link.current %}aria-current="page"{% endif %}>{{ sub_sub_link.title }}</a>
                                         </li>
