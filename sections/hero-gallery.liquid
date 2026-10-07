@@ -375,6 +375,8 @@
           ['mouseenter', 'focusin'].forEach((type) => this.addEventListener(type, () => this.stop()));
           ['mouseleave', 'focusout'].forEach((type) => this.addEventListener(type, () => this.start()));
           this.start();
+          this.onAccessibilityChange = () => this.start();
+          document.addEventListener('a11y:change', this.onAccessibilityChange);
         }
 
         this.addEventListener('shopify:block:select', (event) => {
@@ -386,11 +388,12 @@
       disconnectedCallback() {
         this.stop();
         this.resizeObserver?.disconnect();
+        document.removeEventListener('a11y:change', this.onAccessibilityChange);
       }
 
       start() {
-        if (!this.speed) return;
         this.stop();
+        if (!this.speed || document.documentElement.classList.contains('a11y-stop-motion')) return;
         this.timer = setInterval(() => this.go(this.position + 1), this.speed);
       }
 

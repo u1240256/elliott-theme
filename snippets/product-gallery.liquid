@@ -410,7 +410,11 @@
         const thumbnail = event.target.closest('.product-gallery__thumbnail');
         const gallery = thumbnail?.closest('product-gallery[data-slide-transition]');
 
-        if (!gallery || !window.matchMedia('(min-width: 1000px) and (prefers-reduced-motion: no-preference)').matches) {
+        if (
+          !gallery ||
+          document.documentElement.classList.contains('a11y-stop-motion') ||
+          !window.matchMedia('(min-width: 1000px) and (prefers-reduced-motion: no-preference)').matches
+        ) {
           return;
         }
 

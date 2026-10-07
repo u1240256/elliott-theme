@@ -66,6 +66,17 @@
 
     {{- 'theme.css' | asset_url | stylesheet_tag: preload: true -}}
     {{- 'custom.css' | asset_url | stylesheet_tag -}}
+
+    <script>
+      {%- comment -%}Apply saved accessibility settings before first paint (see snippets/accessibility-widget.liquid){%- endcomment -%}
+      try {
+        Object.entries(JSON.parse(localStorage.getItem('a11y-settings')) || {}).forEach(([key, value]) => {
+          if (value && !['invert', 'contrast', 'brightness', 'grayscale'].includes(key)) {
+            document.documentElement.classList.add(value === true ? `a11y-${key}` : `a11y-${key}-${value}`);
+          }
+        });
+      } catch (error) {}
+    </script>
   </head>
 
   {% liquid
@@ -121,5 +132,7 @@
         {%- sections 'footer-group' -%}
       {%- endif -%}
     </main>
+
+    {%- render 'accessibility-widget' -%}
   </body>
 </html>
