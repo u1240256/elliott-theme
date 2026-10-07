@@ -6,7 +6,7 @@
 <div class="promo-banner {% unless section.settings.remove_vertical_spacing %}section-spacing{% endunless %}">
   <div class="{% if section.settings.full_width %}promo-banner__inner--full{% else %}container container--lg{% endif %}">
     {%- if section.settings.link != blank -%}
-      <a href="{{ section.settings.link }}" class="promo-banner__link" aria-label="{{ label | strip | escape }}">
+      <a href="{{ section.settings.link }}" class="promo-banner__link" {% if section.settings.image != blank %}aria-label="{{ label | strip | escape }}"{% endif %}>
     {%- endif -%}
 
     {%- if section.settings.image == blank -%}

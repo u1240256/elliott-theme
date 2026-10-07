@@ -37,7 +37,7 @@
         "enable_sticky": false,
         "scroll_speed": 0.04,
         "desktop_font_size": 13,
-        "mobile_font_size": 11
+        "mobile_font_size": 12
       }
     },
     "header": {

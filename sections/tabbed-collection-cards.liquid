@@ -73,10 +73,10 @@
             <a href="{{ card_link | default: '#' }}" class="tabbed-cards__card group" {{ block.shopify_attributes }}>
               <div class="tabbed-cards__media">
                 {%- if card_image != blank -%}
-                  {{- card_image | image_url: width: 900 | image_tag: sizes: '(max-width: 699px) 70vw, 25vw', widths: '300,400,500,600,700,800,900', class: 'zoom-image group-hover:zoom', loading: 'lazy' -}}
+                  {{- card_image | image_url: width: 900 | image_tag: sizes: '(max-width: 699px) 70vw, 25vw', widths: '300,400,500,600,700,800,900', class: 'zoom-image group-hover:zoom', loading: 'lazy', alt: '' -}}
                 {%- elsif stock_handles contains block.settings.collection.handle -%}
                   {%- assign stock_name = 'stock-card-' | append: block.settings.collection.handle -%}
-                  {%- render 'stock-image', name: stock_name, class: 'zoom-image group-hover:zoom', alt: card_label -%}
+                  {%- render 'stock-image', name: stock_name, class: 'zoom-image group-hover:zoom' -%}
                 {%- else -%}
                   {{- 'collection-1' | placeholder_svg_tag: 'placeholder' -}}
                 {%- endif -%}
@@ -207,9 +207,16 @@
       }
 
       onKeyDown(event, tab) {
-        if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
-        const step = event.key === 'ArrowRight' ? 1 : -1;
-        const next = this.tabs[(this.tabs.indexOf(tab) + step + this.tabs.length) % this.tabs.length];
+        const index = this.tabs.indexOf(tab);
+        const targets = {
+          ArrowRight: (index + 1) % this.tabs.length,
+          ArrowLeft: (index - 1 + this.tabs.length) % this.tabs.length,
+          Home: 0,
+          End: this.tabs.length - 1
+        };
+        if (!(event.key in targets)) return;
+        event.preventDefault();
+        const next = this.tabs[targets[event.key]];
         this.select(next);
         next.focus();
       }

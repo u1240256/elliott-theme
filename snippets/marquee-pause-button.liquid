@@ -1,0 +1,11 @@
+{%- comment -%}
+  Pause/play button for a scrolling strip. Behaviour lives in snippets/marquee-controls.
+
+  @param target {String} - id of the <marquee-text> element it controls
+  @param class {String} - [Optional] extra classes
+{%- endcomment -%}
+<button type="button" class="marquee-toggle {{ class }}" data-marquee-toggle aria-controls="{{ target }}" aria-pressed="false">
+  <span class="sr-only">Pause scrolling</span>
+  <svg class="marquee-toggle__pause" aria-hidden="true" focusable="false" viewBox="0 0 10 10" fill="currentColor"><rect x="1.5" y="1" width="2.5" height="8"/><rect x="6" y="1" width="2.5" height="8"/></svg>
+  <svg class="marquee-toggle__play" aria-hidden="true" focusable="false" viewBox="0 0 10 10" fill="currentColor"><path d="M2.5 1l6.5 4-6.5 4z"/></svg>
+</button>

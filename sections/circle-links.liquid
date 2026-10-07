@@ -22,7 +22,7 @@
               {%- if block.settings.image == blank and block.settings.swatch_color != blank -%}
                 <span class="circle-links__swatch" style="background: {{ block.settings.swatch_color }}"></span>
               {%- elsif item_image != blank -%}
-                {{- item_image | image_url: width: 400 | image_tag: sizes: '(max-width: 699px) 100px, 160px', widths: '100,200,300,400', class: 'zoom-image group-hover:zoom', loading: 'lazy' -}}
+                {{- item_image | image_url: width: 400 | image_tag: sizes: '(max-width: 699px) 100px, 160px', widths: '100,200,300,400', class: 'zoom-image group-hover:zoom', loading: 'lazy', alt: '' -}}
               {%- else -%}
                 {{- 'image' | placeholder_svg_tag: 'placeholder' -}}
               {%- endif -%}
@@ -102,7 +102,7 @@
 
   .circle-links__label {
     font-family: var(--text-font-family);
-    font-size: .6875rem;
+    font-size: .75rem;
     font-weight: 500;
     line-height: 1.5;
     letter-spacing: .15em;

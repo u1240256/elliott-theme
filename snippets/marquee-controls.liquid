@@ -1,0 +1,88 @@
+{%- comment -%}
+  Accessibility controls for every <marquee-text> scrolling strip (announcement bar, product ticker). Rendered once
+  from layout/theme.liquid. Each strip gets a pause button via snippets/marquee-pause-button.
+
+  - Pause button: visitors on touch or keyboard can stop the motion (WCAG 2.2.2); hover pause alone is not enough.
+  - Paused by default for visitors who ask their device to reduce motion, or who pick "Stop Animations" in the
+    accessibility widget. The strips are animated by script, so CSS alone can't stop them.
+  - The theme loops a strip by cloning its content with aria-hidden; the clones are made inert so their links
+    are not reachable with Tab.
+{%- endcomment -%}
+
+<style>
+  .marquee-toggle {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+    cursor: pointer;
+    opacity: .85;
+  }
+
+  .marquee-toggle:hover { opacity: 1; }
+
+  .marquee-toggle:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+
+  .marquee-toggle svg { width: .625rem; height: .625rem; }
+
+  .marquee-toggle .marquee-toggle__play,
+  .marquee-toggle[aria-pressed="true"] .marquee-toggle__pause { display: none; }
+
+  .marquee-toggle[aria-pressed="true"] .marquee-toggle__play { display: block; }
+</style>
+
+<script>
+  (() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const marquees = () => Array.from(document.querySelectorAll('marquee-text'));
+
+    const isPaused = (marquee) => {
+      if (document.documentElement.classList.contains('a11y-stop-motion')) return true;
+      if (marquee.dataset.paused) return marquee.dataset.paused === 'true';
+      return reduceMotion.matches;
+    };
+
+    const sync = (marquee) => {
+      marquee.querySelectorAll(':scope > [aria-hidden="true"]').forEach((clone) => (clone.inert = true));
+
+      const paused = isPaused(marquee);
+      const scroller = marquee.shadowRoot?.querySelector('[part="scroller"]');
+      scroller?.getAnimations().forEach((animation) => (paused || marquee.matches(':hover') ? animation.pause() : animation.play()));
+
+      if (marquee.id) {
+        document.querySelectorAll(`[data-marquee-toggle][aria-controls="${marquee.id}"]`).forEach((button) => {
+          button.setAttribute('aria-pressed', paused ? 'true' : 'false');
+        });
+      }
+    };
+
+    marquees().forEach((marquee) => {
+      // The theme starts the animation lazily (when the strip nears the viewport) and appends the clones then
+      new MutationObserver(() => sync(marquee)).observe(marquee, { childList: true });
+      // Runs after the theme's own hover handler, which would otherwise resume a paused strip
+      marquee.addEventListener('pointerleave', () => sync(marquee));
+      sync(marquee);
+    });
+
+    document.addEventListener('click', (event) => {
+      const button = event.target.closest('[data-marquee-toggle]');
+      const marquee = button && document.getElementById(button.getAttribute('aria-controls'));
+      if (!marquee) return;
+
+      marquee.dataset.paused = isPaused(marquee) ? 'false' : 'true';
+      sync(marquee);
+    });
+
+    document.addEventListener('a11y:change', () => marquees().forEach(sync));
+    reduceMotion.addEventListener('change', () => marquees().forEach(sync));
+  })();
+</script>

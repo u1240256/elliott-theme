@@ -140,6 +140,8 @@
         id="{{ product_gallery_carousel_id }}"
         class="product-gallery__carousel scroll-area {% unless mobile_controls == 'arrows' %}full-bleed md:unbleed{% endunless %}"
         role="region"
+        tabindex="0"
+        aria-label="{{ product.title | default: 'Product' | escape }} images"
       >
         {%- if product != blank -%}
           {%- liquid
@@ -213,7 +215,7 @@
               role="group"
               aria-label="{{ 'general.accessibility.item_nth_of_count' | t: index: stock_position, count: gallery_media_count }}"
             >
-              {%- render 'stock-image', name: stock_name, alt: product.title -%}
+              {%- render 'stock-image', name: stock_name -%}
             </div>
           {%- endfor -%}
         {%- else -%}

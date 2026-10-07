@@ -21,7 +21,9 @@
     </p>
   {%- endif -%}
 
-  <marquee-text speed="{{ section.settings.scrolling_speed }}" direction="left" pause-on-hover class="scrolling-content">
+  {%- assign marquee_id = 'product-ticker-marquee-' | append: section.id -%}
+  {%- render 'marquee-pause-button', target: marquee_id, class: 'product-ticker__toggle' -%}
+  <marquee-text id="{{ marquee_id }}" speed="{{ section.settings.scrolling_speed }}" direction="left" pause-on-hover class="scrolling-content">
     <div class="scrolling-content__item">
       {%- if section.settings.collection != blank -%}
         {%- liquid
@@ -41,7 +43,7 @@
 
           <a href="{{ product.url }}" class="product-ticker__item">
             {%- if product.featured_media -%}
-              {{- product.featured_media | image_url: width: 100 | image_tag: width: 50, height: 50, sizes: '50px', widths: '50,100', class: 'product-ticker__image', loading: 'lazy' -}}
+              {{- product.featured_media | image_url: width: 100 | image_tag: width: 50, height: 50, sizes: '50px', widths: '50,100', class: 'product-ticker__image', loading: 'lazy', alt: '' -}}
             {%- endif -%}
 
             <span class="product-ticker__info">
@@ -72,13 +74,21 @@
 {% stylesheet %}
   .product-ticker {
     --scrolling-content-content-gap: 0px;
+    position: relative;
     padding-block: .875rem;
     border-block: 1px solid rgb(var(--text-color) / .08);
   }
 
+  .product-ticker__toggle {
+    position: absolute;
+    inset-block-start: .625rem;
+    inset-inline-end: 1rem;
+    z-index: 1;
+  }
+
   .product-ticker__title {
     margin-block-end: .75rem;
-    font-size: .6875rem;
+    font-size: .75rem;
     font-weight: 600;
     letter-spacing: .2em;
     text-align: center;
@@ -115,8 +125,8 @@
   }
 
   .product-ticker__status {
-    font-size: .6875rem;
-    opacity: .75;
+    font-size: .75rem;
+    opacity: .8;
   }
 
   @media screen and (min-width: 700px) {

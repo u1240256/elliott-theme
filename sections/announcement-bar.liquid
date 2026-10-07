@@ -34,7 +34,7 @@
 
   <height-observer variable="announcement-bar">
     <div class="announcement-bar announcement-bar--marquee color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
-      <marquee-text speed="{{ section.settings.scroll_speed }}" direction="left" pause-on-hover class="announcement-bar__ticker">
+      <marquee-text id="announcement-marquee-{{ section.id }}" speed="{{ section.settings.scroll_speed }}" direction="left" pause-on-hover class="announcement-bar__ticker">
         <div class="announcement-bar__ticker-items">
         {%- for block in section.blocks -%}
           <div class="announcement-bar__message" {{ block.shopify_attributes }}>
@@ -44,6 +44,8 @@
         {%- endfor -%}
         </div>
       </marquee-text>
+      {%- assign marquee_id = 'announcement-marquee-' | append: section.id -%}
+      {%- render 'marquee-pause-button', target: marquee_id, class: 'announcement-bar__toggle' -%}
     </div>
   </height-observer>
 

@@ -8,12 +8,15 @@
 
 /* Announcement ticker: Gold Deep and white are an accessible brand-kit pairing. */
 .shopify-section--announcement-bar .announcement-bar--marquee {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 0;
 }
 
 .announcement-bar__ticker {
   display: block;
+  flex: 1;
+  min-width: 0;
   overflow: hidden;
   padding-block: .55rem;
   white-space: nowrap;
@@ -35,10 +38,16 @@
   gap: .7rem;
   margin-inline: 2.5rem;
   font-family: var(--text-font-family);
-  font-size: calc(var(--announcement-bar-font-size) * .9);
+  font-size: max(var(--announcement-bar-font-size), .75rem);
   font-weight: 500;
   letter-spacing: .18em;
   text-transform: uppercase;
+}
+
+.announcement-bar__toggle {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-inline: .5rem .75rem;
 }
 
 .announcement-bar__message .icon {
@@ -250,4 +259,10 @@
 /* Keeps snapping off while the thumbnail slide animation runs (the theme resets inline snap styles on every scroll) */
 .product-gallery__carousel.is-sliding {
   scroll-snap-type: none !important;
+}
+
+/* Product gallery is keyboard-scrollable (arrow keys once focused); show where focus is */
+.product-gallery__carousel:focus-visible {
+  outline: 2px solid #231f20;
+  outline-offset: 4px;
 }
