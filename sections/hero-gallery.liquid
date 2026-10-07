@@ -4,7 +4,7 @@
   Slides without an image fall back to the temporary stock photos (see snippets/stock-image).
 {%- endcomment -%}
 <div class="hero-gallery">
-  <hero-gallery class="hero-gallery__root{% if section.blocks.size <= 1 %} hero-gallery__root--single{% endif %}" {% if section.settings.autoplay %}data-autoplay="{{ section.settings.speed | times: 1000 }}"{% endif %} aria-roledescription="carousel" aria-label="{{ section.settings.accessibility_label | escape }}">
+  <hero-gallery allow-transparent-header class="hero-gallery__root{% if section.blocks.size <= 1 %} hero-gallery__root--single{% endif %}" {% if section.settings.autoplay %}data-autoplay="{{ section.settings.speed | times: 1000 }}"{% endif %} aria-roledescription="carousel" aria-label="{{ section.settings.accessibility_label | escape }}">
     <div class="hero-gallery__viewport">
       <div class="hero-gallery__track">
         {%- for block in section.blocks -%}
@@ -78,9 +78,9 @@
 
 {% stylesheet %}
   .hero-gallery {
-    --hero-peek: 1rem;
-    --hero-gap: .5rem;
-    padding-block: 1rem 0;
+    --hero-peek: 0px;
+    --hero-gap: 0px;
+    padding: 0;
   }
 
   .hero-gallery__root {
@@ -96,7 +96,7 @@
   .hero-gallery__track {
     display: flex;
     gap: var(--hero-gap);
-    transform: translateX(calc(var(--hero-peek) + var(--hero-gap)));
+    transform: translateX(0);
   }
 
   .hero-gallery__track.is-animating {
@@ -105,19 +105,20 @@
 
   .hero-gallery__slide {
     position: relative;
-    flex: 0 0 calc(100% - 2 * (var(--hero-peek) + var(--hero-gap)));
+    flex: 0 0 100%;
+    min-height: calc(100svh - var(--announcement-bar-height, 0px));
     aspect-ratio: 4 / 5;
-    border-radius: 16px;
+    border-radius: 0;
     overflow: hidden;
     background: #f7f0e8;
   }
 
   .hero-gallery__root--single .hero-gallery__track {
-    transform: translateX(var(--hero-peek));
+    transform: translateX(0);
   }
 
   .hero-gallery__root--single .hero-gallery__slide {
-    flex-basis: calc(100% - 2 * var(--hero-peek));
+    flex-basis: 100%;
   }
 
   .hero-gallery__media,
@@ -136,11 +137,11 @@
     position: absolute;
     inset: 0;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
-    padding: 1.5rem;
+    padding: calc(var(--header-height, 0px) + 2rem) 1.5rem 2rem;
     text-align: center;
-    background: linear-gradient(to top, rgb(247 240 232 / .95) 0%, rgb(247 240 232 / .8) 32%, rgb(247 240 232 / 0) 62%);
+    background: linear-gradient(to bottom, rgb(35 31 32 / .2), rgb(35 31 32 / .44));
   }
 
   .hero-gallery__text {
@@ -156,7 +157,7 @@
     font-weight: 500;
     letter-spacing: .18em;
     text-transform: uppercase;
-    color: #916323;
+    color: #ffffff;
   }
 
   .hero-gallery__heading {
@@ -165,14 +166,14 @@
     font-weight: 600;
     line-height: 1.05;
     letter-spacing: -.01em;
-    color: #231f20;
+    color: #ffffff;
   }
 
   .hero-gallery__subtext {
     font-family: var(--text-font-family);
     font-size: .9375rem;
     line-height: 1.5;
-    color: #231f20;
+    color: #ffffff;
   }
 
   .hero-gallery__button {
@@ -184,14 +185,15 @@
     font-weight: 600;
     letter-spacing: .15em;
     text-transform: uppercase;
-    color: #ffffff;
-    background: #916323;
+    color: #231f20;
+    background: #ffffff;
     border-radius: 8px;
     transition: background .2s ease;
   }
 
   .hero-gallery__button:hover {
-    background: #7a531d;
+    color: #231f20;
+    background: #f7f0e8;
   }
 
   .hero-gallery__slide--linked .hero-gallery__button::after {
@@ -213,9 +215,9 @@
     place-items: center;
     width: 2.5rem;
     height: 2.5rem;
-    color: #231f20;
-    background: #ffffff;
-    border: 1px solid #b47b2b;
+    color: #ffffff;
+    background: rgb(35 31 32 / .22);
+    border: 1px solid rgb(255 255 255 / .65);
     border-radius: 50%;
     cursor: pointer;
     transform: translate(-50%, -50%);
@@ -223,21 +225,24 @@
   }
 
   .hero-gallery__arrow:hover {
-    color: #ffffff;
-    background: #916323;
-    border-color: #916323;
+    color: #231f20;
+    background: #ffffff;
+    border-color: #ffffff;
   }
 
   .hero-gallery__arrow--prev {
-    left: calc(var(--hero-peek) + var(--hero-gap) / 2);
+    left: 1rem;
+    transform: translateY(-50%);
   }
 
   .hero-gallery__arrow--next {
-    left: calc(100% - var(--hero-peek) - var(--hero-gap) / 2);
+    right: 1rem;
+    left: auto;
+    transform: translateY(-50%);
   }
 
   .hero-gallery__dots {
-    display: flex;
+    display: none;
     justify-content: center;
     gap: .5rem;
     padding-block: 1rem 0;
@@ -261,42 +266,44 @@
 
   @media screen and (min-width: 700px) {
     .hero-gallery {
-      --hero-peek: 2.5rem;
-      --hero-gap: 1rem;
-      padding-block-start: 1.5rem;
+      --hero-peek: 0px;
+      --hero-gap: 0px;
     }
 
     .hero-gallery__slide {
-      aspect-ratio: 16 / 7;
+      min-height: calc(100svh - var(--announcement-bar-height, 0px));
+      aspect-ratio: auto;
     }
 
     .hero-gallery__content {
       align-items: center;
-      padding: 3rem 4.5rem;
+      justify-content: center;
+      padding: calc(var(--header-height, 0px) + 3rem) 6rem 3rem;
+      text-align: center;
     }
 
     .hero-gallery__content--left {
-      justify-content: flex-start;
-      text-align: left;
-      background: linear-gradient(to right, rgb(247 240 232 / .94) 0%, rgb(247 240 232 / .75) 34%, rgb(247 240 232 / 0) 60%);
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(to bottom, rgb(35 31 32 / .2), rgb(35 31 32 / .44));
     }
 
     .hero-gallery__content--left .hero-gallery__text {
-      justify-items: start;
+      justify-items: center;
     }
 
     .hero-gallery__content--right {
-      justify-content: flex-end;
-      text-align: right;
-      background: linear-gradient(to left, rgb(247 240 232 / .94) 0%, rgb(247 240 232 / .75) 34%, rgb(247 240 232 / 0) 60%);
+      justify-content: center;
+      text-align: center;
+      background: linear-gradient(to bottom, rgb(35 31 32 / .2), rgb(35 31 32 / .44));
     }
 
     .hero-gallery__content--right .hero-gallery__text {
-      justify-items: end;
+      justify-items: center;
     }
 
     .hero-gallery__content--center {
-      background: radial-gradient(ellipse at center, rgb(247 240 232 / .9) 0%, rgb(247 240 232 / .6) 40%, rgb(247 240 232 / 0) 70%);
+      background: linear-gradient(to bottom, rgb(35 31 32 / .2), rgb(35 31 32 / .44));
     }
 
     .hero-gallery__heading {
@@ -308,14 +315,8 @@
     }
 
     .hero-gallery__arrow {
-      width: 3rem;
-      height: 3rem;
-    }
-  }
-
-  @media screen and (min-width: 1400px) {
-    .hero-gallery {
-      --hero-peek: 4rem;
+      width: 2.75rem;
+      height: 2.75rem;
     }
   }
 {% endstylesheet %}

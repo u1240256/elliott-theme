@@ -99,6 +99,11 @@
   text-transform: uppercase;
 }
 
+/* Keep the centered brand mark legible while the home hero sits behind the header. */
+:has(.shopify-section:first-child [allow-transparent-header]) .header:not(:hover, .is-solid, :has(.header__primary-nav [open], .header__secondary-nav [open], .header-search[open])) .header__logo-image {
+  filter: brightness(0) invert(1);
+}
+
 @media screen and (min-width: 1000px) {
   .header__secondary-nav {
     column-gap: 1.75rem;

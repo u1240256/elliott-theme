@@ -35,7 +35,7 @@
       "settings": {
         "color_scheme": "scheme-announcement",
         "enable_sticky": false,
-        "scroll_speed": 0.15,
+        "scroll_speed": 0.08,
         "desktop_font_size": 13,
         "mobile_font_size": 11
       }
@@ -69,10 +69,10 @@
         "show_locale_selector": false,
         "transparent_header_text_color": "#ffffff",
         "search_position": "left",
-        "utility_link_1_text": "Wholesale",
-        "utility_link_1_url": "shopify://pages/contact",
-        "utility_link_2_text": "Subscribe",
-        "utility_link_2_url": "#newsletter",
+        "utility_link_1_text": "",
+        "utility_link_1_url": "",
+        "utility_link_2_text": "",
+        "utility_link_2_url": "",
         "utility_link_3_text": "",
         "utility_link_3_url": "",
         "highlight_menu_item": "New Arrivals",

@@ -20,7 +20,7 @@
             "text": "Thoughtful, cosy pieces for the newest member of the family.",
             "button_label": "Shop best sellers",
             "link": "shopify://collections/best-sellers",
-            "text_position": "left"
+            "text_position": "center"
           }
         },
         "slide-2": {
@@ -31,7 +31,7 @@
             "text": "Buttery-soft ribbed sets for slow mornings and sunny afternoons.",
             "button_label": "Shop new arrivals",
             "link": "shopify://collections/all",
-            "text_position": "right"
+            "text_position": "center"
           }
         },
         "slide-3": {
@@ -42,7 +42,7 @@
             "text": "From Snuggle White to Pine Green, find the colour that feels like them.",
             "button_label": "Shop all colors",
             "link": "shopify://collections/all",
-            "text_position": "right"
+            "text_position": "center"
           }
         }
       },
