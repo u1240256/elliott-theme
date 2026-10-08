@@ -84,9 +84,9 @@
                 {%- when 'list' -%}
                   {%- liquid
                     if filter.presentation == 'image'
-                      assign wrapper_class_list = 'v-stack gap-2'
+                      assign wrapper_class_list = 'facets__swatch-grid'
                     elsif filter.presentation == 'swatch' or color_label_list contains downcase_label
-                      assign wrapper_class_list = 'h-stack wrap gap-2'
+                      assign wrapper_class_list = 'facets__swatch-grid'
                     else
                       assign wrapper_class_list = 'v-stack gap-2.5'
                     endif
@@ -108,7 +108,7 @@
                             assign label = filter_value.label
                           endif
 
-                          render 'checkbox', hide_checkbox: true, label: label, name: filter_value.param_name, value: filter_value.value, checked: filter_value.active, id_prefix: value_id_prefix
+                          render 'checkbox', label: label, name: filter_value.param_name, value: filter_value.value, checked: filter_value.active, id_prefix: value_id_prefix
                         endif
                       endfor
                     %}
@@ -121,7 +121,17 @@
           {%- endcapture -%}
 
           {%- if filter_content != blank -%}
-            {%- render 'accordion', title: filter.label, content: filter_content, open: open_filters_by_default, show_arrow: true -%}
+            {%- liquid
+              # Filters read "Shop by Size", "Shop by Color"... unless the label already says so
+              assign filter_title = filter.label
+              assign downcase_filter_title = filter_title | downcase
+
+              unless downcase_filter_title contains 'shop by'
+                assign filter_title = 'Shop by ' | append: filter.label
+              endunless
+            -%}
+
+            {%- render 'accordion', title: filter_title, content: filter_content, open: open_filters_by_default, show_arrow: true -%}
           {%- endif -%}
         {%- endfor -%}
       {%- endif -%}

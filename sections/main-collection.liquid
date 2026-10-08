@@ -446,6 +446,24 @@
                         endfor
                       endif
 
+                      # Every colour of this garment on the page, in collection order, for the card's swatches
+                      assign colourway_products = null
+
+                      if card_title != null
+                        assign colourway_products = collection.products | where: 'id', 0
+
+                        for other_product in collection.products
+                          assign other_title_parts = other_product.title | split: ' – '
+                          assign other_color_prefix = other_title_parts.first | append: ' – '
+                          assign other_family_key = other_product.title | remove_first: other_color_prefix
+
+                          if other_title_parts.size >= 3 and other_family_key == family_key
+                            assign matching_products = collection.products | where: 'id', other_product.id
+                            assign colourway_products = colourway_products | concat: matching_products
+                          endif
+                        endfor
+                      endif
+
                       assign card_position = card_position | plus: 1
 
                       for block in section.blocks
@@ -454,7 +472,7 @@
                         endif
                       endfor
 
-                      render 'product-card', product: card_product, title: card_title, reveal: settings.stagger_products_apparition, position: card_position, hide_product_information: section.settings.hide_product_information, stacked: true
+                      render 'product-card', product: card_product, title: card_title, colourways: colourway_products, reveal: settings.stagger_products_apparition, position: card_position, hide_product_information: section.settings.hide_product_information, stacked: true
                     endfor
                   %}
                 </product-list>

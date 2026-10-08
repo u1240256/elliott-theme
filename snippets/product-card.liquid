@@ -3,6 +3,7 @@
 
   @param {object} [product] - the product to render
   @param {string} [title] - overrides the product title (used when one card stands in for several colourway products)
+  @param {product[]} [colourways] - the colourway products this card stands in for, shown as swatches that swap the card to each colour
   @param {boolean} [stacked] - define if the product is stacked or not on mobile
   @param {boolean} [reveal] - if set to true, the card will be revealed on scroll through animation
   @param {number} [position] - the position of the card in the list. If specified, the theme will eagerly load the first 3 cards images
@@ -175,7 +176,69 @@
       </div>
     {%- endif -%}
 
-    {%- if show_swatches and settings.product_color_display != 'hide' -%}
+    {%- if show_swatches and colourways.size > 1 -%}
+      {%- comment -%}Each colourway is its own product: swatches swap the card image and links to that product{%- endcomment -%}
+      {%- assign swatch_config = settings.color_swatch_config | newline_to_br | split: '<br />' -%}
+
+      <fieldset class="h-stack wrap justify-center gap-1">
+        <legend class="sr-only">Color</legend>
+
+        {%- for colourway in colourways -%}
+          {%- liquid
+            assign colour_name = colourway.title | split: ' – ' | first | strip
+            assign downcase_colour_name = colour_name | downcase
+            assign swatch_style = '--swatch-background: linear-gradient(to right, ' | append: downcase_colour_name | append: ', ' | append: downcase_colour_name | append: ')'
+            assign is_swatch_white = false
+
+            for swatch_item in swatch_config
+              assign swatch_parts = swatch_item | split: ':'
+              assign swatch_name = swatch_parts.first | downcase | strip
+
+              if swatch_name == downcase_colour_name
+                assign swatch_value = swatch_parts.last | strip
+                assign swatch_style = '--swatch-background: linear-gradient(to right, ' | append: swatch_value | append: ', ' | append: swatch_value | append: ')'
+
+                if swatch_value == '#ffffff' or swatch_value == '#fbf8f3'
+                  assign is_swatch_white = true
+                endif
+
+                break
+              endif
+            endfor
+
+            assign secondary_media = colourway.media[1]
+          -%}
+
+          {%- capture swatch_id -%}colourway-{{ quick_buy_context }}-{{ section.id }}-{{ block.id }}-{{ product.id }}-{{ colourway.id }}{%- endcapture -%}
+
+          <input
+            class="sr-only"
+            type="radio"
+            name="colourway-{{ quick_buy_context }}-{{ section.id }}-{{ block.id }}-{{ product.id }}"
+            id="{{ swatch_id }}"
+            value="{{ colourway.id }}"
+            data-product-url="{{ colourway.url }}"
+            {% if colourway.featured_media %}
+              data-variant-media="{{ colourway.featured_media | json | escape }}"
+              {% if secondary_media %}
+                data-variant-secondary-media="{{ secondary_media | json | escape }}"
+              {% endif %}
+            {% endif %}
+            {% if colourway.id == product.id %}
+              checked="checked"
+            {% endif %}
+          >
+          <label
+            for="{{ swatch_id }}"
+            class="color-swatch {% unless colourway.available %}is-disabled{% endunless %} {% if settings.round_color_swatches %}rounded-full{% endif %} {% if is_swatch_white %}border{% endif %}"
+            data-tooltip="{{ colour_name | escape }}"
+            style="{{ swatch_style }}"
+          >
+            <span class="sr-only">{{ colour_name }}</span>
+          </label>
+        {%- endfor -%}
+      </fieldset>
+    {%- elsif show_swatches and settings.product_color_display != 'hide' -%}
       {%- liquid
         assign matched_product_option = null
         assign color_label_list = 'general.label.color' | t | replace: ', ', ',' | downcase | split: ','

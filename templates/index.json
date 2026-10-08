@@ -154,100 +154,6 @@
         "cards_per_row": 4
       }
     },
-    "newest-prints": {
-      "type": "circle-links",
-      "blocks": {
-        "circle-1": {
-          "type": "item",
-          "settings": {
-            "collection": "baby-bear-black",
-            "swatch_color": "#2b2829"
-          }
-        },
-        "circle-2": {
-          "type": "item",
-          "settings": {
-            "collection": "cozy-charcoal",
-            "swatch_color": "#5b5856"
-          }
-        },
-        "circle-3": {
-          "type": "item",
-          "settings": {
-            "collection": "snuggle-white",
-            "swatch_color": "#fbf8f3"
-          }
-        },
-        "circle-4": {
-          "type": "item",
-          "settings": {
-            "collection": "pine-green",
-            "swatch_color": "#43604b"
-          }
-        },
-        "circle-5": {
-          "type": "item",
-          "settings": {
-            "collection": "sweet-pea-blush",
-            "swatch_color": "#efcfc6"
-          }
-        },
-        "circle-6": {
-          "type": "item",
-          "settings": {
-            "collection": "ladybug-red",
-            "swatch_color": "#b23b33"
-          }
-        },
-        "circle-7": {
-          "type": "item",
-          "settings": {
-            "collection": "teddy-bear-brown",
-            "swatch_color": "#8b6142"
-          }
-        },
-        "circle-8": {
-          "type": "item",
-          "settings": {
-            "collection": "little-sailor-navy",
-            "swatch_color": "#263552"
-          }
-        },
-        "circle-9": {
-          "type": "item",
-          "settings": {
-            "collection": "baby-sunshine-yellow",
-            "swatch_color": "#f3db8f"
-          }
-        },
-        "circle-10": {
-          "type": "item",
-          "settings": {
-            "collection": "baby-rose",
-            "swatch_color": "#dba3a9"
-          }
-        }
-      },
-      "block_order": [
-        "circle-1",
-        "circle-2",
-        "circle-3",
-        "circle-4",
-        "circle-5",
-        "circle-6",
-        "circle-7",
-        "circle-8",
-        "circle-9",
-        "circle-10"
-      ],
-      "settings": {
-        "color_scheme": "scheme-1",
-        "separate_section_with_border": false,
-        "title": "Shop by Color",
-        "heading_style": "h2",
-        "circle_size": 110
-      }
-    },
     "selling-fast": {
       "type": "product-ticker",
       "settings": {
@@ -396,7 +302,6 @@
     "hero-gallery",
     "promo-banner",
     "our-favorites",
-    "newest-prints",
     "selling-fast",
     "first-photo-outfits",
     "new-trending",
