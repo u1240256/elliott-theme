@@ -11,10 +11,68 @@
     endif
   endfor
 
-  if section.settings.quick_links_menu.links.size > 0 or section.settings.show_filters and collection.filters.size > 0
-    assign show_filters = true
+  # A parent collection (a menu item with sub-items, e.g. "Baby") lists its sub-collections instead of every product
+  assign sub_collection_links = ''
+
+  for link in section.settings.sub_collections_menu.links
+    if link.url == collection.url and link.links.size > 0
+      assign sub_collection_links = link.links | where: 'type', 'collection_link' | sort_natural: 'title'
+      break
+    endif
+
+    for child_link in link.links
+      if child_link.url == collection.url and child_link.links.size > 0
+        assign sub_collection_links = child_link.links | where: 'type', 'collection_link' | sort_natural: 'title'
+        break
+      endif
+    endfor
+
+    if sub_collection_links.size > 0
+      break
+    endif
+  endfor
+
+  if sub_collection_links.size > 0
+    assign show_sub_collections = true
   else
-    assign show_filters = false
+    assign show_sub_collections = false
+  endif
+
+  assign show_filters = false
+
+  unless show_sub_collections
+    if section.settings.quick_links_menu.links.size > 0 or section.settings.show_filters and collection.filters.size > 0
+      assign show_filters = true
+    endif
+  endunless
+
+  # Each colourway is its own product, titled "Color – Fabric – Type". The grid shows one card per fabric and type
+  # (like Bubble Rompers); the product page links to the other colours. Count those cards for the toolbar.
+  assign family_keys = '|'
+  assign family_count = 0
+
+  for product in collection.products
+    assign title_parts = product.title | split: ' – '
+
+    if title_parts.size >= 3
+      assign color_prefix = title_parts.first | append: ' – '
+      assign family_key = product.title | remove_first: color_prefix
+    else
+      assign family_key = product.handle
+    endif
+
+    assign family_marker = '|' | append: family_key | append: '|'
+
+    unless family_keys contains family_marker
+      assign family_keys = family_keys | append: family_key | append: '|'
+      assign family_count = family_count | plus: 1
+    endunless
+  endfor
+
+  if collection.products_count > collection.products.size
+    assign results_count = collection.products_count
+  else
+    assign results_count = family_count
   endif
 
   # First, we retrieve, based on the merchant settings, the user preferences and the available space the most appropriate size
@@ -111,7 +169,54 @@
 <div class="color-scheme color-scheme--{{ section.settings.color_scheme.id }}">
   <div class="container">
     <div class="v-stack gap-6 sm:gap-12">
-      {%- if collection.all_products_count == 0 -%}
+      {%- if show_sub_collections -%}
+        {%- assign text_class = '' -%}
+
+        {%- if settings.product_card_text_font == 'heading' -%}
+          {%- assign text_class = 'h6' -%}
+        {%- endif -%}
+
+        <div class="collection">
+          <div class="collection__main">
+            <product-list
+              id="product-list-{{ section.id }}"
+              class="product-list"
+              collection-mobile-layout="{{ products_mobile_grid_mode }}"
+              collection-desktop-layout="{{ products_desktop_grid_mode }}"
+            >
+              {%- for sub_link in sub_collection_links -%}
+                {%- liquid
+                  assign sub_collection = sub_link.object
+                  assign sub_collection_image = sub_collection.featured_image | default: sub_collection.products.first.featured_media
+
+                  if forloop.index > 3
+                    assign image_loading = 'lazy'
+                  else
+                    assign image_loading = null
+                  endif
+                -%}
+
+                <div class="product-card">
+                  <div class="product-card__figure">
+                    <a href="{{ sub_link.url }}" class="product-card__media" draggable="false" data-instant>
+                      {%- if sub_collection_image != blank -%}
+                        {%- capture image_classes -%}product-card__image product-card__image--primary {% if settings.product_image_aspect_ratio contains 'crop' %}object-cover{% endif %} aspect-{{ settings.product_image_aspect_ratio | split: '_' | first }}{%- endcapture -%}
+                        {{- sub_collection_image | image_url: width: sub_collection_image.width | image_tag: loading: image_loading, sizes: '(max-width: 699px) 50vw, (max-width: 999px) 33vw, 25vw', widths: '200,300,400,500,600,700,800,1000,1200,1400', draggable: 'false', class: image_classes, alt: sub_link.title -}}
+                      {%- else -%}
+                        {{- 'collection-1' | placeholder_svg_tag: 'product-card__image placeholder' -}}
+                      {%- endif -%}
+                    </a>
+                  </div>
+
+                  <div class="product-card__info">
+                    <a href="{{ sub_link.url }}" class="product-title {{ text_class }}" data-instant>{{ sub_link.title }}</a>
+                  </div>
+                </div>
+              {%- endfor -%}
+            </product-list>
+          </div>
+        </div>
+      {%- elsif collection.all_products_count == 0 -%}
         <div class="empty-state">
           <div class="prose">
             <h1 class="h4">{{ collection.title }}</h1>
@@ -177,7 +282,7 @@
 
             {%- if section.settings.show_results_count -%}
               <p class="collection-toolbar__products-count h6 text-subdued md-max:hidden">
-                {{ 'collection.products_count' | t: count: collection.products_count }}
+                {{ 'collection.products_count' | t: count: results_count }}
               </p>
             {%- endif -%}
 
@@ -295,14 +400,61 @@
                   collection-desktop-layout="{{ products_desktop_grid_mode }}"
                 >
                   {% liquid
+                    assign rendered_family_keys = '|'
+                    assign card_position = 0
+
                     for product in collection.products
+                      assign title_parts = product.title | split: ' – '
+                      assign card_title = null
+
+                      if title_parts.size >= 3
+                        assign color_prefix = title_parts.first | append: ' – '
+                        assign family_key = product.title | remove_first: color_prefix
+
+                        if title_parts.size == 3
+                          assign card_title = title_parts.last | append: ' - ' | append: title_parts[1]
+                        else
+                          assign card_title = family_key
+                        endif
+                      else
+                        assign family_key = product.handle
+                      endif
+
+                      assign family_marker = '|' | append: family_key | append: '|'
+
+                      if rendered_family_keys contains family_marker
+                        continue
+                      endif
+
+                      assign rendered_family_keys = rendered_family_keys | append: family_key | append: '|'
+
+                      # Prefer a colour that is in stock to represent the garment
+                      assign card_product = product
+
+                      if product.available == false and card_title != null
+                        for other_product in collection.products
+                          if other_product.available
+                            assign other_title_parts = other_product.title | split: ' – '
+                            assign other_color_prefix = other_title_parts.first | append: ' – '
+                            assign other_family_key = other_product.title | remove_first: other_color_prefix
+
+                            if other_family_key == family_key
+                              assign card_product = other_product
+                              break
+                            endif
+                          endif
+                        endfor
+                      endif
+
+                      assign card_position = card_position | plus: 1
+
                       for block in section.blocks
-                        if forloop.parentloop.index == block.settings.position
+                        if card_position == block.settings.position
                           render 'collection-promo-block', block: block, reveal: true
                         endif
                       endfor
 
-                      render 'product-card', product: product, reveal: settings.stagger_products_apparition, position: forloop.index, hide_product_information: section.settings.hide_product_information, stacked: true
+                      render 'product-card', product: card_product, title: card_title, reveal: settings.stagger_products_apparition, position: card_position, hide_product_information: section.settings.hide_product_information, stacked: true
                     endfor
                   %}
                 </product-list>
@@ -440,6 +592,13 @@
       "id": "quick_links_menu",
       "label": "t:sections.main_collection.quick_links_menu",
       "info": "t:sections.main_collection.quick_links_menu_info"
+    },
+    {
+      "type": "link_list",
+      "id": "sub_collections_menu",
+      "label": "Sub-collections menu",
+      "info": "Collections that have sub-items in this menu show those sub-collections instead of their products.",
+      "default": "main-menu"
     },
     {
       "type": "checkbox",

@@ -37,7 +37,7 @@
       "type": "main-collection",
       "settings": {
         "color_scheme": "scheme-1",
-        "products_per_page": 24,
+        "products_per_page": 50,
         "products_per_row_mobile": "2",
         "products_size_desktop": "medium",
         "show_grid_mode_selector": false,

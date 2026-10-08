@@ -2,6 +2,7 @@
   This component is used in collection and featured collection to render a single product as a card.
 
   @param {object} [product] - the product to render
+  @param {string} [title] - overrides the product title (used when one card stands in for several colourway products)
   @param {boolean} [stacked] - define if the product is stacked or not on mobile
   @param {boolean} [reveal] - if set to true, the card will be revealed on scroll through animation
   @param {number} [position] - the position of the card in the list. If specified, the theme will eagerly load the first 3 cards images
@@ -162,7 +163,7 @@
                 {% endif %}
                 data-instant
               >
-                {{- product.title -}}
+                {{- title | default: product.title -}}
               </a>
             {%- endif -%}
 
