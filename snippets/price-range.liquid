@@ -13,12 +13,22 @@
     assign higher_bound_progress = max_value | divided_by: range_max | times: 100.0
   -%}
 
+  {%- capture currency_prefix -%}
+    {{- cart.currency.symbol -}}
+    {%- if settings.currency_code_enabled %}{{ cart.currency.iso_code }}{% endif -%}
+  {%- endcapture -%}
+
+  <div class="price-range__values" aria-hidden="true">
+    <span data-price-range-min>{{ currency_prefix }}{{ min_value | ceil | times: 100 | money_without_currency }}</span>
+    <span data-price-range-max>{{ currency_prefix }}{{ max_value | ceil | times: 100 | money_without_currency }}</span>
+  </div>
+
   <div class="range-group" style="--range-min: {{ lower_bound_progress }}%; --range-max: {{ higher_bound_progress }}%">
     <input type="range" aria-label="{{ 'collection.faceting.price_filter_from' | t }}" class="range" min="0" max="{{ range_max | ceil }}" value="{{ min_value | ceil }}">
     <input type="range" aria-label="{{ 'collection.faceting.price_filter_to' | t }}" class="range" min="0" max="{{ range_max | ceil }}" value="{{ max_value | ceil }}">
   </div>
 
-  <div class="input-group">
+  <div class="input-group price-range__inputs">
     <label class="input-prefix text-sm">
       <span class="prefix text-subdued">
         {{- cart.currency.symbol -}}
@@ -66,3 +76,22 @@
     </label>
   </div>
 </price-range>
+
+<script>
+  // Mirror the slider handles in the "$0.00 – $58.00" labels above them
+  if (!window.priceRangeLabelsReady) {
+    window.priceRangeLabelsReady = true;
+
+    document.addEventListener('input', (event) => {
+      const priceRange = event.target.closest('price-range');
+
+      if (!priceRange || !event.target.matches('.range')) return;
+
+      const [lower, upper] = priceRange.querySelectorAll('.range');
+      const prefix = {{ currency_prefix | json }};
+
+      priceRange.querySelector('[data-price-range-min]').textContent = prefix + Number(lower.value).toFixed(2);
+      priceRange.querySelector('[data-price-range-max]').textContent = prefix + Number(upper.value).toFixed(2);
+    });
+  }
+</script>
