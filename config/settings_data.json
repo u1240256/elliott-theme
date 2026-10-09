@@ -25,6 +25,7 @@
     "text_font": "montserrat_n4",
     "text_font_size_desktop": 14,
     "button_letter_spacing": 18,
+    "color_swatch_config": "Snuggle White:#fbf8f3\nSweet Pea Blush:#efcfc6\nBaby Rose:#dba3a9\nLadybug Red:#b23b33\nBaby Sunshine Yellow:#f3db8f\nPine Green:#43604b\nLittle Sailor Navy:#263552\nBaby Bear Black:#2b2829\nCozy Charcoal:#5b5856\nTeddy Bear Brown:#8b6142",
     "product_image_aspect_ratio": "portrait",
     "product_color_display": "swatch",
     "show_product_rating": true,
@@ -117,8 +118,7 @@
           "circle_button_icon": "#231f20"
         }
       }
-    },
-    "color_swatch_config": "Baby Bear Black:#2b2829\nCozy Charcoal:#5b5856\nSnuggle White:#fbf8f3\nPine Green:#43604b\nSweet Pea Blush:#efcfc6\nLadybug Red:#b23b33\nTeddy Bear Brown:#8b6142\nLittle Sailor Navy:#263552\nBaby Sunshine Yellow:#f3db8f\nBaby Rose:#dba3a9"
+    }
   },
   "installed_preset_name": "Prestige",
   "presets": {
