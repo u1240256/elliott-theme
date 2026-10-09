@@ -401,6 +401,7 @@
                 >
                   {% liquid
                     assign rendered_family_keys = '|'
+                    assign swatch_names = settings.color_swatch_config | newline_to_br | split: '<br />'
                     assign card_position = 0
 
                     for product in collection.products
@@ -446,20 +447,37 @@
                         endfor
                       endif
 
-                      # Every colour of this garment on the page, in collection order, for the card's swatches
+                      # Every colour of this garment on the page for the card's swatches, in the order of the
+                      # "Color swatch configuration" theme setting, then any colour not listed there
                       assign colourway_products = null
 
                       if card_title != null
                         assign colourway_products = collection.products | where: 'id', 0
+                        assign colourway_ids = '|'
+
+                        for swatch_item in swatch_names
+                          assign swatch_name = swatch_item | split: ':' | first | strip
+                          assign colourway_title = swatch_name | append: ' – ' | append: family_key
+                          assign matching_products = collection.products | where: 'title', colourway_title
+
+                          for matching_product in matching_products
+                            assign colourway_ids = colourway_ids | append: matching_product.id | append: '|'
+                          endfor
+
+                          assign colourway_products = colourway_products | concat: matching_products
+                        endfor
 
                         for other_product in collection.products
                           assign other_title_parts = other_product.title | split: ' – '
                           assign other_color_prefix = other_title_parts.first | append: ' – '
                           assign other_family_key = other_product.title | remove_first: other_color_prefix
+                          assign other_marker = '|' | append: other_product.id | append: '|'
 
                           if other_title_parts.size >= 3 and other_family_key == family_key
-                            assign matching_products = collection.products | where: 'id', other_product.id
-                            assign colourway_products = colourway_products | concat: matching_products
+                            unless colourway_ids contains other_marker
+                              assign matching_products = collection.products | where: 'id', other_product.id
+                              assign colourway_products = colourway_products | concat: matching_products
+                            endunless
                           endif
                         endfor
                       endif

@@ -90,11 +90,39 @@
                     else
                       assign wrapper_class_list = 'v-stack gap-2.5'
                     endif
+
+                    # Colour swatches follow the order of the "Color swatch configuration" theme setting, then any others
+                    assign ordered_values = filter.values
+
+                    if wrapper_class_list == 'facets__swatch-grid' and filter.presentation != 'image'
+                      assign swatch_names = settings.color_swatch_config | newline_to_br | split: '<br />'
+                      assign ordered_values = filter.values | where: 'label', '__none__'
+                      assign ordered_labels = '|'
+
+                      for swatch_item in swatch_names
+                        assign swatch_name = swatch_item | split: ':' | first | strip
+                        assign matching_values = filter.values | where: 'label', swatch_name
+
+                        if matching_values.size > 0
+                          assign ordered_values = ordered_values | concat: matching_values
+                          assign ordered_labels = ordered_labels | append: swatch_name | append: '|'
+                        endif
+                      endfor
+
+                      for filter_value in filter.values
+                        assign value_marker = '|' | append: filter_value.label | append: '|'
+
+                        unless ordered_labels contains value_marker
+                          assign remaining_values = filter.values | where: 'label', filter_value.label
+                          assign ordered_values = ordered_values | concat: remaining_values
+                        endunless
+                      endfor
+                    endif
                   -%}
 
                   <div class="{{ wrapper_class_list }}">
                     {% liquid
-                      for filter_value in filter.values
+                      for filter_value in ordered_values
                         assign value_id_prefix = id_prefix | append: '-' | append: forloop.index
 
                         if filter.presentation == 'image'
