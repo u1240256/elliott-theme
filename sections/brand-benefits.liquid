@@ -3,6 +3,18 @@
 {%- endcomment -%}
 <div class="brand-benefits {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
   <div class="container">
+    {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="brand-benefits__header">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="brand-benefits__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.subheading != blank -%}
+          <p class="brand-benefits__subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
     <ul class="brand-benefits__list" role="list">
       {%- for block in section.blocks -%}
         {%- assign icon_file = block.settings.icon | append: '.svg' -%}
@@ -27,6 +39,31 @@
   .brand-benefits {
     padding-block: 2.5rem;
     background: #ffffff;
+  }
+
+  .brand-benefits__header {
+    display: grid;
+    justify-items: center;
+    gap: .75rem;
+    margin-block-end: 2.5rem;
+    text-align: center;
+  }
+
+  .brand-benefits__heading {
+    font-family: var(--heading-font-family);
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -.01em;
+    color: #231f20;
+  }
+
+  .brand-benefits__subheading {
+    max-width: 28em;
+    font-family: var(--heading-font-family);
+    font-size: 1.125rem;
+    line-height: 1.45;
+    color: #231f20;
   }
 
   .brand-benefits__list {
@@ -81,6 +118,18 @@
     .brand-benefits__icon {
       width: 3rem;
     }
+
+    .brand-benefits__header {
+      margin-block-end: 3rem;
+    }
+
+    .brand-benefits__heading {
+      font-size: 2.25rem;
+    }
+
+    .brand-benefits__subheading {
+      font-size: 1.25rem;
+    }
   }
 {% endstylesheet %}
 
@@ -91,6 +140,18 @@
   "tag": "section",
   "max_blocks": 4,
   "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Soft. Safe. Made for little ones."
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Thoughtfully designed clothing for your baby’s comfort and your peace of mind."
+    },
     {
       "type": "checkbox",
       "id": "separate_section_with_border",

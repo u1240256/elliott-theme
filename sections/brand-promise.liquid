@@ -1,0 +1,148 @@
+{%- comment -%}
+  "Designed with love" band from the packaging insert: tagline artwork, short brand promise and an optional photo
+  beside it. Without a photo the copy sits centered.
+{%- endcomment -%}
+<div class="brand-promise section-spacing {% if section.settings.image != blank %}brand-promise--with-image{% endif %}">
+  <div class="container">
+    <div class="brand-promise__inner">
+      {%- if section.settings.image != blank -%}
+        <div class="brand-promise__media">
+          {{- section.settings.image | image_url: width: 1600 | image_tag: loading: 'lazy', sizes: '(max-width: 699px) 100vw, 50vw', widths: '400,600,800,1000,1200,1600', class: 'brand-promise__image' -}}
+        </div>
+      {%- endif -%}
+
+      <div class="brand-promise__copy">
+        <h2 class="brand-promise__tagline">
+          <img src="{{ 'em-tagline.svg' | asset_url }}" alt="Designed with love for your little one" width="238" height="78" loading="lazy">
+        </h2>
+
+        {%- if section.settings.content != blank -%}
+          <div class="brand-promise__content">{{ section.settings.content }}</div>
+        {%- endif -%}
+
+        {%- if section.settings.link_text != blank and section.settings.link_url != blank -%}
+          <a href="{{ section.settings.link_url }}" class="brand-promise__link">{{ section.settings.link_text }}</a>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .brand-promise {
+    background: #ffffff;
+  }
+
+  .brand-promise__inner {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .brand-promise__media {
+    overflow: hidden;
+    border-radius: 16px;
+  }
+
+  .brand-promise__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+  }
+
+  .brand-promise__copy {
+    display: grid;
+    justify-items: center;
+    gap: 1.5rem;
+    max-width: 40rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .brand-promise__tagline img {
+    display: block;
+    width: min(100%, 22rem);
+    height: auto;
+  }
+
+  /* Gold rule under the copy, as on the printed insert */
+  .brand-promise__content {
+    max-width: 30em;
+    padding-block-end: 1.5rem;
+    border-block-end: 1.5px solid #b47b2b;
+    font-family: var(--heading-font-family);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: #231f20;
+  }
+
+  .brand-promise__content p + p {
+    margin-block-start: 1rem;
+  }
+
+  .brand-promise__link {
+    font-family: var(--text-font-family);
+    font-size: .875rem;
+    font-weight: 500;
+    color: #916323;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media screen and (min-width: 700px) {
+    .brand-promise--with-image .brand-promise__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4rem;
+    }
+
+    .brand-promise__tagline img {
+      width: 28rem;
+    }
+
+    .brand-promise__content {
+      font-size: 1.375rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Brand promise",
+  "class": "shopify-section--brand-promise",
+  "tag": "section",
+  "disabled_on": {
+    "groups": ["header", "custom.overlay"]
+  },
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Optional. Shown beside the text on desktop."
+    },
+    {
+      "type": "richtext",
+      "id": "content",
+      "label": "Text",
+      "default": "<p>At Elliott and Me, we create high-quality clothing that is ultra-soft, breathable, and gentle on delicate skin. Perfect for snuggles, playtime, and everything in between.</p>"
+    },
+    {
+      "type": "text",
+      "id": "link_text",
+      "label": "Link text"
+    },
+    {
+      "type": "url",
+      "id": "link_url",
+      "label": "Link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Brand promise"
+    }
+  ]
+}
+{% endschema %}

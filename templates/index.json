@@ -290,10 +290,18 @@
       "type": "brand-story",
       "settings": {
         "eyebrow": "Made for everyday life",
-        "show_tagline": true,
+        "show_tagline": false,
         "heading": "Every child has an “and Me.”",
         "content": "<p>The morning cuddles. The little adventures. The sleepy nights. You focus on the moments. We’ll focus on the little things.</p>",
         "link_text": "Read our story",
+        "link_url": ""
+      }
+    },
+    "brand-promise": {
+      "type": "brand-promise",
+      "settings": {
+        "content": "<p>At Elliott and Me, we create high-quality clothing that is ultra-soft, breathable, and gentle on delicate skin. Perfect for snuggles, playtime, and everything in between.</p>",
+        "link_text": "",
         "link_url": ""
       }
     }
@@ -306,6 +314,7 @@
     "first-photo-outfits",
     "new-trending",
     "perfect-sleeper",
+    "brand-promise",
     "brand-story",
     "newsletter"
   ]
