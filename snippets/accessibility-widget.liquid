@@ -184,17 +184,18 @@
     z-index: 2147483001;
     background: var(--a11y-gold);
     color: #fff;
-    transition: transform 0.5s cubic-bezier(.4, 0, .2, 1), scale 0.15s ease;
+    transition: top 0.5s cubic-bezier(.4, 0, .2, 1), scale 0.15s ease;
   }
 
-  /* Docked: bottom corner, leaving room for the back-to-top button underneath */
+  /* Docked: bottom corner, stacked above the back-to-top button. 100% is the same viewport box the back-to-top
+     button's bottom is measured from, so the two never overlap. */
   .a11y__launcher.is-docked {
-    transform: translateY(calc(100dvh - var(--a11y-launcher-top) - var(--a11y-dock-bottom) - 2 * var(--a11y-launcher-size) - var(--a11y-stack-gap)));
+    top: calc(100% - var(--a11y-dock-bottom) - 2 * var(--a11y-launcher-size) - var(--a11y-stack-gap));
   }
 
   .a11y__to-top {
     bottom: var(--a11y-dock-bottom);
-    z-index: 2147483001;
+    z-index: 2147483000;
     background: var(--a11y-ink);
     color: #fff;
     opacity: 0;
