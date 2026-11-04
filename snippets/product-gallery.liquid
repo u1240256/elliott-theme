@@ -84,23 +84,14 @@
       endif
     endfor
   endif
-
-  # Proof of concept: pad knotted gowns with stock photos until real product photography is uploaded.
-  # Remove this (and the gallery_stock_images loops below) once the products have their own images.
-  assign gallery_stock_images = '' | split: ','
-  if product.handle contains 'knotted-gown'
-    assign gallery_stock_images = 'stock-look,stock-card-swaddles,stock-card-baby' | split: ','
-  endif
-  assign gallery_media_count = product.media.size | plus: gallery_stock_images.size
 %}
 
 <product-gallery
   class="product-gallery"
   form="{{ product_form_id }}"
   filtered-indexes="{{ filtered_indexes | json }}"
-  {% if gallery_stock_images.size > 0 %}
+  {% if product.media.size > 1 %}
     data-slide-transition
-    style="--stock-aspect-ratio: {{ product.featured_media.aspect_ratio | default: 1 }}"
   {% endif %}
   {% if enable_media_autoplay %}
     autoplay-media
@@ -176,7 +167,7 @@
               data-media-type="{{ media.media_type }}"
               data-media-id="{{ media.id }}"
               role="group"
-              aria-label="{{ 'general.accessibility.item_nth_of_count' | t: index: media.position, count: gallery_media_count }}"
+              aria-label="{{ 'general.accessibility.item_nth_of_count' | t: index: media.position, count: product.media.size }}"
               {% if filtered_indexes contains media.position %}
                 hidden
               {% endif %}
@@ -202,20 +193,6 @@
                 group: 'product',
                 product: product
               -%}
-            </div>
-          {%- endfor -%}
-
-          {%- for stock_name in gallery_stock_images -%}
-            {%- assign stock_position = product.media.size | plus: forloop.index -%}
-
-            <div
-              class="product-gallery__media product-gallery__media--stock snap-center"
-              data-media-type="image"
-              data-media-id="{{ stock_name }}"
-              role="group"
-              aria-label="{{ 'general.accessibility.item_nth_of_count' | t: index: stock_position, count: gallery_media_count }}"
-            >
-              {%- render 'stock-image', name: stock_name -%}
             </div>
           {%- endfor -%}
         {%- else -%}
@@ -279,7 +256,7 @@
     ----------------------------------------------------------------------------------------------------------------------
   {%- endcomment -%}
 
-  {%- if gallery_media_count > 1 or product == blank -%}
+  {%- if product.media.size > 1 or product == blank -%}
     {%- liquid
       assign show_thumbnails_mobile = false
       assign show_thumbnails_desktop = false
@@ -323,22 +300,6 @@
                 {% endunless %}
               </button>
             {%- endfor -%}
-
-            {%- for stock_name in gallery_stock_images -%}
-              {%- assign stock_position = product.media.size | plus: forloop.index -%}
-
-              <button
-                type="button"
-                class="product-gallery__thumbnail product-gallery__thumbnail--stock"
-                data-media-type="image"
-                data-media-position="{{ stock_position }}"
-                data-media-id="{{ stock_name }}"
-                aria-current="false"
-                aria-label="{{ 'general.accessibility.go_to_item' | t: index: stock_position | escape }}"
-              >
-                {%- render 'stock-image', name: stock_name, class: 'object-cover' -%}
-              </button>
-            {%- endfor -%}
           {%- else -%}
             {%- for i in (1..3) -%}
               {%- capture placeholder_name -%}product-{% cycle '1', '2', '3', '4', '5' %}{%- endcapture -%}
@@ -375,14 +336,6 @@
               <span class="sr-only">{{ 'general.accessibility.go_to_item' | t: index: media.position }}</span>
             </button>
           {%- endfor -%}
-
-          {%- for stock_name in gallery_stock_images -%}
-            {%- assign stock_position = product.media.size | plus: forloop.index -%}
-
-            <button type="button" class="tap-area" aria-current="false">
-              <span class="sr-only">{{ 'general.accessibility.go_to_item' | t: index: stock_position }}</span>
-            </button>
-          {%- endfor -%}
         {%- else -%}
           {%- for i in (1..3) -%}
             <button type="button" class="tap-area" aria-current="{% if forloop.first %}true{% else %}false{% endif %}">
@@ -395,7 +348,7 @@
   {%- endif -%}
 </product-gallery>
 
-{%- if gallery_stock_images.size > 0 -%}
+{%- if product.media.size > 1 -%}
   <script>
     {%- comment -%}
       On desktop, clicking a thumbnail glides the image strip sideways with a fast-start, soft-landing ease (like

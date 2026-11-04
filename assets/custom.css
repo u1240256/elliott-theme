@@ -288,14 +288,6 @@
   }
 }
 
-/* Product gallery: stock photo padding (proof of concept on knotted gowns) */
-.product-gallery__media--stock > img,
-.product-gallery__thumbnail--stock > img {
-  aspect-ratio: var(--stock-aspect-ratio, 1);
-  object-fit: cover;
-  height: auto;
-}
-
 /* Keeps snapping off while the thumbnail slide animation runs (the theme resets inline snap styles on every scroll) */
 .product-gallery__carousel.is-sliding {
   scroll-snap-type: none !important;
