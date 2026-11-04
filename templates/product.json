@@ -111,12 +111,17 @@
           "settings": {
             "option_name": "Color"
           }
+        },
+        "fabric_siblings": {
+          "type": "fabric_siblings",
+          "settings": {}
         }
       },
       "block_order": [
         "title",
         "rating",
         "color_siblings",
+        "fabric_siblings",
         "variant_picker",
         "inventory",
         "gift_note",
