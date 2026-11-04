@@ -267,18 +267,21 @@
 
           {%- when 'fabric_siblings' -%}
             {%- comment -%}
-              Bubble Romper only. Shows every color available in EACH fabric (Solid Jersey, 8x5 Ribbed) as its
-              own grouped swatch row, always both groups together regardless of which fabric/color is currently
-              being viewed. Products are matched by handle "<color>-<fabric>-bubble-romper". Mirrors the
-              color_siblings pattern above, but iterates fabrics and doesn't gate on the current product being a
-              member of a single list.
+              Bubble Romper and Knotted Hat only (fabric_sibling_types above). Shows every color available in
+              EACH fabric (Solid Jersey, 8x5 Ribbed) as its own grouped swatch row, always both groups together
+              regardless of which fabric/color is currently being viewed. Products are matched by handle
+              "<color>-<fabric>-<product-type>". Mirrors the color_siblings pattern above, but iterates fabrics
+              and doesn't gate on the current product being a member of a single list. Add more product types to
+              fabric_sibling_types above to extend this to other garments that get the same Solid/Ribbed split.
             {%- endcomment -%}
-            {%- if product.type == 'Bubble Romper' -%}
+            {%- assign fabric_sibling_types = 'Bubble Romper,Knotted Hat' | split: ',' -%}
+            {%- if fabric_sibling_types contains product.type -%}
               {%- liquid
                 assign color_slugs = 'baby-bear-black,cozy-charcoal,snuggle-white,pine-green,sweet-pea-blush,ladybug-red,teddy-bear-brown,little-sailor-navy,baby-sunshine-yellow,baby-rose' | split: ','
                 assign color_names = 'Baby Bear Black,Cozy Charcoal,Snuggle White,Pine Green,Sweet Pea Blush,Ladybug Red,Teddy Bear Brown,Little Sailor Navy,Baby Sunshine Yellow,Baby Rose' | split: ','
                 assign fabric_slugs = 'solid-jersey,8x5-ribbed' | split: ','
                 assign fabric_labels = 'Solid Jersey,8x5 Ribbed' | split: ','
+                assign type_slug = product.type | handleize
               -%}
 
               <div class="variant-picker fabric-siblings v-stack gap-4" {{ block.shopify_attributes }}>
@@ -288,7 +291,7 @@
 
                   {%- capture swatch_row -%}
                     {%- for slug in color_slugs -%}
-                      {%- assign sibling_handle = slug | append: '-' | append: fabric_slug | append: '-bubble-romper' -%}
+                      {%- assign sibling_handle = slug | append: '-' | append: fabric_slug | append: '-' | append: type_slug -%}
                       {%- assign sibling = all_products[sibling_handle] -%}
 
                       {%- if sibling.id != blank -%}
