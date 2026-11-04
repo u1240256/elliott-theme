@@ -118,6 +118,33 @@
           {%- when 'title' -%}
             {%- if product != blank -%}
               {%- assign product_title = product.title -%}
+
+              {%- comment -%}Fabric pairs read as one garment (see snippets/variant-picker): "Bubble Romper - Solid Jersey" shows as "Bubble Romper"{%- endcomment -%}
+              {%- liquid
+                assign fabric_slugs = 'solid-jersey,8x5-ribbed' | split: ','
+                assign fabric_names = 'Solid Jersey,8x5 Ribbed' | split: ','
+
+                for fabric_slug in fabric_slugs
+                  assign fabric_title_suffix = ' - ' | append: fabric_names[forloop.index0]
+                  assign fabric_suffix = '-' | append: fabric_slug
+                  assign base_handle = product.handle | remove_last: fabric_suffix
+                  assign base_title = product_title | remove_last: fabric_title_suffix
+                  assign rebuilt_handle = base_handle | append: fabric_suffix
+                  assign rebuilt_title = base_title | append: fabric_title_suffix
+
+                  if base_handle != product.handle and rebuilt_handle == product.handle and rebuilt_title == product_title
+                    for other_slug in fabric_slugs
+                      assign other_handle = base_handle | append: '-' | append: other_slug
+
+                      if other_handle != product.handle and all_products[other_handle].id != blank
+                        assign product_title = base_title
+                        break
+                      endif
+                    endfor
+                    break
+                  endif
+                endfor
+              -%}
             {%- else -%}
               {%- assign product_title = 'general.on_boarding.product_title' | t -%}
             {%- endif -%}

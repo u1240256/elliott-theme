@@ -48,15 +48,33 @@
 
   # Each colourway is its own product, titled "Color – Fabric – Type". The grid shows one card per fabric and type
   # (like Bubble Rompers); the product page links to the other colours. Count those cards for the toolbar.
+  # A garment sold as one product per fabric ("Bubble Romper - Solid Jersey", "Bubble Romper - 8x5 Ribbed") also
+  # shows as one card, the first fabric in this list; its product page groups both fabrics' colours.
+  assign fabric_slugs = 'solid-jersey,8x5-ribbed' | split: ','
+  assign fabric_names = 'Solid Jersey,8x5 Ribbed' | split: ','
   assign family_keys = '|'
   assign family_count = 0
 
   for product in collection.products
     assign title_parts = product.title | split: ' – '
+    assign fabric_base_title = ''
+
+    for fabric_slug in fabric_slugs
+      assign fabric_title_suffix = ' - ' | append: fabric_names[forloop.index0]
+      assign fabric_base = product.title | remove_last: fabric_title_suffix
+      assign rebuilt_title = fabric_base | append: fabric_title_suffix
+
+      if fabric_base != product.title and rebuilt_title == product.title
+        assign fabric_base_title = fabric_base
+        break
+      endif
+    endfor
 
     if title_parts.size >= 3
       assign color_prefix = title_parts.first | append: ' – '
       assign family_key = product.title | remove_first: color_prefix
+    elsif fabric_base_title != blank
+      assign family_key = fabric_base_title
     else
       assign family_key = product.handle
     endif
@@ -407,6 +425,19 @@
                     for product in collection.products
                       assign title_parts = product.title | split: ' – '
                       assign card_title = null
+                      assign fabric_card_title = null
+                      assign fabric_base_title = ''
+
+                      for fabric_slug in fabric_slugs
+                        assign fabric_title_suffix = ' - ' | append: fabric_names[forloop.index0]
+                        assign fabric_base = product.title | remove_last: fabric_title_suffix
+                        assign rebuilt_title = fabric_base | append: fabric_title_suffix
+
+                        if fabric_base != product.title and rebuilt_title == product.title
+                          assign fabric_base_title = fabric_base
+                          break
+                        endif
+                      endfor
 
                       if title_parts.size >= 3
                         assign color_prefix = title_parts.first | append: ' – '
@@ -417,6 +448,8 @@
                         else
                           assign card_title = family_key
                         endif
+                      elsif fabric_base_title != blank
+                        assign family_key = fabric_base_title
                       else
                         assign family_key = product.handle
                       endif
@@ -431,6 +464,28 @@
 
                       # Prefer a colour that is in stock to represent the garment
                       assign card_product = product
+
+                      # A fabric pair is represented by its first fabric in the list, titled without the fabric
+                      if fabric_base_title != blank
+                        assign fabric_count = 0
+
+                        for fabric_name in fabric_names
+                          assign fabric_title = fabric_base_title | append: ' - ' | append: fabric_name
+                          assign fabric_products = collection.products | where: 'title', fabric_title
+
+                          if fabric_products.size > 0
+                            if fabric_count == 0
+                              assign card_product = fabric_products.first
+                            endif
+
+                            assign fabric_count = fabric_count | plus: 1
+                          endif
+                        endfor
+
+                        if fabric_count > 1
+                          assign fabric_card_title = fabric_base_title
+                        endif
+                      endif
 
                       if product.available == false and card_title != null
                         for other_product in collection.products
@@ -489,6 +544,10 @@
                           render 'collection-promo-block', block: block, reveal: true
                         endif
                       endfor
+
+                      if fabric_card_title != null
+                        assign card_title = fabric_card_title
+                      endif
 
                       render 'product-card', product: card_product, title: card_title, colourways: colourway_products, reveal: settings.stagger_products_apparition, position: card_position, hide_product_information: section.settings.hide_product_information, stacked: true
                     endfor

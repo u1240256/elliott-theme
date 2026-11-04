@@ -241,6 +241,31 @@
   border-color: #b47b2b;
 }
 
+/* Fabric pairs (Bubble Romper): one color picker grouped by fabric, see snippets/variant-picker */
+.fabric-colors__title {
+  font-size: .6875rem;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.fabric-colors .color-swatch {
+  --swatch-size: 2.5rem;
+  --swatch-offset: 3px;
+  border-radius: 999px;
+  background-clip: content-box;
+  box-shadow: inset 0 0 0 var(--swatch-offset) rgb(var(--background)), inset 0 0 0 calc(var(--swatch-offset) + 1px) rgb(35 31 32 / .14);
+}
+
+.fabric-colors :checked + .color-swatch,
+.fabric-colors .color-swatch.is-selected {
+  border-color: #b47b2b;
+}
+
+.fabric-colors .is-leaving:checked + .color-swatch {
+  border-color: transparent;
+}
+
 /* Colour name on hover: a small dark label above the swatch */
 .color-swatch[data-tooltip] {
   --tooltip-text-color: 35 31 32;

@@ -21,6 +21,40 @@
   if context == 'main_product'
     assign is_main_product = true
   endif
+
+  # Fabric pairs: a garment sold in two fabrics is two products handled "<garment>-<fabric>" (e.g. Bubble Romper -
+  # Solid Jersey and Bubble Romper - 8x5 Ribbed). The product page shows both fabrics' colors as one picker, grouped
+  # by fabric; colors of the other fabric link to that product, keeping the selected size when it exists there.
+  assign fabric_slugs = 'solid-jersey,8x5-ribbed' | split: ','
+  assign fabric_names = 'Solid Jersey,8x5 Ribbed' | split: ','
+  assign fabric_base_handle = ''
+  assign fabric_sibling_count = 0
+
+  if is_main_product
+    for fabric_slug in fabric_slugs
+      assign fabric_suffix = '-' | append: fabric_slug
+
+      if product.handle contains fabric_suffix
+        assign suffix_start = product.handle.size | minus: fabric_suffix.size
+        assign handle_end = product.handle | slice: suffix_start, fabric_suffix.size
+
+        if handle_end == fabric_suffix
+          assign fabric_base_handle = product.handle | remove_last: fabric_suffix
+          break
+        endif
+      endif
+    endfor
+
+    if fabric_base_handle != blank
+      for fabric_slug in fabric_slugs
+        assign fabric_handle = fabric_base_handle | append: '-' | append: fabric_slug
+
+        if fabric_handle != product.handle and all_products[fabric_handle].id != blank
+          assign fabric_sibling_count = fabric_sibling_count | plus: 1
+        endif
+      endfor
+    endif
+  endif
 -%}
 
 {%- unless product.has_only_default_variant -%}
@@ -64,6 +98,115 @@
           assign resolved_option_selector_style = 'variant_image'
         endif
       %}
+
+      {%- if fabric_sibling_count > 0 and color_label_list contains option_downcase -%}
+        {%- liquid
+          assign size_position = 0
+
+          for other_option in product.options_with_values
+            assign other_option_downcase = other_option.name | downcase
+
+            if size_label_list contains other_option_downcase
+              assign size_position = other_option.position
+            endif
+          endfor
+
+          if size_position > 0
+            assign size_index = size_position | minus: 1
+            assign selected_size = product.selected_or_first_available_variant.options[size_index]
+          endif
+
+          assign color_index = option.position | minus: 1
+          assign name = form_id | append: '-option' | append: option.position
+        -%}
+
+        <fieldset class="variant-picker__option fabric-colors v-stack gap-4">
+          <div class="h-stack gap-1">
+            <legend>{{ option.name }}:</legend>
+            <span data-fabric-color-label>{{ option.selected_value }}</span>
+          </div>
+
+          {%- for fabric_slug in fabric_slugs -%}
+            {%- assign fabric_handle = fabric_base_handle | append: '-' | append: fabric_slug -%}
+
+            {%- if fabric_handle == product.handle -%}
+              <div class="fabric-colors__group v-stack gap-2">
+                <p class="fabric-colors__title">{{ fabric_names[forloop.index0] }}</p>
+
+                <div class="variant-picker__option-values h-stack gap-2.5 wrap">
+                  {%- for option_value in option.values -%}
+                    {%- render 'option-value', type: 'swatch', form: form_id, option_value: option_value, param_name: name, option_position: option.position, hide_if_disabled: hide_sold_out_variants, show_tooltip: true, id_prefix: forloop.index -%}
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- else -%}
+              {%- assign fabric_product = all_products[fabric_handle] -%}
+
+              {%- if fabric_product.id != blank -%}
+                <div class="fabric-colors__group v-stack gap-2">
+                  <p class="fabric-colors__title">{{ fabric_names[forloop.index0] }}</p>
+
+                  <div class="variant-picker__option-values h-stack gap-2.5 wrap">
+                    {%- for fabric_color in fabric_product.options_with_values[color_index].values -%}
+                      {%- liquid
+                        # Same size when this fabric has it, otherwise the first variant of the color in stock
+                        assign color_variants = fabric_product.variants | where: 'available', true
+                        assign color_variants = color_variants | concat: fabric_product.variants
+                        assign fabric_variant = null
+
+                        for color_variant in color_variants
+                          if color_variant.options[color_index] == fabric_color.name
+                            if size_position == 0 or color_variant.options[size_index] == selected_size
+                              assign fabric_variant = color_variant
+                              break
+                            endif
+                          endif
+                        endfor
+
+                        if fabric_variant == null
+                          for color_variant in color_variants
+                            if color_variant.options[color_index] == fabric_color.name
+                              assign fabric_variant = color_variant
+                              break
+                            endif
+                          endfor
+                        endif
+
+                        assign fabric_color_disabled = true
+
+                        if fabric_variant.available
+                          assign fabric_color_disabled = false
+                        endif
+                      -%}
+
+                      {%- unless hide_sold_out_variants and fabric_color_disabled -%}
+                        {%- render 'option-value', type: 'swatch', url: fabric_variant.url, label: fabric_color.name, disabled: fabric_color_disabled, show_tooltip: true, id_prefix: 'fabric-color' -%}
+                      {%- endunless -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+        </fieldset>
+
+        <script>
+          // Colors of the other fabric are links: name the clicked color right away while its page loads
+          if (!window.fabricColorsListening) {
+            window.fabricColorsListening = true;
+            document.addEventListener('click', (event) => {
+              const swatch = event.target.closest('.fabric-colors a.color-swatch');
+              if (!swatch) return;
+              const picker = swatch.closest('.fabric-colors');
+              picker.querySelector('[data-fabric-color-label]').textContent = swatch.dataset.tooltip;
+              picker.querySelectorAll('.color-swatch').forEach((other) => other.classList.toggle('is-selected', other === swatch));
+              picker.querySelectorAll('input:checked').forEach((input) => input.classList.add('is-leaving'));
+            });
+          }
+        </script>
+
+        {%- continue -%}
+      {%- endif -%}
 
       <fieldset class="variant-picker__option v-stack gap-2">
         <div class="variant-picker__option-info h-stack justify-between gap-2">
