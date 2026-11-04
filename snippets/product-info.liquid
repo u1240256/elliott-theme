@@ -290,7 +290,13 @@
                             assign selected = false
                           endif
                         -%}
-
+                        {%- render 'option-value', type: 'swatch', url: sibling.url, label: color_names[forloop.index0], selected: selected, show_tooltip: true, id_prefix: 'color-sibling' -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+                  </div>
+                </div>
+              </div>
+            {%- endif -%}
 
           {%- when 'fabric_siblings' -%}
             {%- comment -%}
