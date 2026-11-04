@@ -46,8 +46,8 @@
     endif
   endunless
 
-  # Each colourway is its own product, titled "Color – Fabric – Type". The grid shows one card per fabric and type
-  # (like Bubble Rompers); the product page links to the other colours. Count those cards for the toolbar.
+  # Each colourway is its own product, titled "Color – Fabric – Type". The grid shows one card per garment type, across
+  # fabrics (like Rompers); the product page links to the other colours, grouped by fabric. Count those cards for the toolbar.
   # A garment sold as one product per fabric ("Bubble Romper - Solid Jersey", "Bubble Romper - 8x5 Ribbed") also
   # shows as one card, the first fabric in this list; its product page groups both fabrics' colours.
   assign fabric_slugs = 'solid-jersey,8x5-ribbed' | split: ','
@@ -70,7 +70,9 @@
       endif
     endfor
 
-    if title_parts.size >= 3
+    if title_parts.size == 3
+      assign family_key = title_parts.last
+    elsif title_parts.size > 3
       assign color_prefix = title_parts.first | append: ' – '
       assign family_key = product.title | remove_first: color_prefix
     elsif fabric_base_title != blank
@@ -439,15 +441,13 @@
                         endif
                       endfor
 
-                      if title_parts.size >= 3
+                      if title_parts.size == 3
+                        assign family_key = title_parts.last
+                        assign card_title = title_parts.last | append: ' - ' | append: title_parts[1]
+                      elsif title_parts.size > 3
                         assign color_prefix = title_parts.first | append: ' – '
                         assign family_key = product.title | remove_first: color_prefix
-
-                        if title_parts.size == 3
-                          assign card_title = title_parts.last | append: ' - ' | append: title_parts[1]
-                        else
-                          assign card_title = family_key
-                        endif
+                        assign card_title = family_key
                       elsif fabric_base_title != blank
                         assign family_key = fabric_base_title
                       else
@@ -491,10 +491,15 @@
                         for other_product in collection.products
                           if other_product.available
                             assign other_title_parts = other_product.title | split: ' – '
-                            assign other_color_prefix = other_title_parts.first | append: ' – '
-                            assign other_family_key = other_product.title | remove_first: other_color_prefix
 
-                            if other_family_key == family_key
+                            if other_title_parts.size == 3
+                              assign other_family_key = other_title_parts.last
+                            else
+                              assign other_color_prefix = other_title_parts.first | append: ' – '
+                              assign other_family_key = other_product.title | remove_first: other_color_prefix
+                            endif
+
+                            if other_title_parts.size >= 3 and other_family_key == family_key
                               assign card_product = other_product
                               break
                             endif
@@ -503,38 +508,81 @@
                       endif
 
                       # Every colour of this garment on the page for the card's swatches, in the order of the
-                      # "Color swatch configuration" theme setting, then any colour not listed there
+                      # "Color swatch configuration" theme setting, then any colour not listed there. A colour sold in
+                      # several fabrics gets one swatch: the card's own colourway, else the first fabric in the list.
                       assign colourway_products = null
 
                       if card_title != null
                         assign colourway_products = collection.products | where: 'id', 0
-                        assign colourway_ids = '|'
+                        assign colourway_colours = '|'
+                        assign card_colour = card_product.title | split: ' – ' | first
+                        assign garment_fabrics = '|'
+                        assign garment_fabric_count = 0
 
                         for swatch_item in swatch_names
                           assign swatch_name = swatch_item | split: ':' | first | strip
-                          assign colourway_title = swatch_name | append: ' – ' | append: family_key
-                          assign matching_products = collection.products | where: 'title', colourway_title
+                          assign colour_marker = '|' | append: swatch_name | append: '|'
 
-                          for matching_product in matching_products
-                            assign colourway_ids = colourway_ids | append: matching_product.id | append: '|'
-                          endfor
+                          if colourway_colours contains colour_marker
+                            continue
+                          endif
 
-                          assign colourway_products = colourway_products | concat: matching_products
+                          if swatch_name == card_colour
+                            assign matching_products = collection.products | where: 'id', card_product.id
+                          elsif title_parts.size == 3
+                            assign matching_products = collection.products | where: 'id', 0
+
+                            for fabric_name in fabric_names
+                              assign colourway_title = swatch_name | append: ' – ' | append: fabric_name | append: ' – ' | append: family_key
+                              assign matching_products = collection.products | where: 'title', colourway_title
+
+                              if matching_products.size > 0
+                                break
+                              endif
+                            endfor
+                          else
+                            assign colourway_title = swatch_name | append: ' – ' | append: family_key
+                            assign matching_products = collection.products | where: 'title', colourway_title
+                          endif
+
+                          if matching_products.size > 0
+                            assign colourway_colours = colourway_colours | append: swatch_name | append: '|'
+                            assign colourway_products = colourway_products | concat: matching_products
+                          endif
                         endfor
 
                         for other_product in collection.products
                           assign other_title_parts = other_product.title | split: ' – '
-                          assign other_color_prefix = other_title_parts.first | append: ' – '
-                          assign other_family_key = other_product.title | remove_first: other_color_prefix
-                          assign other_marker = '|' | append: other_product.id | append: '|'
+
+                          if other_title_parts.size == 3
+                            assign other_family_key = other_title_parts.last
+                          else
+                            assign other_color_prefix = other_title_parts.first | append: ' – '
+                            assign other_family_key = other_product.title | remove_first: other_color_prefix
+                          endif
 
                           if other_title_parts.size >= 3 and other_family_key == family_key
-                            unless colourway_ids contains other_marker
+                            assign other_fabric_marker = '|' | append: other_title_parts[1] | append: '|'
+
+                            unless garment_fabrics contains other_fabric_marker
+                              assign garment_fabrics = garment_fabrics | append: other_title_parts[1] | append: '|'
+                              assign garment_fabric_count = garment_fabric_count | plus: 1
+                            endunless
+
+                            assign colour_marker = '|' | append: other_title_parts.first | append: '|'
+
+                            unless colourway_colours contains colour_marker
+                              assign colourway_colours = colourway_colours | append: other_title_parts.first | append: '|'
                               assign matching_products = collection.products | where: 'id', other_product.id
                               assign colourway_products = colourway_products | concat: matching_products
                             endunless
                           endif
                         endfor
+
+                        # Sold in more than one fabric here: the card names just the garment, like "Romper"
+                        if title_parts.size == 3 and garment_fabric_count > 1
+                          assign card_title = family_key
+                        endif
                       endif
 
                       assign card_position = card_position | plus: 1

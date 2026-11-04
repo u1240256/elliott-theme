@@ -119,8 +119,18 @@
             {%- if product != blank -%}
               {%- assign product_title = product.title -%}
 
-              {%- comment -%}Fabric pairs read as one garment (see snippets/variant-picker): "Bubble Romper - Solid Jersey" shows as "Bubble Romper"{%- endcomment -%}
+              {%- comment -%}
+                On the product page a garment reads as one product, its color and fabric being picked below: a colorway
+                "Sweet Pea Blush – 8x5 Ribbed – Romper" shows as "Romper", and a fabric pair (see snippets/variant-picker)
+                "Bubble Romper - Solid Jersey" as "Bubble Romper"
+              {%- endcomment -%}
               {%- liquid
+                assign colorway_title_parts = product_title | split: ' – '
+
+                if colorway_title_parts.size == 3 and request.page_type == 'product' and context == 'main_product'
+                  assign product_title = colorway_title_parts.last
+                endif
+
                 assign fabric_slugs = 'solid-jersey,8x5-ribbed' | split: ','
                 assign fabric_names = 'Solid Jersey,8x5 Ribbed' | split: ','
 
@@ -248,54 +258,162 @@
 
           {%- when 'color_siblings' -%}
             {%- comment -%}
-              Each colorway is its own product, handled "<color>-<fabric>-<type>". Swap the color prefix to find the
-              same garment and fabric in every other color, and link to each one that exists as a swatch.
-              Swatch colors come from the "Color swatch configuration" theme setting.
+              Each colorway is its own product, titled "<Color> – <Fabric> – <Type>". Every color of the same garment, in
+              every fabric, is shown as a swatch grouped by fabric (the way Bubble Romper is, see snippets/variant-picker),
+              each linking to that product with the selected size kept when it exists there.
+              The colorways are read from the product's collection holding most of them, which avoids the per-page limit
+              of all_products. Swatch colors and order come from the "Color swatch configuration" theme setting.
             {%- endcomment -%}
             {%- liquid
-              assign color_slugs = 'baby-bear-black,cozy-charcoal,snuggle-white,pine-green,sweet-pea-blush,ladybug-red,teddy-bear-brown,little-sailor-navy,baby-sunshine-yellow,baby-rose' | split: ','
-              assign color_names = 'Baby Bear Black,Cozy Charcoal,Snuggle White,Pine Green,Sweet Pea Blush,Ladybug Red,Teddy Bear Brown,Little Sailor Navy,Baby Sunshine Yellow,Baby Rose' | split: ','
-              assign family_suffix = ''
-              assign current_color = ''
+              assign fabric_names = 'Solid Jersey,8x5 Ribbed' | split: ','
+              assign swatch_names = settings.color_swatch_config | newline_to_br | split: '<br />'
+              assign title_parts = product.title | split: ' – '
+              assign colorway_source = null
 
-              for slug in color_slugs
-                assign prefix = slug | append: '-'
-                assign handle_start = product.handle | slice: 0, prefix.size
-                if handle_start == prefix
-                  assign family_suffix = product.handle | remove_first: prefix
-                  assign current_color = color_names[forloop.index0]
-                  break
-                endif
-              endfor
+              if title_parts.size == 3
+                assign current_color = title_parts.first
+                assign garment_type = title_parts.last
+                assign best_count = 0
+
+                for candidate in product.collections
+                  assign candidate_count = 0
+
+                  for candidate_product in candidate.products
+                    assign candidate_parts = candidate_product.title | split: ' – '
+
+                    if candidate_parts.size == 3 and candidate_parts.last == garment_type
+                      assign candidate_count = candidate_count | plus: 1
+                    endif
+                  endfor
+
+                  if candidate_count > best_count
+                    assign best_count = candidate_count
+                    assign colorway_source = candidate
+                  endif
+                endfor
+              endif
             -%}
 
-            {%- if family_suffix != blank -%}
-              <div class="variant-picker color-siblings v-stack gap-4" {{ block.shopify_attributes }}>
-                <div class="variant-picker__option v-stack gap-2">
+            {%- if colorway_source != null -%}
+              {%- liquid
+                # Fabrics this garment comes in, so the headings only show when there is more than one
+                assign garment_fabric_count = 0
+
+                for fabric_name in fabric_names
+                  for colorway in colorway_source.products
+                    assign colorway_parts = colorway.title | split: ' – '
+
+                    if colorway_parts.size == 3 and colorway_parts[1] == fabric_name and colorway_parts.last == garment_type
+                      assign garment_fabric_count = garment_fabric_count | plus: 1
+                      break
+                    endif
+                  endfor
+                endfor
+              -%}
+
+              <div class="variant-picker color-siblings fabric-colors v-stack gap-4" {{ block.shopify_attributes }}>
+                <div class="variant-picker__option v-stack gap-4">
                   <div class="h-stack gap-1">
                     <p class="text-subdued">{{ block.settings.option_name | default: 'Color' | escape }}:</p>
-                    <span>{{ current_color }}</span>
+                    <span data-fabric-color-label>{{ current_color }}</span>
                   </div>
 
-                  <div class="variant-picker__option-values h-stack gap-2.5 wrap">
-                    {%- for slug in color_slugs -%}
-                      {%- assign sibling_handle = slug | append: '-' | append: family_suffix -%}
-                      {%- assign sibling = all_products[sibling_handle] -%}
+                  {%- for fabric_name in fabric_names -%}
+                    {%- liquid
+                      # This fabric's colorways, in the order of the swatch configuration, then any color not listed there
+                      assign fabric_colorways = colorway_source.products | where: 'id', 0
+                      assign listed_titles = '|'
 
-                      {%- if sibling.id != blank -%}
-                        {%- liquid
-                          if sibling.id == product.id
-                            assign selected = true
-                          else
-                            assign selected = false
-                          endif
-                        -%}
-                        {%- render 'option-value', type: 'swatch', url: sibling.url, label: color_names[forloop.index0], selected: selected, show_tooltip: true, id_prefix: 'color-sibling' -%}
-                      {%- endif -%}
-                    {%- endfor -%}
-                  </div>
+                      for swatch_item in swatch_names
+                        assign swatch_name = swatch_item | split: ':' | first | strip
+                        assign colorway_title = swatch_name | append: ' – ' | append: fabric_name | append: ' – ' | append: garment_type
+                        assign listed_titles = listed_titles | append: colorway_title | append: '|'
+                        assign matching_colorways = colorway_source.products | where: 'title', colorway_title
+                        assign fabric_colorways = fabric_colorways | concat: matching_colorways
+                      endfor
+
+                      for colorway in colorway_source.products
+                        assign colorway_parts = colorway.title | split: ' – '
+                        assign colorway_marker = '|' | append: colorway.title | append: '|'
+
+                        if colorway_parts.size == 3 and colorway_parts[1] == fabric_name and colorway_parts.last == garment_type
+                          unless listed_titles contains colorway_marker
+                            assign matching_colorways = colorway_source.products | where: 'id', colorway.id
+                            assign fabric_colorways = fabric_colorways | concat: matching_colorways
+                          endunless
+                        endif
+                      endfor
+                    -%}
+
+                    {%- if fabric_colorways.size > 0 -%}
+                      <div class="fabric-colors__group v-stack gap-2">
+                        {%- if garment_fabric_count > 1 -%}
+                          <p class="fabric-colors__title">{{ fabric_name }}</p>
+                        {%- endif -%}
+
+                        <div class="variant-picker__option-values h-stack gap-2.5 wrap">
+                          {%- for colorway in fabric_colorways -%}
+                            {%- liquid
+                              assign colorway_color = colorway.title | split: ' – ' | first
+
+                              if colorway.id == product.id
+                                assign selected = true
+                              else
+                                assign selected = false
+                              endif
+
+                              if colorway.available
+                                assign colorway_disabled = false
+                              else
+                                assign colorway_disabled = true
+                              endif
+
+                              # Size -> link, so the size picked here is kept on the other colorway
+                              capture size_urls
+                                echo '{'
+                                for colorway_variant in colorway.variants
+                                  echo colorway_variant.title | json
+                                  echo ':'
+                                  echo colorway_variant.url | json
+                                  unless forloop.last
+                                    echo ','
+                                  endunless
+                                endfor
+                                echo '}'
+                              endcapture
+                            -%}
+
+                            <span class="contents" data-size-urls="{{ size_urls | escape }}">
+                              {%- render 'option-value', type: 'swatch', url: colorway.url, label: colorway_color, selected: selected, disabled: colorway_disabled, show_tooltip: true, id_prefix: 'color-sibling' -%}
+                            </span>
+                          {%- endfor -%}
+                        </div>
+                      </div>
+                    {%- endif -%}
+                  {%- endfor -%}
                 </div>
               </div>
+
+              <script>
+                // Keep the selected size when moving to another colorway, and name the picked color right away
+                if (!window.colorSiblingsListening) {
+                  window.colorSiblingsListening = true;
+                  document.addEventListener('click', (event) => {
+                    const swatch = event.target.closest('.color-siblings a.color-swatch');
+                    if (!swatch) return;
+                    const picker = swatch.closest('.color-siblings');
+                    const sizeLabel = document.querySelector('variant-picker input[data-option-position]:checked + label');
+                    const sizeUrls = JSON.parse(swatch.parentElement.dataset.sizeUrls || '{}');
+                    const sizeUrl = sizeLabel && sizeUrls[sizeLabel.textContent.trim()];
+                    if (sizeUrl) {
+                      event.preventDefault();
+                      window.location.href = sizeUrl;
+                    }
+                    picker.querySelector('[data-fabric-color-label]').textContent = swatch.dataset.tooltip;
+                    picker.querySelectorAll('.color-swatch').forEach((other) => other.classList.toggle('is-selected', other === swatch));
+                  });
+                }
+              </script>
             {%- endif -%}
 
           {%- when 'fabric_siblings' -%}
