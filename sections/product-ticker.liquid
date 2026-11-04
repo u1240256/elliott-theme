@@ -15,14 +15,14 @@
 <div class="product-ticker color-scheme color-scheme--{{ section.settings.color_scheme.id }} color-scheme--bg-{{ color_scheme_hash }} {% if section.settings.separate_section_with_border %}bordered-section{% endif %}">
   {%- if section.settings.title != blank -%}
     <p class="product-ticker__title">
-      <span aria-hidden="true">{{ section.settings.icon }}</span>
+      <span class="product-ticker__pulse" aria-hidden="true"></span>
       {{ section.settings.title }}
-      <span aria-hidden="true">{{ section.settings.icon }}</span>
     </p>
   {%- endif -%}
 
   {%- assign marquee_id = 'product-ticker-marquee-' | append: section.id -%}
   {%- render 'marquee-pause-button', target: marquee_id, class: 'product-ticker__toggle' -%}
+
   <marquee-text id="{{ marquee_id }}" speed="{{ section.settings.scrolling_speed }}" direction="left" pause-on-hover class="scrolling-content">
     <div class="scrolling-content__item">
       {%- if section.settings.collection != blank -%}
@@ -49,7 +49,7 @@
             <span class="product-ticker__info">
               <span class="product-ticker__name">{{ product.title }}</span>
               <span class="product-ticker__status">
-                <span aria-hidden="true">{{ section.settings.icon }}</span>
+                {%- if section.settings.icon != blank %}<span aria-hidden="true">{{ section.settings.icon }}</span> {% endif -%}
                 {{ ticker_label }}
                 {%- if units_sold != blank and units_sold > 0 %} {{ units_sold }} sold{% endif -%}
               </span>
@@ -62,7 +62,7 @@
             {{- 'product-1' | placeholder_svg_tag: 'product-ticker__image' -}}
             <span class="product-ticker__info">
               <span class="product-ticker__name">Product title</span>
-              <span class="product-ticker__status"><span aria-hidden="true">{{ section.settings.icon }}</span> {{ section.settings.default_label }}</span>
+              <span class="product-ticker__status">{{ section.settings.default_label }}</span>
             </span>
           </span>
         {%- endfor -%}
@@ -72,42 +72,83 @@
 </div>
 
 {% stylesheet %}
+  /* A Gold Deep tag sits beside (desktop) or above (mobile) a strip of cream pill chips */
   .product-ticker {
-    --scrolling-content-content-gap: 0px;
-    position: relative;
-    padding-block: .875rem;
-    border-block: 1px solid rgb(var(--text-color) / .08);
-  }
-
-  .product-ticker__toggle {
-    position: absolute;
-    inset-block-start: .625rem;
-    inset-inline-end: 1rem;
-    z-index: 1;
+    --scrolling-content-content-gap: .75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .75rem 1rem;
+    padding: 1.25rem var(--container-gutter);
   }
 
   .product-ticker__title {
-    margin-block-end: .75rem;
-    font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: .2em;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin-inline-end: auto;
+    padding: .5rem 1rem;
+    font-size: .6875rem;
+    font-weight: 500;
+    letter-spacing: .16em;
     text-transform: uppercase;
+    white-space: nowrap;
+    color: #ffffff;
+    background: #916323;
+    border-radius: 999px;
+  }
+
+  .product-ticker__pulse {
+    position: relative;
+    width: .375rem;
+    height: .375rem;
+    background: currentColor;
+    border-radius: 50%;
+  }
+
+  .product-ticker__pulse::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: currentColor;
+    animation: product-ticker-pulse 1.8s ease-out infinite;
+  }
+
+  @keyframes product-ticker-pulse {
+    to {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .product-ticker__pulse::after {
+      animation: none;
+    }
+  }
+
+  .product-ticker .scrolling-content {
+    order: 1;
+    flex: 1 0 100%;
+    min-width: 0;
+    mask-image: linear-gradient(to right, transparent, #000 2.5rem, #000 calc(100% - 2.5rem), transparent);
   }
 
   .product-ticker__item {
     display: flex;
     align-items: center;
-    gap: .875rem;
-    padding-inline: 1.5rem;
-    border-inline-end: 1px solid rgb(var(--text-color) / .1);
+    gap: .75rem;
+    padding: .3125rem 1.25rem .3125rem .3125rem;
+    background: #f7f0e8;
+    border-radius: 999px;
   }
 
   .product-ticker__image {
-    width: 44px;
-    height: 44px;
+    width: 2.75rem;
+    height: 2.75rem;
     object-fit: cover;
-    border-radius: 4px;
+    border-radius: 50%;
     flex-shrink: 0;
   }
 
@@ -121,17 +162,36 @@
     max-width: 13rem;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: .8125rem;
+    font-family: var(--heading-font-family);
+    font-size: 1.0625rem;
+    line-height: 1.2;
   }
 
   .product-ticker__status {
-    font-size: .75rem;
-    opacity: .8;
+    font-size: .625rem;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: #916323;
   }
 
   @media screen and (min-width: 700px) {
-    .product-ticker__item {
-      padding-inline: 1.75rem;
+    .product-ticker {
+      flex-wrap: nowrap;
+      gap: 1.25rem;
+    }
+
+    .product-ticker__title {
+      margin-inline-end: 0;
+    }
+
+    .product-ticker__toggle {
+      order: 1;
+    }
+
+    .product-ticker .scrolling-content {
+      order: 0;
+      flex: 1 1 auto;
     }
   }
 {% endstylesheet %}
@@ -167,7 +227,8 @@
       "type": "text",
       "id": "icon",
       "label": "Icon (emoji)",
-      "default": "🔥"
+      "info": "Shown before each product's status line. Leave empty for none.",
+      "default": ""
     },
     {
       "type": "collection",

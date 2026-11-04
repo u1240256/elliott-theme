@@ -57,8 +57,9 @@
                       {%- capture horizontal_position_id -%}product_{{ product_index }}_horizontal_position{%- endcapture -%}
                       {%- capture vertical_position_id -%}product_{{ product_index }}_vertical_position{%- endcapture -%}
 
-                      <button class="shop-the-look__hot-spot" style="--shop-the-look-hot-spot-top: {{ block.settings[vertical_position_id] }}%; --shop-the-look-hot-spot-left: {{ block.settings[horizontal_position_id] }}%; {% render 'surface', background: block.settings.hot_spots_background %}" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="{{ 'general.accessibility.go_to_item' | t: index: product_index | escape }}">
+                      <button class="shop-the-look__hot-spot" style="--shop-the-look-hot-spot-top: {{ block.settings[vertical_position_id] }}%; --shop-the-look-hot-spot-left: {{ block.settings[horizontal_position_id] }}%;" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="{{ 'general.accessibility.go_to_item' | t: index: product_index | escape }}">
                         <span class="sr-only">{{- 'general.accessibility.go_to_item' | t: index: product_index -}}</span>
+                        <span class="shop-the-look__hot-spot-number" aria-hidden="true">{{ product_index }}</span>
                       </button>
                     {%- endfor -%}
                   </carousel-navigation>
@@ -106,10 +107,11 @@
                     {%- render 'button', href: href_attribute, content: button_text -%}
 
                     {%- if products_count > 1 -%}
-                      <carousel-navigation aria-controls="shop-the-look-item-carousel-{{ block.id }}-{% if device == 'mobile' %}md{% else %}md-max{% endif %}" class="page-dots">
+                      <carousel-navigation aria-controls="shop-the-look-item-carousel-{{ block.id }}-{% if device == 'mobile' %}md{% else %}md-max{% endif %}" class="page-dots page-dots--numbered">
                         {%- for i in (1..products_count) -%}
                           <button class="tap-area" aria-current="{% if forloop.first %}true{% else %}false{% endif %}" aria-label="{{ 'general.accessibility.go_to_item' | t: index: forloop.index | escape }}">
                             <span class="sr-only">{{- 'general.accessibility.go_to_item' | t: index: forloop.index -}}</span>
+                            <span aria-hidden="true">{{ forloop.index }}</span>
                           </button>
                         {%- endfor -%}
                       </carousel-navigation>
