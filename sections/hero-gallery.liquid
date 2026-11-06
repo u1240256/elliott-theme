@@ -219,7 +219,7 @@
     position: absolute;
     top: 50%;
     z-index: 1;
-    display: grid;
+    display: none;
     place-items: center;
     width: 2.5rem;
     height: 2.5rem;
@@ -286,7 +286,7 @@
     display: block;
   }
   .hero-gallery__dots {
-    display: none;
+    display: flex;
     justify-content: center;
     gap: .5rem;
     padding-block: 1rem 0;
@@ -359,6 +359,8 @@
     }
 
     .hero-gallery__arrow {
+      display: grid;
+      place-items: center;
       width: 2.75rem;
       height: 2.75rem;
     }
