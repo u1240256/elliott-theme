@@ -17,7 +17,7 @@
         "message_Xehx8E": {
           "type": "message",
           "settings": {
-            "text": "Free US shipping on orders $50+"
+            "text": "Free US shipping on orders $65+"
           }
         },
         "message_brand": {
@@ -62,12 +62,6 @@
         "sidebar_show_dividers": false,
         "sidebar_open_second_level_menus": false,
         "layout": "logo_center_navigation_below",
-        "show_icons": true,
-        "show_country_selector": true,
-        "show_country_name": false,
-        "show_country_flag": true,
-        "show_locale_selector": false,
-        "transparent_header_text_color": "#ffffff",
         "search_position": "left",
         "utility_link_1_text": "",
         "utility_link_1_url": "",
@@ -76,7 +70,13 @@
         "utility_link_3_text": "",
         "utility_link_3_url": "",
         "highlight_menu_item": "New Arrivals",
-        "highlight_menu_color": "#916323"
+        "highlight_menu_color": "#916323",
+        "show_icons": true,
+        "show_country_selector": true,
+        "show_country_name": false,
+        "show_country_flag": true,
+        "show_locale_selector": false,
+        "transparent_header_text_color": "#ffffff"
       }
     }
   },
