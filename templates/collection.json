@@ -12,6 +12,10 @@
     "promo-banner": {
       "type": "promo-banner",
       "settings": {
+        "eyebrow": "A little welcome gift",
+        "highlight": "Free shipping",
+        "heading": "on orders over $65",
+        "button_label": "Shop now",
         "link": "shopify://collections/all",
         "accessibility_label": "Shop the current promotion",
         "full_width": true,
@@ -22,26 +26,34 @@
       "type": "collection-banner",
       "settings": {
         "color_scheme": "scheme-1",
-        "show_image": false,
+        "image_size": "auto",
         "allow_transparent_header": false,
+        "show_image": false,
         "reveal": false,
         "enable_parallax": false,
         "show_collection_title": true,
         "show_collection_description": false,
         "show_breadcrumb": true,
         "content_width": "md",
-        "text_alignment": "center"
+        "text_alignment": "center",
+        "overlay_color": "#000000",
+        "overlay_opacity": 30
       }
     },
     "main": {
       "type": "main-collection",
       "settings": {
         "color_scheme": "scheme-1",
+        "hide_product_information": false,
         "products_per_page": 50,
         "products_per_row_mobile": "2",
         "products_size_desktop": "medium",
         "show_grid_mode_selector": false,
+        "horizontal_spacing_factor": 1,
+        "vertical_spacing_factor": 1,
         "filter_layout": "sidebar",
+        "quick_links_menu": "",
+        "sub_collections_menu": "main-menu",
         "show_sort_by": true,
         "show_filters": true,
         "show_results_count": true,
