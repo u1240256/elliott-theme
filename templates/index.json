@@ -18,7 +18,7 @@
             "eyebrow": "Soft. Safe. Made for little ones.",
             "heading": "The ultimate gift guide",
             "text": "Thoughtful, cosy pieces for the newest member of the family.",
-            "image": "shopify://shop_images/MainGallery1.jpg",
+            "image": "shopify://shop_images/MainGallery2.jpg",
             "button_label": "Shop best sellers",
             "link": "shopify://collections/best-sellers",
             "text_position": "center"
@@ -30,7 +30,7 @@
             "eyebrow": "New arrivals",
             "heading": "Made for little adventures",
             "text": "Buttery-soft ribbed sets for slow mornings and sunny afternoons.",
-            "image": "shopify://shop_images/MainGallery2.jpg",
+            "image": "shopify://shop_images/MainGallery3.jpg",
             "button_label": "Shop new arrivals",
             "link": "shopify://collections/all",
             "text_position": "center"
@@ -42,7 +42,7 @@
             "eyebrow": "Shop by color",
             "heading": "Ten gentle shades to mix and match",
             "text": "From Snuggle White to Pine Green, find the colour that feels like them.",
-            "image": "shopify://shop_images/MainGallery3.jpg",
+            "image": "shopify://shop_images/MainGallery1.jpg",
             "button_label": "Shop all colors",
             "link": "shopify://collections/all",
             "text_position": "center"
