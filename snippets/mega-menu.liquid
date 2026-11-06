@@ -11,14 +11,16 @@
       {%- assign sorted_sub_links = link.links | sort_natural: 'title' -%}
       {%- for sub_link in sorted_sub_links -%}
         <li class="v-stack justify-items-start gap-5">
-          <a href="{{ sub_link.url }}" class="h6">{{ sub_link.title }}</a>
+          {%- capture sub_link_url -%}{% render 'representative-collection-link', collection: sub_link.object, fallback_url: sub_link.url %}{%- endcapture -%}
+          <a href="{{ sub_link_url | strip }}" class="h6">{{ sub_link.title }}</a>
 
           {%- if sub_link.links.size > 0 -%}
             <ul class="v-stack gap-2.5 unstyled-list">
               {%- assign sorted_sub_sub_links = sub_link.links | sort_natural: 'title' -%}
               {%- for sub_sub_link in sorted_sub_sub_links -%}
                 <li>
-                  <a href="{{ sub_sub_link.url }}" class="link-faded">{{ sub_sub_link.title }}</a>
+                  {%- capture sub_sub_link_url -%}{% render 'representative-collection-link', collection: sub_sub_link.object, fallback_url: sub_sub_link.url %}{%- endcapture -%}
+                  <a href="{{ sub_sub_link_url | strip }}" class="link-faded">{{ sub_sub_link.title }}</a>
                 </li>
               {%- endfor -%}
             </ul>

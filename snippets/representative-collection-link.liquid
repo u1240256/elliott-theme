@@ -1,0 +1,29 @@
+{%- doc -%}
+  Resolves a collection link to a representative product's URL instead of the collection's own shop page. With
+  only a handful of items per category, sending someone to the collection page just shows the same single
+  grouped product card again, so category navigation (the Baby/Kids/Accessories tiles and their nav dropdowns)
+  links straight to a product. Prefers the colourway with a "...Main" hero photo, falls back to the first
+  available product, and falls back to the given url if the collection has no products at all.
+
+  @param {object} collection - the collection to find a representative product for
+  @param {string} fallback_url - the url to use if the collection has no products
+
+  @example
+    {%- capture resolved_url -%}{% render 'representative-collection-link', collection: sub_link.object, fallback_url: sub_link.url %}{%- endcapture -%}
+    <a href="{{ resolved_url | strip }}">{{ sub_link.title }}</a>
+{%- enddoc -%}
+
+{%- liquid
+  assign representative_product = collection.products.first
+
+  for product in collection.products
+    assign representative_media_name = product.featured_media.preview_image.src | split: '/' | last | split: '?' | first
+
+    if representative_media_name contains 'Main'
+      assign representative_product = product
+      break
+    endif
+  endfor
+
+  assign representative_url = representative_product.url | default: fallback_url
+-%}{{- representative_url -}}
