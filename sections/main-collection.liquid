@@ -209,6 +209,22 @@
                   assign sub_collection = sub_link.object
                   assign sub_collection_image = sub_collection.featured_image | default: sub_collection.products.first.featured_media
 
+                  # Send the tile straight to a representative product instead of the sub-collection's own shop
+                  # page: with so few items per category, that extra click just shows the same one grouped card
+                  # again. Prefer whichever colourway has a "...Main" hero photo, else the first available product.
+                  assign sub_product = sub_collection.products.first
+
+                  for product in sub_collection.products
+                    assign sub_media_name = product.featured_media.preview_image.src | split: '/' | last | split: '?' | first
+
+                    if sub_media_name contains 'Main'
+                      assign sub_product = product
+                      break
+                    endif
+                  endfor
+
+                  assign sub_link_url = sub_product.url | default: sub_link.url
+
                   if forloop.index > 3
                     assign image_loading = 'lazy'
                   else
@@ -218,7 +234,7 @@
 
                 <div class="product-card">
                   <div class="product-card__figure">
-                    <a href="{{ sub_link.url }}" class="product-card__media" draggable="false" data-instant>
+                    <a href="{{ sub_link_url }}" class="product-card__media" draggable="false" data-instant>
                       {%- if sub_collection_image != blank -%}
                         {%- capture image_classes -%}product-card__image product-card__image--primary {% if settings.product_image_aspect_ratio contains 'crop' %}object-cover{% endif %} aspect-{{ settings.product_image_aspect_ratio | split: '_' | first }}{%- endcapture -%}
                         {{- sub_collection_image | image_url: width: sub_collection_image.width | image_tag: loading: image_loading, sizes: '(max-width: 699px) 50vw, (max-width: 999px) 33vw, 25vw', widths: '200,300,400,500,600,700,800,1000,1200,1400', draggable: 'false', class: image_classes, alt: sub_link.title -}}
@@ -229,7 +245,7 @@
                   </div>
 
                   <div class="product-card__info">
-                    <a href="{{ sub_link.url }}" class="product-title {{ text_class }}" data-instant>{{ sub_link.title }}</a>
+                    <a href="{{ sub_link_url }}" class="product-title {{ text_class }}" data-instant>{{ sub_link.title }}</a>
                   </div>
                 </div>
               {%- endfor -%}
