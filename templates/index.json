@@ -15,10 +15,10 @@
         "slide-1": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/MainGallery2.jpg",
             "eyebrow": "Soft. Safe. Made for little ones.",
             "heading": "The ultimate gift guide",
             "text": "Thoughtful, cosy pieces for the newest member of the family.",
-            "image": "shopify://shop_images/MainGallery2.jpg",
             "button_label": "Shop best sellers",
             "link": "shopify://collections/best-sellers",
             "text_position": "center"
@@ -27,10 +27,10 @@
         "slide-2": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/MainGallery3.jpg",
             "eyebrow": "New arrivals",
             "heading": "Made for little adventures",
             "text": "Buttery-soft ribbed sets for slow mornings and sunny afternoons.",
-            "image": "shopify://shop_images/MainGallery3.jpg",
             "button_label": "Shop new arrivals",
             "link": "shopify://collections/all",
             "text_position": "center"
@@ -39,10 +39,10 @@
         "slide-3": {
           "type": "slide",
           "settings": {
+            "image": "shopify://shop_images/MainGallery1.jpg",
             "eyebrow": "Shop by color",
             "heading": "Ten gentle shades to mix and match",
             "text": "From Snuggle White to Pine Green, find the colour that feels like them.",
-            "image": "shopify://shop_images/MainGallery1.jpg",
             "button_label": "Shop all colors",
             "link": "shopify://collections/all",
             "text_position": "center"
@@ -63,14 +63,14 @@
     "promo-banner": {
       "type": "promo-banner",
       "settings": {
+        "eyebrow": "A little welcome gift",
+        "highlight": "Free shipping",
+        "heading": "on orders over $65",
+        "button_label": "Shop now",
         "link": "shopify://collections/all",
         "accessibility_label": "Free shipping on orders over $50. Shop now",
         "full_width": true,
-        "remove_vertical_spacing": true,
-        "eyebrow": "A little welcome gift",
-        "highlight": "Free shipping",
-        "heading": "on orders over $50",
-        "button_label": "Shop now"
+        "remove_vertical_spacing": true
       }
     },
     "our-favorites": {
@@ -85,25 +85,33 @@
         "card-1": {
           "type": "card",
           "settings": {
-            "collection": "baby"
+            "collection": "baby",
+            "label": "",
+            "link": ""
           }
         },
         "card-2": {
           "type": "card",
           "settings": {
-            "collection": "kids"
+            "collection": "kids",
+            "label": "",
+            "link": ""
           }
         },
         "card-3": {
           "type": "card",
           "settings": {
-            "collection": "accessories"
+            "collection": "accessories",
+            "label": "",
+            "link": ""
           }
         },
         "card-4": {
           "type": "card",
           "settings": {
-            "collection": "swaddles"
+            "collection": "swaddles",
+            "label": "",
+            "link": ""
           }
         },
         "tab-2": {
@@ -115,25 +123,33 @@
         "card-5": {
           "type": "card",
           "settings": {
-            "collection": "zipper-footies"
+            "collection": "zipper-footies",
+            "label": "",
+            "link": ""
           }
         },
         "card-6": {
           "type": "card",
           "settings": {
-            "collection": "rompers"
+            "collection": "rompers",
+            "label": "",
+            "link": ""
           }
         },
         "card-7": {
           "type": "card",
           "settings": {
-            "collection": "twirl-dresses"
+            "collection": "twirl-dresses",
+            "label": "",
+            "link": ""
           }
         },
         "card-8": {
           "type": "card",
           "settings": {
-            "collection": "top-bottoms"
+            "collection": "top-bottoms",
+            "label": "",
+            "link": ""
           }
         }
       },
@@ -166,9 +182,9 @@
         "icon": "",
         "collection": "all",
         "products_count": 10,
+        "vary_products": true,
         "default_label": "Popular pick",
-        "scrolling_speed": 0.2,
-        "vary_products": true
+        "scrolling_speed": 0.2
       }
     },
     "first-photo-outfits": {
@@ -214,10 +230,10 @@
           "settings": {
             "collection": "all",
             "products_count": 10,
+            "vary_products": true,
             "title": "New & Trending",
             "link_url": "shopify://collections/new-arrivals",
-            "link_text": "View all",
-            "vary_products": true
+            "link_text": "View all"
           }
         }
       },
@@ -248,10 +264,10 @@
           "settings": {
             "collection": "baby",
             "products_count": 8,
+            "vary_products": true,
             "title": "The Perfect Sleeper",
             "link_url": "shopify://collections/zipper-footies",
-            "link_text": "View all",
-            "vary_products": true
+            "link_text": "View all"
           }
         }
       },
@@ -274,19 +290,12 @@
         "hide_collection_title": false
       }
     },
-    "newsletter": {
-      "type": "newsletter",
+    "brand-promise": {
+      "type": "brand-promise",
       "settings": {
-        "color_scheme": "scheme-light-header",
-        "separate_section_with_border": false,
-        "image_size": "md",
-        "subheading": "Keep me updated",
-        "title": "Join the family",
-        "heading_style": "h2",
-        "content": "<p>Subscribe for new print drops, exclusive offers and gift ideas.</p>",
-        "button_text": "Subscribe",
-        "overlay_color": "#000000",
-        "overlay_opacity": 30
+        "content": "<p>At Elliott and Me, we create high-quality clothing that is ultra-soft, breathable, and gentle on delicate skin. Perfect for snuggles, playtime, and everything in between.</p>",
+        "link_text": "",
+        "link_url": ""
       }
     },
     "brand-story": {
@@ -300,12 +309,19 @@
         "link_url": ""
       }
     },
-    "brand-promise": {
-      "type": "brand-promise",
+    "newsletter": {
+      "type": "newsletter",
       "settings": {
-        "content": "<p>At Elliott and Me, we create high-quality clothing that is ultra-soft, breathable, and gentle on delicate skin. Perfect for snuggles, playtime, and everything in between.</p>",
-        "link_text": "",
-        "link_url": ""
+        "color_scheme": "scheme-light-header",
+        "separate_section_with_border": false,
+        "image_size": "md",
+        "subheading": "Keep me updated",
+        "title": "Join the family",
+        "heading_style": "h2",
+        "content": "<p>Subscribe for new print drops, exclusive offers and gift ideas.</p>",
+        "button_text": "Subscribe",
+        "overlay_color": "#000000",
+        "overlay_opacity": 30
       }
     }
   },
