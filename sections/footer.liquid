@@ -139,6 +139,25 @@
 
       {%- comment -%}
         ------------------------------------------------------------------------------------------------------------------
+        FOOTER ACCESSIBILITY LAUNCHER (MOBILE ONLY)
+
+        On mobile the floating accessibility button is hidden (see snippets/accessibility-widget.liquid) in favour
+        of this inline trigger, which opens the exact same panel. Desktop keeps the floating button instead, so
+        this stays hidden there.
+        ------------------------------------------------------------------------------------------------------------------
+      {%- endcomment -%}
+      <button type="button" id="footer-a11y-launcher" class="footer-accessibility" aria-controls="a11y-panel" aria-expanded="false">
+        <span class="footer-accessibility__icon" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="4.2" r="2.2"/>
+            <path d="M4.2 7.6a1 1 0 0 1 1.2-.8c2.2.5 4.4.8 6.6.8s4.4-.3 6.6-.8a1 1 0 1 1 .4 2c-1.6.3-3.2.6-4.9.7v3.6l2 7.6a1.1 1.1 0 0 1-2.1.6L12 15.2l-2 5.9a1.1 1.1 0 0 1-2.1-.6l2-7.6V9.5c-1.7-.1-3.3-.4-4.9-.7a1 1 0 0 1-.8-1.2z"/>
+          </svg>
+        </span>
+        <span class="footer-accessibility__label">Accessibility</span>
+      </button>
+
+      {%- comment -%}
+        ------------------------------------------------------------------------------------------------------------------
         FOOTER ASIDE (COPYRIGHT + LOCALIZATION SELECTORS + PAYMENT METHODS)
         ------------------------------------------------------------------------------------------------------------------
       {%- endcomment -%}
@@ -185,6 +204,47 @@
     </div>
   </div>
 </div>
+
+{% stylesheet %}
+  .footer-accessibility {
+    display: none;
+  }
+
+  @media screen and (max-width: 699px) {
+    .footer-accessibility {
+      display: grid;
+      justify-items: center;
+      gap: .5rem;
+      margin-block: .5rem 1.5rem;
+      background: none;
+      border: 0;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .footer-accessibility__icon {
+      display: grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      border: 1.5px solid currentColor;
+      border-radius: 50%;
+      color: #916323;
+    }
+
+    .footer-accessibility__icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .footer-accessibility__label {
+      font-size: .6875rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+  }
+{% endstylesheet %}
 
 {% schema %}
 {

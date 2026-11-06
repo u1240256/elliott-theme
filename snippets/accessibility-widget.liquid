@@ -233,6 +233,15 @@
     left: var(--a11y-launcher-gap);
   }
 
+  /* On mobile the floating launcher is replaced by an inline trigger in the footer (see sections/footer.liquid).
+     Only hide it when that footer trigger is actually on the page (the footer is skipped on, e.g., the password
+     page), so there is always a way to reach the panel. The back-to-top button is unrelated and always floats. */
+  @media screen and (max-width: 699px) {
+    body:has(#footer-a11y-launcher) .a11y__launcher {
+      display: none;
+    }
+  }
+
   @media screen and (max-width: 999px) {
     .a11y { --a11y-launcher-size: 48px; --a11y-launcher-gap: 16px; --a11y-stack-gap: 10px; }
     .a11y__launcher svg { width: 26px; height: 26px; }
@@ -942,19 +951,30 @@
     window.addEventListener('scroll', dock, { passive: true });
     dock();
 
+    // The floating launcher is hidden on mobile in favour of an inline trigger in the footer (see
+    // sections/footer.liquid); both open/close the same panel, so track whichever one was used last.
+    const footerLauncher = document.getElementById('footer-a11y-launcher');
+    const launchers = [launcher, footerLauncher].filter(Boolean);
+    let activeLauncher = launcher;
+
     const open = () => {
       panel.classList.add('is-open');
-      launcher.setAttribute('aria-expanded', 'true');
+      launchers.forEach((btn) => btn.setAttribute('aria-expanded', 'true'));
       panel.querySelector('[data-a11y-close]').focus();
     };
 
     const close = () => {
       panel.classList.remove('is-open');
-      launcher.setAttribute('aria-expanded', 'false');
-      launcher.focus();
+      launchers.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+      activeLauncher.focus();
     };
 
-    launcher.addEventListener('click', () => (panel.classList.contains('is-open') ? close() : open()));
+    launchers.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeLauncher = btn;
+        panel.classList.contains('is-open') ? close() : open();
+      });
+    });
     widget.querySelector('[data-a11y-close]').addEventListener('click', close);
 
     document.addEventListener('keydown', (event) => {
@@ -962,7 +982,13 @@
     });
 
     document.addEventListener('click', (event) => {
-      if (panel.classList.contains('is-open') && !widget.contains(event.target)) close();
+      if (
+        panel.classList.contains('is-open') &&
+        !widget.contains(event.target) &&
+        !launchers.some((btn) => btn.contains(event.target))
+      ) {
+        close();
+      }
     });
 
     apply();
