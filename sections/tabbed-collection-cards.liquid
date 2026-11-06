@@ -1,5 +1,5 @@
 {%- comment -%}
-  Section with a heading, a pill toggle of tabs, and under each tab a row of arch-topped image cards with a serif label.
+  Section with a heading, a pill toggle of tabs, and under each tab a row of image cards with a serif label.
   Every "Card" block belongs to the closest "Tab" block above it.
 {%- endcomment -%}
 {%- assign color_scheme_hash = section.settings.color_scheme.settings.background_gradient | default: section.settings.color_scheme.settings.background | md5 -%}
@@ -165,13 +165,10 @@
     scroll-snap-align: start;
   }
 
-  /* Arch-topped frame */
   .tabbed-cards__media {
     width: 100%;
     aspect-ratio: 3 / 4;
     overflow: hidden;
-    background: #f7f0e8;
-    border-radius: 999px 999px 0 0;
   }
 
   .tabbed-cards__media img,
