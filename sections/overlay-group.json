@@ -13,7 +13,16 @@
   "sections": {
     "cart-drawer": {
       "type": "cart-drawer",
-      "settings": {}
+      "settings": {
+        "cross_sell_products": [
+          "gid://shopify/Product/9613851754598",
+          "gid://shopify/Product/9613851820134",
+          "gid://shopify/Product/9613851787366",
+          "gid://shopify/Product/9613851885670",
+          "gid://shopify/Product/9613851852902"
+        ],
+        "cross_sell_title": "Goes well with"
+      }
     },
     "newsletter-popup": {
       "type": "newsletter-popup",
