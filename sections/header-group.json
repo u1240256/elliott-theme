@@ -19,17 +19,10 @@
           "settings": {
             "text": "Free US shipping on orders $65+"
           }
-        },
-        "message_brand": {
-          "type": "message",
-          "settings": {
-            "text": "Buy 1, get 20% off your second item. Select items"
-          }
         }
       },
       "block_order": [
-        "message_Xehx8E",
-        "message_brand"
+        "message_Xehx8E"
       ],
       "name": "t:sections.announcement_bar.name",
       "settings": {
