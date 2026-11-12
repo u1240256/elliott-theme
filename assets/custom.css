@@ -442,3 +442,17 @@
   color: #ffffff;
   background: #916323;
 }
+
+/* Prices: larger, bolder and in full ink so they read at a glance */
+.price-list sale-price {
+  font-weight: 600;
+  color: rgb(var(--text-color));
+}
+
+.product-card__info .price-list sale-price {
+  font-size: 1.125rem;
+}
+
+.price-list--product sale-price {
+  font-size: 1.75rem;
+}

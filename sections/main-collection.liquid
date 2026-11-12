@@ -373,7 +373,11 @@
         {%- endif -%}
 
         <div class="collection">
-          {%- paginate collection.products by section.settings.products_per_page -%}
+          {%- comment -%}
+            Colourways are grouped into one card per garment, which only works when every colourway of a garment is on
+            the same page, so the whole collection is loaded at once (250 is Shopify's per-page maximum)
+          {%- endcomment -%}
+          {%- paginate collection.products by 250 -%}
             {%- if show_filters -%}
               <facets-drawer
                 id="facets-drawer"

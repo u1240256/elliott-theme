@@ -12,9 +12,8 @@
     "promo-banner": {
       "type": "promo-banner",
       "settings": {
-        "eyebrow": "A little welcome gift",
-        "highlight": "Free shipping",
-        "heading": "on orders over $65",
+        "highlight": "Free US shipping",
+        "heading": "on orders $65+",
         "button_label": "Shop now",
         "link": "shopify://collections/all",
         "accessibility_label": "Shop the current promotion",
