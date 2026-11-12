@@ -470,10 +470,18 @@
 
                     for product in listed_products
                       if list_every_colourway
+                        # Only the first page is built straight away; later pages ship as inert <template>s (no images,
+                        # no layout) that <listing-pages> unpacks when that page is opened
                         assign card_position = card_position | plus: 1
-                        echo '<div class="contents" data-listing-item>'
+                        assign listing_wrapper = 'div class="contents"'
+
+                        if card_position > section.settings.products_per_page
+                          assign listing_wrapper = 'template'
+                        endif
+
+                        echo '<' | append: listing_wrapper | append: ' data-listing-item>'
                         render 'product-card', product: product, reveal: settings.stagger_products_apparition, position: card_position, hide_product_information: section.settings.hide_product_information, stacked: true
-                        echo '</div>'
+                        echo '</' | append: listing_wrapper | split: ' ' | first | append: '>'
                         continue
                       endif
 
@@ -701,7 +709,7 @@
 <script>
   {%- comment -%}
     Splits the all-products list into pages (?p=2, ?p=3...). Shopify's own pagination can't be used there, because the
-    model-first order is worked out across the whole collection. Without JavaScript every card simply stays visible.
+    model-first order is worked out across the whole collection. Without JavaScript the first page still shows.
     A custom element so it re-runs when filtering swaps the section's HTML.
   {%- endcomment -%}
   if (!customElements.get('listing-pages')) {
@@ -714,7 +722,19 @@
         const params = new URLSearchParams(location.search);
         const page = Math.min(Math.max(parseInt(params.get('p'), 10) || 1, 1), Math.max(pages, 1));
 
-        items.forEach((item, index) => (item.style.display = Math.floor(index / size) + 1 === page ? '' : 'none'));
+        items.forEach((item, index) => {
+          const onPage = Math.floor(index / size) + 1 === page;
+
+          if (onPage && item instanceof HTMLTemplateElement) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'contents';
+            wrapper.setAttribute('data-listing-item', '');
+            wrapper.append(item.content.cloneNode(true));
+            item.replaceWith(wrapper);
+          } else if (!(item instanceof HTMLTemplateElement)) {
+            item.style.display = onPage ? '' : 'none';
+          }
+        });
         this.hidden = pages < 2;
 
         if (pages < 2) {
