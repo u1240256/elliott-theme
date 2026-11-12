@@ -68,7 +68,8 @@
                   {%- continue -%}
                 {%- endif -%}
 
-                <a href="{{ collection.url }}" class="collection-card group">
+                {%- capture collection_card_url -%}{% render 'representative-collection-link', collection: collection, fallback_url: collection.url %}{%- endcapture -%}
+                <a href="{{ collection_card_url | strip }}" class="collection-card group">
                   <div
                     class="content-over-media content-over-media--{{ section.settings.image_size }}"
                     style="--content-over-media-overlay: {{ section.settings.overlay_color.rgb }} / {{ section.settings.overlay_opacity | divided_by: 100.0 }};"

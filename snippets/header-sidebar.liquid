@@ -149,13 +149,15 @@
                           <div class="header-sidebar__nested-linklist">
                             {%- assign sorted_sub_sub_links = sub_link.links | sort_natural: 'title' -%}
                             {%- for sub_sub_link in sorted_sub_sub_links -%}
-                              <a href="{{ sub_sub_link.url }}" class="link-faded-reverse">{{ sub_sub_link.title }}</a>
+                              {%- capture sub_sub_link_url -%}{% render 'representative-collection-link', collection: sub_sub_link.object, fallback_url: sub_sub_link.url %}{%- endcapture -%}
+                              <a href="{{ sub_sub_link_url | strip }}" class="link-faded-reverse">{{ sub_sub_link.title }}</a>
                             {%- endfor -%}
                           </div>
                         </details>
                       </accordion-disclosure>
                     {%- else -%}
-                      <a href="{{ sub_link.url }}" class="header-sidebar__linklist-button {% if section.settings.sidebar_text_font == 'heading' %}h6{% endif %}">
+                      {%- capture sub_link_url -%}{% render 'representative-collection-link', collection: sub_link.object, fallback_url: sub_link.url %}{%- endcapture -%}
+                      <a href="{{ sub_link_url | strip }}" class="header-sidebar__linklist-button {% if section.settings.sidebar_text_font == 'heading' %}h6{% endif %}">
                         {{- sub_link.title -}}
                       </a>
                     {%- endif -%}
