@@ -83,6 +83,17 @@
         endif
       endif
     endfor
+
+    # A photo assigned to some variants (like the 3-button front for 0-12Mo and the 4-button front for 12-24Mo) only
+    # shows for those variants. Photos assigned to no variant (model, back, swatch) always show.
+    for variant in product.variants
+      if variant.featured_media and variant.featured_media.id != default_media.id
+        assign media_position = variant.featured_media.position | sort
+        assign filtered_indexes = filtered_indexes | concat: media_position
+      endif
+    endfor
+
+    assign filtered_indexes = filtered_indexes | uniq
   endif
 %}
 
