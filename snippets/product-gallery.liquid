@@ -93,6 +93,54 @@
       endif
     endfor
 
+    # Size-specific photos are named after a size, like "...-front-0to3.png" for 0-3Mo. They only show for that size,
+    # and while that size is picked they stand in for the regular front and back shots.
+    assign size_option = product.options_by_name['Size']
+
+    if size_option
+      assign size_tags = ''
+
+      for size_value in size_option.values
+        assign size_tag = size_value | downcase | remove: 'mo' | replace: '-', 'to'
+        assign size_tags = size_tags | append: '-' | append: size_tag | append: '.,'
+      endfor
+
+      assign size_tags = size_tags | split: ','
+      assign selected_size_tag = size_option.selected_value | downcase | remove: 'mo' | replace: '-', 'to' | prepend: '-' | append: '.'
+      assign has_selected_size_photos = false
+
+      for media in product.media
+        assign media_name = media.preview_image.src | split: '/' | last | split: '?' | first | downcase
+
+        if media_name contains selected_size_tag
+          assign has_selected_size_photos = true
+          break
+        endif
+      endfor
+
+      for media in product.media
+        assign media_name = media.preview_image.src | split: '/' | last | split: '?' | first | downcase
+        assign hide_media = false
+
+        for size_tag in size_tags
+          if media_name contains size_tag and size_tag != selected_size_tag
+            assign hide_media = true
+          endif
+        endfor
+
+        if has_selected_size_photos and media_name contains selected_size_tag
+          continue
+        elsif has_selected_size_photos and media_name contains '-front' or has_selected_size_photos and media_name contains '-back'
+          assign hide_media = true
+        endif
+
+        if hide_media and media != default_media
+          assign media_position = media.position | sort
+          assign filtered_indexes = filtered_indexes | concat: media_position
+        endif
+      endfor
+    endif
+
     assign filtered_indexes = filtered_indexes | uniq
   endif
 %}
