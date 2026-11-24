@@ -150,15 +150,28 @@
     assign filtered_indexes = filtered_indexes | uniq
   endif
 
-  # The gallery opens on the first photo that shows (the model or main photo when there is one), not on the variant's
-  # own photo further down.
-  assign initial_media = default_media
+  # The gallery opens on the selected size's front photo (the model photo stays first in the list). Without a front
+  # photo, it opens on the first photo that shows.
+  assign initial_media = nil
   for media in product.media
     unless filtered_indexes contains media.position
-      assign initial_media = media
-      break
+      assign media_name = media.preview_image.src | split: '/' | last | split: '?' | first | downcase
+      if media_name contains '-front'
+        assign initial_media = media
+        break
+      endif
     endunless
   endfor
+
+  unless initial_media
+    assign initial_media = default_media
+    for media in product.media
+      unless filtered_indexes contains media.position
+        assign initial_media = media
+        break
+      endunless
+    endfor
+  endunless
 %}
 
 <product-gallery

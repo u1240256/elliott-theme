@@ -3151,28 +3151,23 @@ onSectionRerender_fn = function(event) {
   if (!galleryMarkup) {
     return;
   }
-  // Switching sizes keeps the same kind of photo on screen (front stays on front, back on back, model on model).
-  // When the new size has no photo of that kind, the gallery stays at the same position instead.
-  const photoKind = (cell) => {
-    const name = (cell?.querySelector("img")?.getAttribute("src") || "").split("?")[0].split("/").pop().toLowerCase();
-    return name.includes("model") || name.includes("main") ? "model" : name.includes("-front") ? "front" : name.includes("-back") ? "back" : name.includes("swatch") ? "swatch" : name;
-  };
-  const previousIndex = this.carousel.selectedIndex || 0, previousKind = photoKind(this.carousel.selectedCell);
+  // Switching sizes goes to the new size's front photo (the model photo stays first in the list). Without a front
+  // photo, the gallery goes to its first photo.
+  const isFront = (cell) => (cell?.querySelector("img")?.getAttribute("src") || "").split("?")[0].split("/").pop().toLowerCase().includes("-front");
   if (galleryMarkup.filteredIndex !== this.filteredIndexes) {
     this.carousel.filter(galleryMarkup.filteredIndexes);
     this.setAttribute("filtered-indexes", galleryMarkup.getAttribute("filtered-indexes"));
   }
   if (this.carousel.isScrollable) {
-    const cells = this.carousel.cells, sameKindIndex = cells.findIndex((cell) => photoKind(cell) === previousKind);
-    this.carousel.select(sameKindIndex !== -1 ? sameKindIndex : Math.min(previousIndex, cells.length - 1), { instant: true });
+    const frontIndex = this.carousel.cells.findIndex(isFront);
+    this.carousel.select(Math.max(frontIndex, 0), { instant: true });
   }
 };
 /**
  * When the variant changes, we check the alt tags for each media and filter them
  */
 onVariantChange_fn = function() {
-  // Nothing to do: instead of jumping to the variant's own photo, the gallery stays on the same kind of photo once the
-  // new variant's photos are filtered, in onSectionRerender_fn.
+  // Nothing to do: the gallery goes to the new size's front photo once its photos are filtered, in onSectionRerender_fn.
 };
 /**
  * When the media is about to change, we perform some logic
