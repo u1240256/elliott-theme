@@ -3155,22 +3155,16 @@ onSectionRerender_fn = function(event) {
     this.carousel.filter(galleryMarkup.filteredIndexes);
     this.setAttribute("filtered-indexes", galleryMarkup.getAttribute("filtered-indexes"));
   }
+  if (this.carousel.isScrollable) {
+    this.carousel.select(0, { instant: true });
+  }
 };
 /**
  * When the variant changes, we check the alt tags for each media and filter them
  */
-onVariantChange_fn = function(event) {
-  if (!event.detail.variant) {
-    return;
-  }
-  if (event.detail.variant["featured_media"] && event.detail.previousVariant?.["featured_media"]?.["id"] !== event.detail.variant["featured_media"]["id"]) {
-    const position = event.detail.variant["featured_media"]["position"] - 1, filteredIndexBelowPosition = this.filteredIndexes.filter((filteredIndex) => filteredIndex < position);
-    if (this.carousel.isScrollable) {
-      this.carousel.select(position - filteredIndexBelowPosition.length, { instant: true });
-    } else {
-      this.querySelector(`[data-media-id="${event.detail.variant["featured_media"]["id"]}"]`)?.scrollIntoView({ block: "start", behavior: "smooth" });
-    }
-  }
+onVariantChange_fn = function() {
+  // Nothing to do: instead of jumping to the variant's own photo, the gallery goes back to its first photo (the model
+  // or main photo when there is one) once the new variant's photos are filtered, in onSectionRerender_fn.
 };
 /**
  * When the media is about to change, we perform some logic

@@ -86,7 +86,13 @@
 
     # A photo assigned to some variants (like the 3-button front for 0-12Mo and the 4-button front for 12-24Mo) only
     # shows for those variants. Photos assigned to no variant (model, back, swatch) always show.
+    # Model and main photos are never hidden this way: they show for every size.
     for variant in product.variants
+      assign variant_media_name = variant.featured_media.preview_image.src | split: '/' | last | split: '?' | first | downcase
+      if variant_media_name contains 'model' or variant_media_name contains 'main'
+        continue
+      endif
+
       if variant.featured_media and variant.featured_media.id != default_media.id
         assign media_position = variant.featured_media.position | sort
         assign filtered_indexes = filtered_indexes | concat: media_position
@@ -143,6 +149,16 @@
 
     assign filtered_indexes = filtered_indexes | uniq
   endif
+
+  # The gallery opens on the first photo that shows (the model or main photo when there is one), not on the variant's
+  # own photo further down.
+  assign initial_media = default_media
+  for media in product.media
+    unless filtered_indexes contains media.position
+      assign initial_media = media
+      break
+    endunless
+  endfor
 %}
 
 <product-gallery
@@ -222,7 +238,7 @@
 
           {%- for media in product.media -%}
             <div
-              class="product-gallery__media snap-center {% if media == default_media %}is-initial{% endif %}"
+              class="product-gallery__media snap-center {% if media == initial_media %}is-initial{% endif %}"
               data-media-type="{{ media.media_type }}"
               data-media-id="{{ media.id }}"
               role="group"
@@ -231,7 +247,7 @@
                 hidden
               {% endif %}
             >
-              {%- if default_media == media -%}
+              {%- if initial_media == media -%}
                 {%- assign preload = true -%}
               {%- else -%}
                 {%- assign preload = false -%}
@@ -343,7 +359,7 @@
                 data-media-type="{{ media.media_type }}"
                 data-media-position="{{ media.position }}"
                 data-media-id="{{ media.id }}"
-                aria-current="{% if media == default_media %}true{% else %}false{% endif %}"
+                aria-current="{% if media == initial_media %}true{% else %}false{% endif %}"
                 aria-label="{{ 'general.accessibility.go_to_item' | t: index: forloop.index | escape }}"
               >
                 {{- media | image_url: width: media.preview_image.width | image_tag: sizes: '56px', widths: '56,112,168', class: 'object-contain' -}}
@@ -390,7 +406,7 @@
               {% if filtered_indexes contains media.position %}
                 hidden
               {% endif %}
-              aria-current="{% if media == default_media %}true{% else %}false{% endif %}"
+              aria-current="{% if media == initial_media %}true{% else %}false{% endif %}"
             >
               <span class="sr-only">{{ 'general.accessibility.go_to_item' | t: index: media.position }}</span>
             </button>
